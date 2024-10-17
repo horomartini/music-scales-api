@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  api:
+    container_name: api
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      PORT: ${SERVER_PORT}
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    networks:
+      - main-network
+  
+  db:
+    container_name: db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    entrypoint: bash -c "docker-entrypoint.sh mongod | jq --unbuffered -r '.msg'"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - db-data:/data/db
+    networks:
+      - main-network
+    restart: always
+  
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:8044:80"
+    networks:
+      - main-network
+    
+volumes:
+  db-data:
+
+networks:
+  main-network:
+    driver: bridge    

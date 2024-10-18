@@ -1,21 +1,15 @@
-const express = require('express')
-const mongoose = require('mongoose')
-
-const PORT = process.env.PORT || 8080
-const MONGO_URI = process.env.MONGO_URI
-
-const app = express()
-app.use(express.json())
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const PORT = process.env.PORT || 8080;
+const app = (0, express_1.default)();
+app.use(express_1.default.json());
 app.get('/api/test', (req, res) => {
-  res.json({ message: 'test' })
-})
-
+    res.json({ message: 'test' });
+});
 app.listen(PORT, () => {
-  mongoose
-    .connect(MONGO_URI, {})
-    .then(() => { console.log('Connected to db') })
-    .catch(error => { console.error('Error connecting to db:', error.message) })
-
-  console.log(`Server is running on port ${PORT}`)
-})
+    console.log(`Server is running on port ${PORT}`);
+});

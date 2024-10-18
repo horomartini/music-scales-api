@@ -21,7 +21,6 @@ services:
     build:
       context: ./db
       dockerfile: Dockerfile
-    entrypoint: bash -c "docker-entrypoint.sh mongod | jq --unbuffered -r '.msg'"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
@@ -32,7 +31,6 @@ services:
       - db-data:/data/db
     networks:
       - main-network
-    restart: always
   
   nginx:
     container_name: nginx
@@ -41,6 +39,8 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - api
+    environment:
+      SERVER_PORT: ${SERVER_PORT}
     ports:
       - "127.0.0.1:8044:80"
     networks:

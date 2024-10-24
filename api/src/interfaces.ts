@@ -13,18 +13,38 @@ export interface ISound extends IPhysicalNote {
   pitch: number
 }
 
-export interface INoteRef {
-  note: mongoose.Types.ObjectId
+export interface IRefRaw {
+  sound: {
+    note: mongoose.Types.ObjectId
+    octave: number
+    pitch: number
+  }
 }
 
-export interface IPhysicalNoteRef extends Omit<IPhysicalNote, 'name'>, INoteRef {
-
-}
-
-export interface ISoundRef extends Omit<ISound, 'name'>, INoteRef {
-
+export interface IRefPopulated {
+  sound: {
+    note: INote
+    octave: number
+    pitch: number
+  }
 }
 
 export interface IRef {
-  sound: ISoundRef
+  sound: ISound
 }
+
+// export interface INoteRef {
+//   note: mongoose.Types.ObjectId
+// }
+
+// export interface IPhysicalNoteRef extends Omit<IPhysicalNote, 'name'>, INoteRef {
+
+// }
+
+// export interface ISoundRef extends Omit<ISound, 'name'>, INoteRef {
+
+// }
+
+// export interface IRef {
+//   sound: ISoundRef
+// }

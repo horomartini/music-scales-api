@@ -1,28 +1,68 @@
 db = db.getSiblingDB('maindb')
 
-db.createCollection('Note')
-if (db.Note.countDocuments({}) === 0) {
-  db.Note.insertMany([
-    { name: "C" },
-    { name: "C#" },
-    { name: "D" },
-    { name: "D#" },
-    { name: "E" },
-    { name: "F" },
-    { name: "F#" },
-    { name: "G" },
-    { name: "G#" },
-    { name: "A" },
-    { name: "A#" },
-    { name: "B" },
+db.createCollection('notes')
+if (db.notes.countDocuments({}) === 0) {
+  db.notes.insertMany([
+    { name: 'C' },
+    { name: 'C#' },
+    { name: 'D' },
+    { name: 'D#' },
+    { name: 'E' },
+    { name: 'F' },
+    { name: 'F#' },
+    { name: 'G' },
+    { name: 'G#' },
+    { name: 'A' },
+    { name: 'A#' },
+    { name: 'B' },
   ])
 }
 
-db.createCollection('Ref')
-if (db.Ref.countDocuments({}) === 0) {
-  const noteA = db.Note.findOne({ name: 'A' })
+db.createCollection('instruments')
+if (db.instruments.countDocuments({}) == 0) {
+  db.instruments.insertOne({
+    name: 'guitar',
+    baseNotes: 6,
+    defaultTuning: null,
+  })
+}
 
-  db.Ref.insert({
+db.createCollection('tunings')
+if (db.tunings.countDocuments({}) === 0) {
+  const guitar = db.instruments.findOne({ name: 'guitar' })
+  const notesRaw = db.notes.findOne({ name: { $in: ['E', 'A', 'D', 'G', 'B'] } }).toArray()
+  const notes = notesRaw.map(note => ({ [note.name]: note.name }))
+
+  const tuning = db.tunings.insertOne({
+    instrument: guitar._id,
+    name: 'E Standard',
+    notes: [
+      { note: notes.E._id, octave: 2 },
+      { note: notes.A._id, octave: 2 },
+      { note: notes.D._id, octave: 3 },
+      { note: notes.G._id, octave: 3 },
+      { note: notes.B._id, octave: 3 },
+      { note: notes.E._id, octave: 4 },
+    ],
+  })
+
+  db.instruments.updateOne({ name: 'guitar' }, { $set: { defaultTuning: tuning.insertedId } })
+}
+
+db.createCollection('scales')
+if (db.scales.countDocuments({}) === 0) {
+  db.scales.insertOne({
+    name: 'Major (Ionian)',
+    keywords: ['major', 'ionian'],
+    steps: [2, 2, 1, 2, 2, 2, 1],
+  })
+}
+
+db.createCollection('refs')
+if (db.refs.countDocuments({}) === 0) {
+  const noteA = db.notes.findOne({ name: 'A' })
+
+  db.refs.insertOne({
     sound: {
       note: noteA._id,
       octave: 4,

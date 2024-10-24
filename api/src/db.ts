@@ -1,28 +1,28 @@
 import mongoose from 'mongoose'
 
-import { INote, IRef } from './interfaces'
+import { INote, IRefRaw } from './interfaces'
 
 
-const noteSchemaDefinition = {
+const notesSchemaDefinition = {
   name: { type: String, required: true },
 } as const
 
-const refSchemaDefinition = {
+const refsSchemaDefinition = {
   sound: {
-    note: { type: mongoose.Schema.Types.ObjectId, ref: 'Note', required: true },
+    note: { type: mongoose.Schema.Types.ObjectId, ref: 'notes', required: true },
     octave: { type: Number, required: true },
     pitch: { type: Number, required: true },
   }
 } as const
 
 
-const noteSchema = new mongoose.Schema<INote>(noteSchemaDefinition)
-const refSchema = new mongoose.Schema<IRef>(refSchemaDefinition)
+const notesSchema = new mongoose.Schema<INote>(notesSchemaDefinition)
+const refsSchema = new mongoose.Schema<IRefRaw>(refsSchemaDefinition)
 
-const Note = mongoose.model<INote>('Note', noteSchema)
-const Ref = mongoose.model<IRef>('Ref', refSchema)
+const Notes = mongoose.model<INote>('notes', notesSchema)
+const Refs = mongoose.model<IRefRaw>('refs', refsSchema)
 
 
 export default {
-  Note, Ref
+  Notes, Refs
 }

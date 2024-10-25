@@ -1,37 +1,58 @@
 {
   "notes": [
-    { "note": "C" },
-    { "note": "C#" },
-    { "note": "D" },
-    { "note": "D#" },
-    { "note": "E" },
-    { "note": "F" },
-    { "note": "F#" },
-    { "note": "G" },
-    { "note": "G#" },
-    { "note": "A" },
-    { "note": "A#" },
-    { "note": "B" }
+    { "_id": "id.notes.c",  "name": "C" },
+    { "_id": "id.notes.cs", "name": "C#" },
+    { "_id": "id.notes.d",  "name": "D" },
+    { "_id": "id.notes.ds", "name": "D#" },
+    { "_id": "id.notes.e",  "name": "E" },
+    { "_id": "id.notes.f",  "name": "F" },
+    { "_id": "id.notes.fs", "name": "F#" },
+    { "_id": "id.notes.g",  "name": "G" },
+    { "_id": "id.notes.gs", "name": "G#" },
+    { "_id": "id.notes.a",  "name": "A" },
+    { "_id": "id.notes.as", "name": "A#" },
+    { "_id": "id.notes.b",  "name": "B" }
   ],
-  "tuning": [
+  "instruments": [
+    { 
+      "_id": "id.instruments.guitar",
+      "name": "guitar", 
+      "baseNotes": 6, 
+      "defaultTuning": "id.tunings.e-standard"
+    }
+  ],
+  "tunings": [
     {
-      "instrument": "guitar",
-      "name": "E standard",
+      "_id": "id.tunings.e-standard",
+      "instrument": "id.instruments.guitar",
+      "name": "E Standard",
       "notes": [
-        { "note": "E", "octave": "2" },
-        { "note": "A", "octave": "2" },
-        { "note": "D", "octave": "3" },
-        { "note": "G", "octave": "3" },
-        { "note": "B", "octave": "3" },
-        { "note": "E", "octave": "4" }
+        { "note": "id.notes.e", "octave": 2 },
+        { "note": "id.notes.a", "octave": 2 },
+        { "note": "id.notes.d", "octave": 3 },
+        { "note": "id.notes.g", "octave": 3 },
+        { "note": "id.notes.b", "octave": 3 },
+        { "note": "id.notes.e", "octave": 4 }
       ]
     }
   ],
   "scales": [
     {
-      "name": "Ionian",
-      "steps": [2, 2, 1, 2, 2, 2, 1],
-      "idea": "give this and generate with POST the scale"
+      "_id": "id.scales.major",
+      "name": "Major (Ionian)",
+      "keywords": ["major", "ionian"],
+      "steps": [2, 2, 1, 2, 2, 2, 1]
+    }
+  ],
+  "refs": [
+    {
+      "_id": "id.refs",
+      "sound": {
+        "_id": "id.refs.sound",
+        "note": "id.notes.a",
+        "octave": 4,
+        "pitch": 440
+      }
     }
   ]
 }

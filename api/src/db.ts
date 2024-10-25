@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 
 import { INote, IRefRaw } from './interfaces'
 
+import sampleData from './data.json'
+
 
 const notesSchemaDefinition = {
   name: { type: String, required: true },
@@ -24,5 +26,6 @@ const Refs = mongoose.model<IRefRaw>('refs', refsSchema)
 
 
 export default {
-  Notes, Refs
+  model: { Notes, Refs },
+  test: sampleData,
 }

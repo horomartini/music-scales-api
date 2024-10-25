@@ -6,12 +6,10 @@
   "license": "MIT",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build.old": "npx tsc",
-    "dev.old": "npx ts-node src/main.ts",
     "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",
-    "dev": "nodemon src/main.ts"
+    "dev": "nodemon src/main.ts",
+    "dev-dockerless": "nodemon src/main.ts"
   },
   "dependencies": {
     "express": "^4.21.1",

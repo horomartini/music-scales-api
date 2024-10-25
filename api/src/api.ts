@@ -9,19 +9,19 @@ const router = express.Router()
 
 router.get('/test', async (req, res) => {
   try {
-    const refs1 = await db.Notes.find()
-    const refs2 = await db.Refs
-      .findOne({ sound: { $exists: true } }, '-_id')
-      .populate<IRefPopulated>({ path: 'sound.note', select: 'name -_id' })
-      .lean()
+    // const refs1 = await db.Notes.find()
+    // const refs2 = await db.Refs
+    //   .findOne({ sound: { $exists: true } }, '-_id')
+    //   .populate<IRefPopulated>({ path: 'sound.note', select: 'name -_id' })
+    //   .lean()
 
-    const refs3: ISound & { note: INote } = {
-      ...refs2!.sound,
-      name: refs2!.sound.note.name
-    }
-    const { note, ...refs4 } = refs3
+    // const refs3: ISound & { note: INote } = {
+    //   ...refs2!.sound,
+    //   name: refs2!.sound.note.name
+    // }
+    // const { note, ...refs4 } = refs3
 
-    res.json({ message: 'test2', refs1, refs4 })
+    res.json({ message: 'test2' })
   } catch (err: any) {
     res.status(500).json({ message: 'error lol2', error: err?.message })
   }
@@ -64,6 +64,13 @@ router.get('/scales', (req, res) => {
       { key: 'E', names: ['scale 2', 'scale 4'] },
     ],
   }
+
+  const result = db.test.scales.map(scale => {
+    const { _id, ...rest } = scale
+    return rest
+  })
+
+  res.json(result)
 })
 
 router.get('/scales/:scale', (req, res) => {

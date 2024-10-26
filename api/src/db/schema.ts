@@ -1,8 +1,6 @@
+import type { INote } from 'api-types'
+
 import mongoose from 'mongoose'
-
-import { INote, IRefRaw } from './interfaces'
-
-import sampleData from './data.json'
 
 
 const notesSchemaDefinition = {
@@ -19,13 +17,10 @@ const refsSchemaDefinition = {
 
 
 const notesSchema = new mongoose.Schema<INote>(notesSchemaDefinition)
-const refsSchema = new mongoose.Schema<IRefRaw>(refsSchemaDefinition)
-
-const Notes = mongoose.model<INote>('notes', notesSchema)
-const Refs = mongoose.model<IRefRaw>('refs', refsSchema)
+// const refsSchema = new mongoose.Schema<IRefRaw>(refsSchemaDefinition)
 
 
 export default {
-  model: { Notes, Refs },
-  test: sampleData,
+  notes: notesSchema,
+  // refs: refsSchema,
 }

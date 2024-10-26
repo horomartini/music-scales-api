@@ -1,11 +1,18 @@
 import express from 'express'
-import mongoose from 'mongoose'
-
-import db from './db'
-import { INote, ISound, IRef, IRefRaw, IRefPopulated } from 'interfaces'
-
 
 const router = express.Router()
+
+router.get('/healthcheck', async (_, res) => {
+  try {
+    res
+      .status(200)
+      .json({ message: 'healtcheck success' })
+  } catch (err: any) {
+    res
+      .status(500)
+      .json({ message: 'healthcheck failed', error: err?.message })
+  }
+})
 
 router.get('/test', async (req, res) => {
   try {
@@ -21,9 +28,10 @@ router.get('/test', async (req, res) => {
     // }
     // const { note, ...refs4 } = refs3
 
-    res.json({ message: 'test2' })
+    // res.json({ message: 'test2', refs1, refs4 })
+    res.json({ message: 'test' })
   } catch (err: any) {
-    res.status(500).json({ message: 'error lol2', error: err?.message })
+    res.status(500).json({ message: 'error', error: err?.message })
   }
 })
 
@@ -64,13 +72,6 @@ router.get('/scales', (req, res) => {
       { key: 'E', names: ['scale 2', 'scale 4'] },
     ],
   }
-
-  const result = db.test.scales.map(scale => {
-    const { _id, ...rest } = scale
-    return rest
-  })
-
-  res.json(result)
 })
 
 router.get('/scales/:scale', (req, res) => {

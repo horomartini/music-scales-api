@@ -1,10 +1,9 @@
-import type { Pitch } from './types'
-import { IPhysicalNote, ISound } from './interfaces'
+import type { IPhysicalNote, ISound, Pitch } from 'api-types'
 
 
 const isPhysicalNote = (obj: any): obj is IPhysicalNote => 'octave' in obj
 
-const calcAbsFreq = (
+export const calcAbsFreq = (
   target: IPhysicalNote, 
   ref: ISound = { name: 'A', octave: 4, pitch: 440 },
   allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', ]
@@ -16,7 +15,7 @@ const calcAbsFreq = (
   return ref.pitch * Math.pow(twelfthRootOfTwo, targetPos - refPos)
 }
 
-const calc12TET = (
+export const calc12TET = (
   target: Pitch | IPhysicalNote,
   ref: ISound = { name: 'A', octave: 4, pitch: 440 },
   allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', ]

@@ -1,10 +1,10 @@
 import express from 'express'
 import mongoose from 'mongoose'
 
-import apiRouter from './api'
+import apiRouter from './api/main'
 
 const PORT = process.env.PORT || 8080
-const MONGO_URI = process.env.MONGO_URI || ''
+const MONGO_URI = process.env.MONGO_URI || undefined
 
 const app = express()
 app.use(express.json())
@@ -12,10 +12,13 @@ app.use(express.json())
 app.use('/api', apiRouter)
 
 app.listen(PORT, () => {
-  mongoose
-    .connect(MONGO_URI, {})
-    .then(() => { console.log('Connected to db') })
-    .catch(error => { console.error('Error connecting to db:', error.message) })
-
   console.log(`Server is running on port ${PORT}`)
+
+  if (MONGO_URI === undefined)
+    console.warn('MONG_URI has not been defined - connection to database will not be established!')
+  else 
+    mongoose
+      .connect(MONGO_URI, {})
+      .then(() => { console.log('Connected to db') })
+      .catch(error => { console.error('Error connecting to db:', error.message) })
 })

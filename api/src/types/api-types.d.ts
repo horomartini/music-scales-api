@@ -15,4 +15,40 @@ declare module 'api-types' {
   export interface ISound extends IPhysicalNote {
     pitch: Pitch
   }
+
+  /* //* old code for when cyclic fields were tried
+  export interface IInstrument {
+    name: string
+    baseNotes: number
+    defaultTuning: ITuning | null
+  }
+  */
+  export interface IInstrument {
+    name: string
+    baseNotes: number
+    defaultTuning: string | null
+  }
+
+  /* //* old code for when cyclic fields were tried
+  export interface ITuning {
+    name: string
+    instrument: IInstrument | null
+    notes: (IPhysicalNote | null)[]
+  }
+  */
+  export interface ITuning {
+    name: string
+    instrument: string | null
+    notes: (IPhysicalNote | null)[]
+  }
+
+  export interface IScale {
+    name: string
+    keywords: string[]
+    steps: number[]
+  }
+
+  export interface IRef {
+    sound: ISound | null
+  }
 }

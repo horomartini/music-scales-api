@@ -1,4 +1,5 @@
 import express from 'express'
+import db from '../../db/sample-db'
 
 const router = express.Router()
 
@@ -16,19 +17,27 @@ router.get('/healthcheck', async (_, res) => {
 
 router.get('/test', async (req, res) => {
   try {
-    // const refs1 = await db.Notes.find()
-    // const refs2 = await db.Refs
-    //   .findOne({ sound: { $exists: true } }, '-_id')
-    //   .populate<IRefPopulated>({ path: 'sound.note', select: 'name -_id' })
-    //   .lean()
+    /* //* old code from trying to get data from mongo
+    const refs1 = await db.Notes.find()
+    const refs2 = await db.Refs
+      .findOne({ sound: { $exists: true } }, '-_id')
+      .populate<IRefPopulated>({ path: 'sound.note', select: 'name -_id' })
+      .lean()
 
-    // const refs3: ISound & { note: INote } = {
-    //   ...refs2!.sound,
-    //   name: refs2!.sound.note.name
-    // }
-    // const { note, ...refs4 } = refs3
+    const refs3: ISound & { note: INote } = {
+      ...refs2!.sound,
+      name: refs2!.sound.note.name
+    }
+    const { note, ...refs4 } = refs3
 
-    // res.json({ message: 'test2', refs1, refs4 })
+    res.json({ message: 'test2', refs1, refs4 })
+    */
+    console.log(db.getNotes())
+    console.log(db.getInstruments())
+    console.log(db.getTunings())
+    console.log(db.getScales())
+    console.log(db.getRefs())
+
     res.json({ message: 'test' })
   } catch (err: any) {
     res.status(500).json({ message: 'error', error: err?.message })
@@ -129,9 +138,11 @@ router.get('/instruments/:instrument', (req, res) => {
   }
 })
 
-router.get('/instruments/:instrument/tunings', (req, res) => {
+router.get('/tunings', (req, res) => {
   /**
-   * @returns all possible tunings for this instrument
+   * @returns all possible tunings
+   * 
+   * filter for when you onyl want tunings for guitar
    */
   const returns = {
     return__variant1: [
@@ -140,9 +151,9 @@ router.get('/instruments/:instrument/tunings', (req, res) => {
   }
 })
 
-router.get('/instruments/:instrument/tunings/:tuning', (req, res) => {
+router.get('/tunings/:tuning', (req, res) => {
   /**
-   * @returns layout/data of this tuning
+   * @returns data for given tuning
    */
   const returns = {
     return__variant1: [

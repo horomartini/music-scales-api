@@ -24,8 +24,8 @@
   "tunings": [
     {
       "_id": "id.tunings.e-standard",
-      "instrument": "id.instruments.guitar",
       "name": "E Standard",
+      "instrument": "id.instruments.guitar",
       "notes": [
         { "note": "id.notes.e", "octave": 2 },
         { "note": "id.notes.a", "octave": 2 },

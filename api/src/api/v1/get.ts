@@ -1,5 +1,7 @@
 import express from 'express'
 import db from '../../db/sample-db'
+import { INote, IPhysicalNote } from 'api-types'
+import { stepsToNotes } from '../../utils/scales'
 
 const router = express.Router()
 
@@ -44,7 +46,7 @@ router.get('/test', async (req, res) => {
   }
 })
 
-router.get('/scales', (req, res) => {
+router.get('/scales', async (req, res) => {
   /**
    * @returns all names of available scales
    * @param notes - give us scale in keys that work with those notes, e.g. `notes=E,F#4`
@@ -80,6 +82,58 @@ router.get('/scales', (req, res) => {
       { key: 'C#', names: ['scale 1', 'scale 3'] }, 
       { key: 'E', names: ['scale 2', 'scale 4'] },
     ],
+  }
+
+  const params = {
+    notes: (req.query.notes ?? '') as string
+  }
+
+  const scales = db.getScales()
+
+  if (params.notes !== '') {
+    // parse notes from query params
+    const notesArray: (IPhysicalNote | INote)[] = (
+      params.notes.split(',') || []
+    ).map(note => {
+      if (/\d/.test(note)) 
+        return {
+          name: note.slice(0, -1).replace('s', '#'),
+          octave: Number(note.slice(-1)),
+        } as IPhysicalNote
+      return { name: note } as INote
+    })
+
+    // get all possible notes
+    const notes = db.getNotes()
+   
+    // get an array of scale objects
+    const scales2 = Object.values(scales.reduce((acc, scale) => {
+      // get actual scale notes for every possible key
+      //  and filter them with those that fit the query param criteria
+      const scaleNotesWithRoots = notes
+        .map(note => ({
+          key: note.name,
+          notes: stepsToNotes(note.name, scale.steps, notes)
+        }))
+        .filter(scale => notesArray
+          .map(note => note.name)
+          .every(note => scale.notes.includes(note))
+        )
+
+      // replace scale steps with actual root and notes of scale
+      const scalesWithRoots = scaleNotesWithRoots.map(scaleNotes => ({
+        name: scale.name,
+        keywords: scale.keywords,
+        ...scaleNotes,
+      }))
+
+      // add all scales generated of same name but different root notes
+      return { ...acc, ...scalesWithRoots }
+    }, {}))
+    
+    res.status(200).json(scales2)
+  } else {
+    res.status(200).json(scales.map(({ name }) => ({ name })))
   }
 })
 

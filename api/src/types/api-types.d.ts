@@ -51,4 +51,27 @@ declare module 'api-types' {
   export interface IRef {
     sound: ISound | null
   }
+
+  export interface IQueryNotes {
+    notes?: string
+  }
+
+  export interface IQueryFilter {
+    filter?: string
+  }
+
+  export interface IQuerySorter {
+    sort_by?: string
+    order?: 'asc' | 'desc'
+    group_by?: string
+  }
+
+  export interface IQueryPaginator {
+    page?: number
+    limit?: number
+  }
+
+  export interface IQueryHateoas {
+    hateoas?: boolean
+  }
 }

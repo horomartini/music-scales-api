@@ -1,7 +1,9 @@
 import type { IPhysicalNote, ISound, Pitch } from 'api-types'
 
 
-const isPhysicalNote = (obj: any): obj is IPhysicalNote => 'octave' in obj
+export const isPhysicalNote = (obj: any): obj is IPhysicalNote => 'octave' in obj
+
+export const isSound = (obj: any): obj is ISound => 'pitch' in obj
 
 export const calcAbsFreq = (
   target: IPhysicalNote, 

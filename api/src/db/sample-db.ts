@@ -16,13 +16,19 @@ import type {
 } from 'api-types'
 import sampleDb from './data.json'
 
-
+const DB = sampleDb
 
 const getNotes = () => {
-  const notesCol: INotesCollection[] = sampleDb.notes
+  const notesCol: INotesCollection[] = DB.notes
   const notes: INote[] = notesCol
     .map(({ _id, ...rest }) => ({ ...rest }))
   return notes
+}
+
+const getNote = (name: string): INote | null => {
+  return getNotes()
+    .filter(note => note.name === name)
+    ?.[0] || null
 }
 
 const getInstruments = () => {
@@ -55,8 +61,8 @@ const getInstruments = () => {
   
   return instruments
   */
-  const instrumentsCol: IInstrumentsCollection[] = sampleDb.instruments
-  const tuningsCol: ITuningsCollection[] = sampleDb.tunings
+  const instrumentsCol: IInstrumentsCollection[] = DB.instruments
+  const tuningsCol: ITuningsCollection[] = DB.tunings
 
   const instruments: IInstrument[] = instrumentsCol
     .map(({ _id, ...rest }) => ({ ...rest }))
@@ -70,6 +76,12 @@ const getInstruments = () => {
       return { ...rest, defaultTuning: tuningName }
     })
   return instruments
+}
+
+const getInstrument = (name: string): IInstrument | null => {
+  return getInstruments()
+    .filter(instrument => instrument.name === name)
+    ?.[0] || null
 }
 
 const getTunings = () => {
@@ -99,9 +111,9 @@ const getTunings = () => {
   
   return tunings
   */
-  const tuningsCol: ITuningsCollection[] = sampleDb.tunings
-  const instrumentsCol: IInstrumentsCollection[] = sampleDb.instruments
-  const notesCol: INotesCollection[] = sampleDb.notes
+  const tuningsCol: ITuningsCollection[] = DB.tunings
+  const instrumentsCol: IInstrumentsCollection[] = DB.instruments
+  const notesCol: INotesCollection[] = DB.notes
 
   const tunings: ITuning[] = tuningsCol
     .map(({ _id, ...rest }) => ({ ...rest }))
@@ -126,16 +138,28 @@ const getTunings = () => {
   return tunings
 }
 
+const getTuning = (name: string): ITuning | null => {
+  return getTunings()
+    .filter(tuning => tuning.name === name)
+    ?.[0] || null
+}
+
 const getScales = () => {
-  const scalesCol: IScalesCollection[] = sampleDb.scales
+  const scalesCol: IScalesCollection[] = DB.scales
   const scales: IScale[] = scalesCol
     .map(({ _id, ...rest }) => ({ ...rest }))
   return scales
 }
 
+const getScale = (name: string): IScale | null => {
+  return getScales()
+    .filter(scale => scale.name === name)
+    ?.[0] || null
+}
+
 const getRefs = () => {
-  const refsCol: IRefsCollection[] = sampleDb.refs
-  const notesCol: INotesCollection[] = sampleDb.notes
+  const refsCol: IRefsCollection[] = DB.refs
+  const notesCol: INotesCollection[] = DB.notes
 
   const refs: IRef[] = refsCol
     .map(({ _id, ...rest }) => ({ ...rest }))
@@ -154,10 +178,19 @@ const getRefs = () => {
   return refs
 }
 
+const getRef = (): IRef | null => {
+  return getRefs()?.[0] || null
+}
+
 export default {
   getNotes,
+  getNote,
   getInstruments,
+  getInstrument,
   getTunings,
+  getTuning,
   getScales,
+  getScale,
   getRefs,
+  getRef,
 }

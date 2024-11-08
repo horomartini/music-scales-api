@@ -1,4 +1,4 @@
-import type { INote, IPhysicalNote, IScale, ISound } from 'api-types'
+import type { INote, IPhysicalNote, IScale, IScaleExt, ISound } from 'api-types'
 
 export const stepsToNotes = (
   rootKey: string,
@@ -17,4 +17,24 @@ export const stepsToNotes = (
 
     return note
   })
+}
+
+export const scaleToScaleExt = (
+  scale: IScale,
+  notes: INote[],
+  filterKeys: (INote | IPhysicalNote | ISound)[],
+): IScaleExt[] => {
+  const scalesExt: IScaleExt[] = notes.map(note => ({
+    name: scale.name,
+    keywords: scale.keywords,
+    key: note.name,
+    notes: stepsToNotes(note.name, scale.steps, notes),
+  }))
+
+  if (filterKeys.length < 0)
+    return scalesExt
+  return scalesExt.filter(extScale => filterKeys
+    .map(note => note.name)
+    .every(noteName => extScale.notes.includes(noteName))
+  )
 }

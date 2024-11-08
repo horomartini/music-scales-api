@@ -64,7 +64,8 @@ declare module 'api-types' {
   }
 
   export interface IQueryFilter {
-    filter?: string
+    filter_by?: string
+    filter_for?: string
   }
 
   export interface IQuerySorter {
@@ -81,4 +82,8 @@ declare module 'api-types' {
   export interface IQueryHateoas {
     hateoas?: boolean
   }
+
+  export interface IQueryUX extends IQueryFilter, IQuerySorter, IQueryPaginator {}
+
+  export interface IQueryAll extends IQueryNotes, IQueryUX, IQueryHateoas {}
 }

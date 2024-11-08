@@ -48,6 +48,13 @@ declare module 'api-types' {
     steps: number[]
   }
 
+  export interface IScaleExt {
+    name: string
+    keywords: string[]
+    key: string
+    notes: string[]
+  }
+
   export interface IRef {
     sound: ISound | null
   }

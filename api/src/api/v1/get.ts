@@ -1,7 +1,10 @@
 import express from 'express'
 import db from '../../db/sample-db'
-import { INote, IPhysicalNote } from 'api-types'
+import { INote, IPhysicalNote, IScale, IScaleExt } from 'api-types'
 import { stepsToNotes } from '../../utils/scales'
+import { handleError } from 'utils/errors'
+import { parseNotes } from './utils/params'
+import { isScaleExt } from '../../utils/types'
 
 const router = express.Router()
 
@@ -9,11 +12,11 @@ router.get('/healthcheck', async (_, res) => {
   try {
     res
       .status(200)
-      .json({ message: 'healtcheck success' })
+      .json({ message: 'success' })
   } catch (err: any) {
     res
       .status(500)
-      .json({ message: 'healthcheck failed', error: err?.message })
+      .json({ message: 'failed', error: err?.message })
   }
 })
 
@@ -64,58 +67,35 @@ router.get('/scales', async (req, res) => {
    * @param simplified - returns a simplified version of the result body if possible
    */
 
-  const returns = {
-    return__variant1: [
-      { name: 'scale 1' }, 
-      { name: 'scale 2' },
-    ],
-    return__variant2__notes_Cs_D_G: [
-      { name: 'scale 1', key: 'C#' }, 
-      { name: 'scale 1', key: 'D' }, 
-      { name: 'scale 1', key: 'G' },
-    ],
-    return__variant3__notes_Cs_D_G_Fs_B_E__group_by_name: [
-      { name: 'scale 1', keys: ['C#', 'D', 'G'] }, 
-      { name: 'scale 2', keys: ['F#', 'B', 'E'] },
-    ],
-    return__variant4__notes_Cs_e__group_by_key: [
-      { key: 'C#', names: ['scale 1', 'scale 3'] }, 
-      { key: 'E', names: ['scale 2', 'scale 4'] },
-    ],
-  }
-
   const params = {
-    notes: (req.query.notes ?? '') as string
+    notes: (req.query.notes ?? '') as string,
+    tuning: (req.query.tuning ?? '') as string,
   }
+  const scalesDb = db.getScales()
 
-  const scales = db.getScales()
+  let scales: (IScale | IScaleExt)[] = scalesDb
 
   if (params.notes !== '') {
     // parse notes from query params
-    const notesArray: (IPhysicalNote | INote)[] = (
-      params.notes.split(',') || []
-    ).map(note => {
-      if (/\d/.test(note)) 
-        return {
-          name: note.slice(0, -1).replace('s', '#'),
-          octave: Number(note.slice(-1)),
-        } as IPhysicalNote
-      return { name: note } as INote
-    })
+    const notesToHave: (IPhysicalNote | INote)[] = parseNotes(params.notes)
 
     // get all possible notes
     const notes = db.getNotes()
    
+    // TODO: scales =/= scalesDb, might throw errors at (scale as IScale)
     // get an array of scale objects
-    const scales2 = Object.values(scales.reduce((acc, scale) => {
+    const scalesWithKeys: IScaleExt[] = Object.values(scales.reduce((acc, scale) => {
       // get actual scale notes for every possible key
       //  and filter them with those that fit the query param criteria
-      const scaleNotesWithRoots = notes
-        .map(note => ({
-          key: note.name,
-          notes: stepsToNotes(note.name, scale.steps, notes)
-        }))
-        .filter(scale => notesArray
+
+      let scaleNotesWithRoots = (
+        isScaleExt(scale)
+          ? [scale].map(({ key, notes }) => ({ key, notes }))
+          : notes.map(note => ({
+            key: note.name,
+            notes: stepsToNotes(note.name, (scale as IScale).steps, notes)
+          }))
+        ).filter(scale => notesToHave
           .map(note => note.name)
           .every(note => scale.notes.includes(note))
         )
@@ -130,11 +110,26 @@ router.get('/scales', async (req, res) => {
       // add all scales generated of same name but different root notes
       return { ...acc, ...scalesWithRoots }
     }, {}))
-    
-    res.status(200).json(scales2)
-  } else {
-    res.status(200).json(scales.map(({ name }) => ({ name })))
+
+    scales = scalesWithKeys
   }
+
+  // if (params.tuning !== '') {
+  //   const tunings = db.getTunings()
+  //   const tuningMatch = tunings.filter(({ name }) => name === params.tuning)
+
+  //   if (tuningMatch.length > 0) {
+  //     if (scales?.[0]?.key === undefined) {
+  //       // TODO: param.notes were not defined - generate scales with root keys
+  //     } else {
+  //       scales.filter(scale => scale.notes)
+  //     }
+  //   }
+  // }
+
+  res
+    .status(200)
+    .json(scales)
 })
 
 router.get('/scales/:scale', (req, res) => {

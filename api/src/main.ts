@@ -7,7 +7,12 @@ const PORT = process.env.PORT || 8080
 const MONGO_URI = process.env.MONGO_URI || undefined
 
 const app = express()
+
 app.use(express.json())
+app.use((req, res, next) => {
+  console.log(`[${new Date()}] ${req.method} ${req.url}`)
+  next()
+})
 
 app.use('/api', apiRouter)
 

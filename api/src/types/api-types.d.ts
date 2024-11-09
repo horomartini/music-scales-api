@@ -58,9 +58,41 @@ declare module 'api-types' {
   export interface IRef {
     sound: ISound | null
   }
+}
+
+declare module 'request-types' {
+  export interface IParamNoteName {
+    note: string
+  }
+
+  export interface IParamInstrumentName {
+    instrument: string
+  }
+
+  export interface IParamTuningName {
+    tuning: string
+  }
+
+  export interface IParamScaleName {
+    scale: string
+  }
+
+  export interface IQueryNoteFrequencies {
+    note_freq?: boolean
+  }
+
+  export interface IQueryNoteReference {
+    ref_name?: string
+    ref_octave?: number
+    ref_pitch?: Pitch
+  }
 
   export interface IQueryNotes {
     notes?: string
+  }
+
+  export interface IQueryLookup {
+    exact_match?: boolean
   }
 
   export interface IQueryFilter {
@@ -82,8 +114,4 @@ declare module 'api-types' {
   export interface IQueryHateoas {
     hateoas?: boolean
   }
-
-  export interface IQueryUX extends IQueryFilter, IQuerySorter, IQueryPaginator {}
-
-  export interface IQueryAll extends IQueryNotes, IQueryUX, IQueryHateoas {}
 }

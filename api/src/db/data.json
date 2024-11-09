@@ -16,7 +16,7 @@
   "instruments": [
     { 
       "_id": "id.instruments.guitar",
-      "name": "guitar", 
+      "name": "Guitar", 
       "baseNotes": 6, 
       "defaultTuning": "id.tunings.e-standard"
     }

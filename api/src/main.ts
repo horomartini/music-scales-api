@@ -28,7 +28,6 @@ app.listen(PORT, () => {
 
   if (MONGO_URI === undefined)
     log('warn', 'MONG_URI has not been defined - connection to database will not be established!')
-
   else 
     mongoose
       .connect(MONGO_URI, {})

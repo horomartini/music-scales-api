@@ -29,3 +29,12 @@ export const applyPagination = <T extends { [key: string]: any }>(
   return objects
     .slice(start, end)
 }
+
+export const asKebabCase = (value: string): string => value
+  .toLowerCase()
+  .replace(/[()]/g, '')
+  .replace(/\s+/g, '-')
+  .replace(/[^\w#-]/g, '')
+
+export const equalsAsKebabCase = (a: string, b: string): boolean => 
+  asKebabCase(a) === asKebabCase(b)

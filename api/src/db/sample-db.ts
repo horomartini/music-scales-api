@@ -14,7 +14,9 @@ import type {
   ISound,
   ITuning, 
 } from 'api-types'
+
 import sampleDb from './data.json'
+import { asKebabCase, equalsAsKebabCase } from '../utils/rest'
 
 const DB = sampleDb
 
@@ -27,7 +29,7 @@ const getNotes = () => {
 
 const getNote = (name: string): INote | null => {
   return getNotes()
-    .filter(note => note.name === name)
+    .filter(note => equalsAsKebabCase(note.name, name))
     ?.[0] || null
 }
 
@@ -78,9 +80,19 @@ const getInstruments = () => {
   return instruments
 }
 
-const getInstrument = (name: string): IInstrument | null => {
-  return getInstruments()
-    .filter(instrument => instrument.name === name)
+const getInstrument = (name: string, { exactMatch = true } = {}): IInstrument | null => {
+  const instruments = getInstruments()
+  const match = instruments
+    .filter(instrument => equalsAsKebabCase(instrument.name, name))
+    ?.[0] || null
+  
+  if (match !== null || exactMatch)
+    return match
+
+  return instruments
+    .filter(instrument => asKebabCase(instrument.name)
+      .split('-')
+      .includes(name))
     ?.[0] || null
 }
 
@@ -138,9 +150,19 @@ const getTunings = () => {
   return tunings
 }
 
-const getTuning = (name: string): ITuning | null => {
-  return getTunings()
-    .filter(tuning => tuning.name === name)
+const getTuning = (name: string, { exactMatch = true } = {}): ITuning | null => {
+  const tunings = getTunings()
+  const match = tunings
+    .filter(tuning => equalsAsKebabCase(tuning.name, name))
+    ?.[0] || null
+  
+  if (match !== null || exactMatch)
+    return match
+
+  return tunings
+    .filter(tuning => asKebabCase(tuning.name)
+      .split('-')
+      .includes(name))
     ?.[0] || null
 }
 
@@ -151,9 +173,19 @@ const getScales = () => {
   return scales
 }
 
-const getScale = (name: string): IScale | null => {
-  return getScales()
-    .filter(scale => scale.name === name)
+const getScale = (name: string, { exactMatch = true } = {}): IScale | null => {
+  const scales = getScales()
+  const match = scales
+    .filter(scale => equalsAsKebabCase(scale.name, name))
+    ?.[0] || null
+  
+  if (match !== null || exactMatch)
+    return match
+
+  return scales
+    .filter(scale => asKebabCase(scale.name)
+      .split('-')
+      .includes(name))
     ?.[0] || null
 }
 

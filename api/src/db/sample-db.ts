@@ -11,6 +11,7 @@ import type {
   IPhysicalNote,
   IRef,
   IScale,
+  IScaleExt,
   ISound,
   ITuning, 
 } from 'api-types'
@@ -19,6 +20,9 @@ import sampleDb from './data.json'
 import { asKebabCase, equalsAsKebabCase } from '../utils/rest'
 
 const DB = sampleDb
+
+const createSampleId = (collection: string, name: string) => 
+  `id.${collection}.${asKebabCase(name).replace('#', 's')}`
 
 const getNotes = () => {
   const notesCol: INotesCollection[] = DB.notes
@@ -31,6 +35,18 @@ const getNote = (name: string): INote | null => {
   return getNotes()
     .filter(note => equalsAsKebabCase(note.name, name))
     ?.[0] || null
+}
+
+const addNote = (note: INote) => {
+  const noteDoc: INotesCollection = { 
+    ...note, 
+    _id: createSampleId('notes', note.name), 
+  }
+  DB.notes = [...DB.notes, noteDoc]
+}
+
+const addNotes = (notes: INote[]) => {
+  notes.forEach(addNote)
 }
 
 const getInstruments = () => {
@@ -94,6 +110,20 @@ const getInstrument = (name: string, { exactMatch = true } = {}): IInstrument | 
       .split('-')
       .includes(name))
     ?.[0] || null
+}
+
+const addInstrument = (instrument: IInstrument) => {
+  const tuning = getTuning(instrument.defaultTuning ?? '')
+  const instrumentDoc: IInstrumentsCollection = { 
+    ...instrument,
+     _id: createSampleId('instruments', instrument.name),
+     defaultTuning: tuning?.name ?? 'null',
+  }
+  DB.instruments = [...DB.instruments, instrumentDoc]
+}
+
+const addInstruments = (instruments: IInstrument[]) => {
+  instruments.forEach(addInstrument)
 }
 
 const getTunings = () => {
@@ -166,6 +196,30 @@ const getTuning = (name: string, { exactMatch = true } = {}): ITuning | null => 
     ?.[0] || null
 }
 
+const addTuning = (tuning: ITuning) => {
+  const instrument = getInstrument(tuning.instrument ?? '')
+  const notesCol = DB.notes
+  const tuningDoc: ITuningsCollection = {
+    ...tuning,
+    _id: createSampleId('tunings', tuning.name),
+    instrument: instrument?.name ?? 'null',
+    notes: tuning.notes.map(physicalNote => {
+      const noteDoc = notesCol
+        .filter(({ name }) => name === physicalNote?.name)
+        ?.[0]
+      return {
+        note: noteDoc?._id ?? 'null',
+        octave: physicalNote?.octave ?? 0,
+      }
+    })
+  }
+  DB.tunings = [...DB.tunings, tuningDoc]
+}
+
+const addTunings = (tunings: ITuning[]) => {
+  tunings.forEach(addTuning)
+}
+
 const getScales = () => {
   const scalesCol: IScalesCollection[] = DB.scales
   const scales: IScale[] = scalesCol
@@ -187,6 +241,18 @@ const getScale = (name: string, { exactMatch = true } = {}): IScale | null => {
       .split('-')
       .includes(name))
     ?.[0] || null
+}
+
+const addScale = (scale: IScale) => {
+  const scaleDoc: IScalesCollection = {
+    ...scale,
+    _id: createSampleId('scales', scale.name),
+  }
+  DB.scales = [...DB.scales, scaleDoc]
+}
+
+const addScales = (scales: IScale[]) => {
+  scales.forEach(addScale)
 }
 
 const getRefs = () => {
@@ -217,12 +283,24 @@ const getRef = (): IRef | null => {
 export default {
   getNotes,
   getNote,
+  addNote,
+  addNotes,
+
   getInstruments,
   getInstrument,
+  addInstrument,
+  addInstruments,
+
   getTunings,
   getTuning,
+  addTuning,
+  addTunings,
+
   getScales,
   getScale,
+  addScale,
+  addScales,
+
   getRefs,
   getRef,
 }

@@ -459,33 +459,4 @@ router.get('/scales/:scale', (
     .json({ data: scale })
 })
 
-router.get('/test', async (req, res) => {
-  try {
-    /* //* old code from trying to get data from mongo
-    const refs1 = await db.Notes.find()
-    const refs2 = await db.Refs
-      .findOne({ sound: { $exists: true } }, '-_id')
-      .populate<IRefPopulated>({ path: 'sound.note', select: 'name -_id' })
-      .lean()
-
-    const refs3: ISound & { note: INote } = {
-      ...refs2!.sound,
-      name: refs2!.sound.note.name
-    }
-    const { note, ...refs4 } = refs3
-
-    res.json({ message: 'test2', refs1, refs4 })
-    */
-    console.log(db.getNotes())
-    console.log(db.getInstruments())
-    console.log(db.getTunings())
-    console.log(db.getScales())
-    console.log(db.getRefs())
-
-    res.json({ message: 'test' })
-  } catch (err: any) {
-    res.status(500).json({ message: 'error', error: err?.message })
-  }
-})
-
 export default router

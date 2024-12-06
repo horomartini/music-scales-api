@@ -1,28 +1,10 @@
-import { INote, IPhysicalNote, IScale, IScaleExt, ISound } from "api-types"
-import { log } from "./logger"
-
-export const isNote = (obj: any): obj is INote =>
-  'name' in obj && typeof obj.name === 'string'
-
-export const isPhysicalNote = (obj: any): obj is IPhysicalNote => 
-  isNote(obj) &&
-  'octave' in obj && typeof obj.octave === 'number'
-
-export const isSound = (obj: any): obj is ISound => 
-  isPhysicalNote(obj) && 
-  'pitch' in obj && typeof obj.pitch === 'number'
-
-export const isScale = (obj: any): obj is IScale =>
-  'name' in obj &&      typeof obj.name === 'string' &&
-  'keywords' in obj &&  Array.isArray(obj.keywords) &&
-  'steps' in obj &&     Array.isArray(obj.steps)
-
-export const isScaleExt = (obj: any): obj is IScaleExt => 
-  'name' in obj &&      typeof obj.name === 'string' &&
-  'keywords' in obj &&  Array.isArray(obj.keywords) &&
-  'key' in obj &&       typeof obj.key === 'string' && 
-  'notes' in obj &&     Array.isArray(obj.notes)
-
+/**
+ * Checks if given object is of the same type as given reference.
+ * - reference needs to be a valid object and is treated like a type, e.g. `{ name: String(), loc: { lat: Number(), lon: Number() } }`
+ * - use constructors of specific types in fields, e.g. `fieldName: String()`,
+ * - use single value in arrays of many values, e.g. `fieldName: [Number()]`.
+ * @todo support multi-type arrays, e.g. `[string | number]`
+ */
 export function isInterface<T extends NonNullable<object>>(ref: NonNullable<T>, obj: any): obj is T {
   if (typeof obj !== 'object') // cannot be non-object or null object
     return false
@@ -48,7 +30,11 @@ export function isInterface<T extends NonNullable<object>>(ref: NonNullable<T>, 
   return true
 }
 
-function isType<T>(ref: T, value: unknown): value is T {
+/**
+ * Checks if given type is of the same type as given reference value, which is used for a type.
+ * If an object is given, `isInterface` is called.
+ */
+export function isType<T>(ref: T, value: unknown): value is T {
   if (ref === null) // if both null, then was suppoused to be null, otherwise is a mistake
     return value === null
 
@@ -65,6 +51,9 @@ function isType<T>(ref: T, value: unknown): value is T {
   return typeof ref === typeof value // check types of both primitive-ish values
 }
 
+/**
+ * Returns an object in an easier-to-read form. Recurrency is used so keep in mind when passing big objects.
+ */
 export function getPrintableInterfaceType<T extends NonNullable<object>>(obj: NonNullable<T>): any {
   const newObj: { [key: string]: string | object } = {}
 
@@ -75,7 +64,10 @@ export function getPrintableInterfaceType<T extends NonNullable<object>>(obj: No
   return newObj
 }
 
-function getPrintableType(value: any): any {
+/**
+ * Returns a value in an easier-to-read form. Recurrency is used so keep in mind when passing big objects.
+ */
+export function getPrintableType(value: any): any {
   if (value === null)
     return 'null'
 

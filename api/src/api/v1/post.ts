@@ -1,14 +1,16 @@
+import type { Request, Response } from 'express'
+
 import express from 'express'
 import db from '../../db/sample-db'
 import { INote, IScale } from 'api-types'
-import { getPrintableInterfaceType, isInterface, isScale } from '../../utils/types'
+import { getPrintableInterfaceType, isInterface } from '../../utils/types'
 import { log } from '../../utils/logger'
 
 const router = express.Router()
 
 const doPost = <T extends object>(
-  req: any, 
-  res: any, 
+  req: Request, 
+  res: Response, 
   addOne: (body: T) => void, 
   addMany: (body: T[]) => void,
   expectedBody: T, 

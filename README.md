@@ -14,3 +14,6 @@ run `docker compose up --build --no-cache` to run dev mode or `docker compose bu
 ### knowledge
 - [rest caching](https://restfulapi.net/caching/)
 - [rest versioning](https://restfulapi.net/versioning/)
+
+
+npm jest package uses outdated packages Glob@7.2.3 and inflight@1.0.6, consider using an alternative to jest

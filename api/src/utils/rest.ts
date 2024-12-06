@@ -38,3 +38,9 @@ export const asKebabCase = (value: string): string => value
 
 export const equalsAsKebabCase = (a: string, b: string): boolean => 
   asKebabCase(a) === asKebabCase(b)
+
+export const toSnakeCase = (value: string): string => value
+  .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+
+export const toKebabCase = (value: string): string => value
+  .replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)

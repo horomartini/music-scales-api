@@ -1,4 +1,3 @@
-import type { Note } from 'types/api'
 import type { NoteDoc } from 'types/db'
 
 import sampleDbJson from './data.json'
@@ -43,6 +42,9 @@ const deleteNote = (note: Pick<NoteDoc, '_id'>) =>
 
 const deleteNotes = (notes: Pick<NoteDoc, '_id'>[]) => 
   deleteMany<Pick<NoteDoc, '_id'>>('notes', notes)
+
+
+
 
 
 function getMany<T extends object, R>(collection: string, data?: T): R[] {

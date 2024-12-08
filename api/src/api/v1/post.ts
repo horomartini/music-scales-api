@@ -1,74 +1,39 @@
-import type { Request, Response } from 'express'
+import type { Request, Response, NextFunction } from 'express'
+import type { Note } from 'types/api'
 
 import express from 'express'
-import db from '../../db/sample-db'
-import { INote, IScale } from 'api-types'
-import { getPrintableInterfaceType, isInterface } from '../../utils/types'
-import { log } from '../../utils/logger'
+
+import { checkBody } from '../../middleware/request'
+
+import db from '../../db/crud'
+
 
 const router = express.Router()
 
-const doPost = <T extends object>(
-  req: Request, 
-  res: Response, 
-  addOne: (body: T) => void, 
-  addMany: (body: T[]) => void,
-  expectedBody: T, 
-) => {
-  const body: T | T[] = req.body
-  const isBulkPost = Array.isArray(body)
-  const isParsed = isBulkPost
-    ? body
-      .map(item => isInterface<T>(expectedBody, item))
-      .every(result => result === true)
-    : isInterface<T>(expectedBody, body)
-  
-  if (!isParsed) {
+
+router.post(
+  '/notes',
+  (req: Request<{}, {}, Note | Note[], {}>, res: Response, next: NextFunction) => {
+    res.locals.data = req.body
+    res.locals.expected = {
+      name: String(),
+    }
+    next()
+  },
+  checkBody<Note>,
+  (_: Request, res: Response<{}, { data: Note | Note[] }>, next: NextFunction) => {
+    const data = res.locals.data
+    Array.isArray(data)
+      ? db.postNotes(data)
+      : db.postNote(data)
+    next()
+  },
+  (_: Request, res: Response) => {
     res
-      .status(400)
-      .json({ 
-        message: `Body of wrong type was given.`,
-        expectedType: `${getPrintableInterfaceType(expectedBody)} | []`,
-      })
-    return
+      .status(201)
+      .json({ success: true })
   }
+)
 
-  isBulkPost 
-    ? addMany(body) 
-    : addOne(body)
-  res
-    .status(201)
-    .json({})
-}
-
-router.post('/notes', (req, res) => {
-  doPost(req, res, db.addNote, db.addNotes, {
-    name: String(),
-  })
-})
-
-router.post('/instruments', (req, res) => {
-  doPost(req, res, db.addInstrument, db.addInstruments, {
-    name: String(),
-    baseNotes: Number(),
-    defaultTuning: String(),
-  })
-})
-
-router.post('/tunings', (req, res) => {
-  doPost(req, res, db.addTuning, db.addTunings, {
-    name: String(),
-    instrument: String(),
-    notes: [{ name: String(), octave: Number() }],
-  })
-})
-
-router.post('/scales', (req, res) => {
-  doPost(req, res, db.addScale, db.addScales, {
-    name: String(),
-    keywords: [String()],
-    steps: [Number()],
-  })
-})
 
 export default router

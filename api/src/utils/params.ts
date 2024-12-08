@@ -3,6 +3,7 @@ import type { Request } from 'express'
 
 import db from '../db/sample-db'
 import { toSnakeCase } from './rest'
+import { sharpSymbols } from './sound'
 
 
 // export const getQueryParams = <T>(query: T, extract: { [K in keyof T]: T[K] }) => {
@@ -181,25 +182,25 @@ export const getQueryParams = (ref: NonNullable<Record<string, [any, any] | [any
   return result
 }
 
-export const parseNote = (note: string): IPhysicalNote | INote => {
-  if (note.includes('s'))
-    note = note.replace('s', '#')
+// export const parseNote = (note: string): IPhysicalNote | INote => {
+//   if (note.includes('s'))
+//     note = note.replace('s', '#')
 
-  if (/\d/.test(note))
-    return {
-      name: note.slice(0, -1),
-      octave: Number(note.slice(-1)),
-    } as IPhysicalNote
-  return { name: note } as INote
-}
+//   if (/\d/.test(note))
+//     return {
+//       name: note.slice(0, -1),
+//       octave: Number(note.slice(-1)),
+//     } as IPhysicalNote
+//   return { name: note } as INote
+// }
 
-export const parseNotes = (notes?: string): (IPhysicalNote | INote)[] => {
-  if (notes === undefined)
-    return []
-  const notesArr: string[] = notes.split(',') || []
-  const notesObjs: (IPhysicalNote | INote)[] = notesArr.map(parseNote)
-  return notesObjs
-}
+// export const parseNotes = (notes?: string): (IPhysicalNote | INote)[] => {
+//   if (notes === undefined)
+//     return []
+//   const notesArr: string[] = notes.split(',') || []
+//   const notesObjs: (IPhysicalNote | INote)[] = notesArr.map(parseNote)
+//   return notesObjs
+// }
 
 export const parseNoteRef = (name: string, octave: number, pitch: Pitch): ISound => {
   const ogRef = db.getRef()

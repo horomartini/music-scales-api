@@ -1,4 +1,4 @@
-import type { Instrument, Note, PhysicalNote, Tuning, Scale } from './api'
+import type { PhysicalNote } from './api'
 
 import { Types as mongooseTypes } from 'mongoose'
 

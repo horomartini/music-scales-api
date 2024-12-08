@@ -5,7 +5,6 @@ import apiRouter from './api/main'
 
 import { logger } from './middleware/logger'
 import { globalErrorHandler } from './middleware/errors-handlers'
-import { addGeneralDataToResponse } from './middleware/intercepters'
 
 import { log } from './utils/logger'
 
@@ -19,7 +18,6 @@ const app = express()
 
 app.use(express.json())
 app.use(logger)
-// app.use(addGeneralDataToResponse)
 
 app.use('/api', apiRouter)
 app.use('/test', (req, res) => { throw TypeError() })

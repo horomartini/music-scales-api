@@ -1,3 +1,5 @@
+import type { ObjectId } from 'types/db'
+
 /**
  * Checks if given object is of the same type as given reference.
  * - reference needs to be a valid object and is treated like a type, e.g. `{ name: String(), loc: { lat: Number(), lon: Number() } }`
@@ -84,3 +86,9 @@ export function getPrintableType(value: any): any {
     default: 'undefined'
   }
 }
+
+/**
+ * Converts string type to ObjectId type, when using strings as strict id types.
+ */
+export const stringToObjectId = (v: string): ObjectId => 
+  (v as unknown) as ObjectId

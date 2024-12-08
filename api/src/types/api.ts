@@ -15,7 +15,6 @@ export type Sound = PhysicalNote & {
 
 export type Instrument = {
   name: string
-  strings: number | null
   defaultTuning: string | null
 }
 

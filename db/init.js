@@ -1,8 +1,7 @@
-db = db.getSiblingDB('maindb')
+const maindb = db.getSiblingDB('maindb')
 
-db.createCollection('notes')
-if (db.notes.countDocuments({}) === 0) {
-  db.notes.insertMany([
+if (maindb.notes.countDocuments({}) === 0) {
+  maindb.notes.insertMany([
     { name: 'C' },
     { name: 'C#' },
     { name: 'D' },
@@ -18,21 +17,25 @@ if (db.notes.countDocuments({}) === 0) {
   ])
 }
 
-db.createCollection('instruments')
-if (db.instruments.countDocuments({}) == 0) {
+if (maindb.instruments.countDocuments({}) === 0) {
   db.instruments.insertOne({
     name: 'guitar',
     defaultTuning: null,
   })
 }
 
-db.createCollection('tunings')
-if (db.tunings.countDocuments({}) === 0) {
+if (maindb.tunings.countDocuments({}) === 0) {
   const guitar = db.instruments.findOne({ name: 'guitar' })
-  const notesRaw = db.notes.findOne({ name: { $in: ['E', 'A', 'D', 'G', 'B'] } }).toArray()
-  const notes = notesRaw.map(note => ({ [note.name]: note.name }))
+  const notes = db.notes
+    .find({ name: { $in: ['E', 'A', 'D', 'G', 'B'] } })
+    .toArray()
+    .reduce((acc, note) => ({ ...acc, [note.name]: { _id: note._id } }), {})
+  
+  console.log(notes)
+  console.log(notes.E)
+  console.log(notes.E._id)
 
-  const tuning = db.tunings.insertOne({
+  const { insertedId: tuningId } = db.tunings.insertOne({
     instrument: guitar._id,
     name: 'E Standard',
     notes: [
@@ -45,18 +48,19 @@ if (db.tunings.countDocuments({}) === 0) {
     ],
   })
 
-  db.instruments.updateOne({ name: 'guitar' }, { $set: { defaultTuning: tuning.insertedId } })
+  db.instruments.updateOne(
+    { name: 'guitar' }, 
+    { $set: { defaultTuning: tuningId } }
+  )
 }
 
-db.createCollection('scales')
-if (db.scales.countDocuments({}) === 0) {
-  db.scales.insertOne({
+if (maindb.scales.countDocuments({}) === 0) {
+  maindb.scales.insertOne({
     name: 'Major (Ionian)',
     steps: [2, 2, 1, 2, 2, 2, 1],
   })
 }
 
-// db.createCollection('refs')
 // if (db.refs.countDocuments({}) === 0) {
 //   const noteA = db.notes.findOne({ name: 'A' })
 

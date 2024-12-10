@@ -62,4 +62,5 @@ volumes:
 
 networks:
   main-network:
-    driver: bridge    
+    driver: bridge 
+    # TODO: make more networks so that only nginx is accessible from outside

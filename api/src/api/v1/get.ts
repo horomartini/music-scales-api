@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express'
-import type { ParamNoteName } from 'types/req'
+import type { ParamInstrumentName, ParamNoteName } from 'types/req'
 import type { Note } from 'types/api'
-import type { NoteDoc } from 'types/db'
+import type { InstrumentDoc, NoteDoc } from 'types/db'
 
 import express from 'express'
 
@@ -16,7 +16,7 @@ const router = express.Router()
 
 router.get(
   '/healthcheck', 
-  async (_: Request, res: Response) => {
+  (_: Request, res: Response) => {
     res
       .status(200)
       .json({ success: true, message: 'success' })
@@ -42,9 +42,8 @@ router.get(
   '/notes/:note',
   (req: Request<ParamNoteName>, res: Response, next: NextFunction) => {
     const { note: noteName } = req.params
-    if (noteName !== undefined) {
+    if (noteName !== undefined)
       res.locals.query = parseNote(noteName) as Partial<Note>
-    }
     next()
   },
   async (_: Request, res: Response<{}, { query?: Partial<Note>, data: NoteDoc | null }>, next: NextFunction) => {
@@ -53,6 +52,39 @@ router.get(
     next()
   },
   (_: Request, res: Response<{}, { data: NoteDoc | null }>) => {
+    res.status(200).json({ success: true, data: res.locals.data })
+  }
+)
+
+router.get(
+  '/instruments',
+  async (_: Request, res: Response, next: NextFunction) => {
+    const instrumentsDb = await db.getInstruments()
+    res.locals.data = instrumentsDb
+    next()
+  },
+  applyFiltering,
+  applySorting,
+  applyPagination,
+  (_: Request, res: Response<{}, { data: InstrumentDoc[] }>) => {
+    res.status(200).json({ success: true, data: res.locals.data })
+  }
+)
+
+router.get(
+  '/instruments/:instrument',
+  (req: Request<ParamInstrumentName>, res: Response, next: NextFunction) => {
+    const { instrument: instrumentName } = req.params
+    if (instrumentName !== undefined)
+      res.locals.query = { name: instrumentName } as Partial<InstrumentDoc>
+    next()
+  },
+  async (_: Request, res: Response<{}, { query?: Partial<InstrumentDoc>, data: InstrumentDoc | null }>, next: NextFunction) => {
+    const instrumentDb = await db.getInstrument(res.locals.query ?? {})
+    res.locals.data = instrumentDb
+    next()
+  },
+  (_: Request, res: Response<{}, { data: InstrumentDoc | null }>) => {
     res.status(200).json({ success: true, data: res.locals.data })
   }
 )

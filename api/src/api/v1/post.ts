@@ -1,11 +1,13 @@
 import type { Request, Response, NextFunction } from 'express'
-import type { Note } from 'types/api'
+import type { Instrument, Note } from 'types/api'
+import type { BodyInstrumentOrMany } from 'types/req'
 
 import express from 'express'
 
 import { checkBody } from '../../middleware/request'
 
 import db from '../../db/crud'
+
 
 
 const router = express.Router()
@@ -32,6 +34,17 @@ router.post(
     res
       .status(201)
       .json({ success: true })
+  }
+)
+
+router.post(
+  '/instruments',
+  (req: Request<{}, {}, BodyInstrumentOrMany, {}>, res: Response, next: NextFunction) => {
+    res.locals.data = req.body
+    res.locals.expected = {
+      name: String(),
+      defaultTuning: String()
+    }
   }
 )
 

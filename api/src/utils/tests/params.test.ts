@@ -3,6 +3,7 @@ import type { Request } from 'express'
 import * as func from '../params'
 
 describe('yyy', () => {
+  it('true', () => { expect(true).toBe(true) })
   // it('ttt', () => {
   //   type TestNote = { name: string }
 

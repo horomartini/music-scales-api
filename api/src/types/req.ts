@@ -20,6 +20,16 @@ export type ParamScaleName = {
 }
 
 
+export type BodyInstrument = {
+  name: string
+  defaultTuning?: string
+}
+
+export type BodyInstrumentOrMany = 
+  | BodyInstrument 
+  | BodyInstrument[]
+
+
 export type QueryUnknown = Record<string, string>
 
 export type QueryFilter = {

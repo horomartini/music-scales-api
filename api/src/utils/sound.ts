@@ -1,7 +1,7 @@
 import type { IPhysicalNote, ISound, Pitch } from 'api-types'
+import type { Note } from 'types/api'
 
 import { isType } from './types'
-import type { Note } from 'types/api'
 
 
 export const sharpSymbols = ['s', '♯', '#']
@@ -25,8 +25,11 @@ export const calc12TET = (
   ref: ISound = { name: 'A', octave: 4, pitch: 440 },
   allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', ]
 ): Pitch => {
-  const physicalNote: IPhysicalNote = { name: String(), octave: Number() }
-  const targetPitch = isType(physicalNote, target)
+  const physicalNoteSchema = { 
+    name: { type: String, required: true },
+    octave: { type: Number, required: true },
+  }
+  const targetPitch = isType<IPhysicalNote>(target, physicalNoteSchema)
     ? calcAbsFreq(target, ref, allNotes)
     : target
   const x = 1 / 12 * Math.round(12 * Math.log2(targetPitch / ref.pitch))

@@ -1,4 +1,4 @@
-import type { NoteDoc } from 'types/db'
+import type { InstrumentDoc, NoteDoc } from 'types/db'
 
 import sampleDbJson from './data.json'
 import { toKebabCase } from '../utils/rest'
@@ -44,6 +44,35 @@ const deleteNotes = async (notes: Pick<NoteDoc, '_id'>[]) =>
   await deleteMany<Pick<NoteDoc, '_id'>>('notes', notes)
 
 
+const getInstrument = async (instrument: Partial<InstrumentDoc>) => 
+  await getOne<Partial<InstrumentDoc>, InstrumentDoc>('instruments', instrument)
+
+const getInstruments = async (instrument?: Partial<InstrumentDoc>) => 
+  await getMany<Partial<InstrumentDoc>, InstrumentDoc>('instruments', instrument)
+
+const postInstrument = async (instrument: Omit<InstrumentDoc, '_id'>) => 
+  await postOne<Omit<InstrumentDoc, '_id'>>('instruments', instrument)
+
+const postInstruments = async (instruments: Omit<InstrumentDoc, '_id'>[]) => 
+  await postMany<Omit<InstrumentDoc, '_id'>>('instruments', instruments)
+
+const putInstrument = async (instrument: InstrumentDoc) => 
+  await putOne<InstrumentDoc>('instruments', instrument)
+
+const putInstruments = async (instruments: InstrumentDoc[]) => 
+  await putMany<InstrumentDoc>('instruments', instruments)
+
+const patchInstrument = async (instrument: Partial<InstrumentDoc>) => 
+  await patchOne<Partial<InstrumentDoc>>('instruments', instrument)
+
+const patchInstruments = async (instruments: Partial<InstrumentDoc>[]) => 
+  await patchMany<Partial<InstrumentDoc>>('instruments', instruments)
+
+const deleteInstrument = async (instrument: Pick<InstrumentDoc, '_id'>) => 
+  await deleteOne<Pick<InstrumentDoc, '_id'>>('instruments', instrument)
+
+const deleteInstruments = async (instruments: Pick<InstrumentDoc, '_id'>[]) => 
+  await deleteMany<Pick<InstrumentDoc, '_id'>>('instruments', instruments)
 
 
 
@@ -270,4 +299,15 @@ export default {
   patchNotes,
   deleteNote,
   deleteNotes,
+
+  getInstrument,
+  getInstruments,
+  postInstrument,
+  postInstruments,
+  putInstrument,
+  putInstruments,
+  patchInstrument,
+  patchInstruments,
+  deleteInstrument,
+  deleteInstruments,
 }

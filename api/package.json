@@ -8,7 +8,7 @@
   "scripts": {
     "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",
-    "test": "jest",
+    "test": "jest --watch",
     "dev": "nodemon src/main.ts",
     "dev-dockerless": "nodemon src/main.ts"
   },

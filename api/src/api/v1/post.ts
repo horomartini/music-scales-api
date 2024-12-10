@@ -21,11 +21,11 @@ router.post(
     next()
   },
   checkBody<Note>,
-  (_: Request, res: Response<{}, { data: Note | Note[] }>, next: NextFunction) => {
+  async (_: Request, res: Response<{}, { data: Note | Note[] }>, next: NextFunction) => {
     const data = res.locals.data
     Array.isArray(data)
-      ? db.postNotes(data)
-      : db.postNote(data)
+      ? await db.postNotes(data)
+      : await db.postNote(data)
     next()
   },
   (_: Request, res: Response) => {

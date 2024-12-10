@@ -25,8 +25,8 @@ router.get(
 
 router.get(
   '/notes', 
-  (_: Request, res: Response, next: NextFunction) => {
-    const notesDb = db.getNotes()
+  async (_: Request, res: Response, next: NextFunction) => {
+    const notesDb = await db.getNotes()
     res.locals.data = notesDb
     next()
   }, 
@@ -47,8 +47,8 @@ router.get(
     }
     next()
   },
-  (_: Request, res: Response<{}, { query?: Partial<Note>, data: NoteDoc | null }>, next: NextFunction) => {
-    const noteDb = db.getNote(res.locals.query ?? {})
+  async (_: Request, res: Response<{}, { query?: Partial<Note>, data: NoteDoc | null }>, next: NextFunction) => {
+    const noteDb = await db.getNote(res.locals.query ?? {})
     res.locals.data = noteDb
     next()
   },

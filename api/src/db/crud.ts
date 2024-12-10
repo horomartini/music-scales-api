@@ -9,108 +9,108 @@ const isMongo = Boolean(process.env.MONGO_URI)
 let sampleDb = sampleDbJson
 
 
-const getNote = (note: Partial<NoteDoc>) => 
-  getOne<Partial<NoteDoc>, NoteDoc>('notes', note)
+const getNote = async (note: Partial<NoteDoc>) => 
+  await getOne<Partial<NoteDoc>, NoteDoc>('notes', note)
 
-const getNotes = (note?: Partial<NoteDoc>) => 
-  getMany<Partial<NoteDoc>, NoteDoc>('notes', note)
+const getNotes = async (note?: Partial<NoteDoc>) => 
+  await getMany<Partial<NoteDoc>, NoteDoc>('notes', note)
 
-const postNote = (note: Omit<NoteDoc, '_id'>) => 
-  postOne<Omit<NoteDoc, '_id'>>('notes', note)
+const postNote = async (note: Omit<NoteDoc, '_id'>) => 
+  await postOne<Omit<NoteDoc, '_id'>>('notes', note)
 
-const postNotes = (notes: Omit<NoteDoc, '_id'>[]) =>
-  postMany<Omit<NoteDoc, '_id'>>('notes', notes)
+const postNotes = async (notes: Omit<NoteDoc, '_id'>[]) =>
+  await postMany<Omit<NoteDoc, '_id'>>('notes', notes)
 
-const putNote = (note: NoteDoc) => 
-  putOne<NoteDoc>('notes', note)
+const putNote = async (note: NoteDoc) => 
+  await putOne<NoteDoc>('notes', note)
 
 // db.putNotes([
 //   { _id: ('id.notes.c' as unknown) as ObjectId, name: 'not C' },
 //   { _id: ('id.notes.cs' as unknown) as ObjectId, name: 'not C#' }
 // ])
-const putNotes = (notes: NoteDoc[]) => 
-  putMany<NoteDoc>('notes', notes)
+const putNotes = async (notes: NoteDoc[]) => 
+  await putMany<NoteDoc>('notes', notes)
 
-const patchNote = (note: Partial<NoteDoc>) => 
-  patchOne<Partial<NoteDoc>>('notes', note)
+const patchNote = async (note: Partial<NoteDoc>) => 
+  await patchOne<Partial<NoteDoc>>('notes', note)
 
-const patchNotes = (notes: Partial<NoteDoc>[]) => 
-  patchMany<Partial<NoteDoc>>('notes', notes)
+const patchNotes = async (notes: Partial<NoteDoc>[]) => 
+  await patchMany<Partial<NoteDoc>>('notes', notes)
 
-const deleteNote = (note: Pick<NoteDoc, '_id'>) => 
-  deleteOne<Pick<NoteDoc, '_id'>>('notes', note)
+const deleteNote = async (note: Pick<NoteDoc, '_id'>) => 
+  await deleteOne<Pick<NoteDoc, '_id'>>('notes', note)
 
-const deleteNotes = (notes: Pick<NoteDoc, '_id'>[]) => 
-  deleteMany<Pick<NoteDoc, '_id'>>('notes', notes)
-
-
+const deleteNotes = async (notes: Pick<NoteDoc, '_id'>[]) => 
+  await deleteMany<Pick<NoteDoc, '_id'>>('notes', notes)
 
 
 
-function getMany<T extends object, R>(collection: string, data?: T): R[] {
+
+
+async function getMany<T extends object, R>(collection: string, data?: T): Promise<R[]> {
   if (!isMongo) return getManySample<T, R>(collection, data)
 
   // TODO: implement mongo
   return [] as R[]
 }
 
-function getOne<T extends object, R>(collection: string, data: T): R | null {
+async function getOne<T extends object, R>(collection: string, data: T): Promise<R | null> {
   if (!isMongo) return getOneSample<T, R>(collection, data)
 
   // TODO: implement mongo
   return {} as R
 }
 
-function postOne<T extends object>(collection: string, data: T) {
+async function postOne<T extends object>(collection: string, data: T): Promise<void> {
   if (!isMongo) return postOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
-function postMany<T extends object>(collection: string, data: T[]) {
+async function postMany<T extends object>(collection: string, data: T[]): Promise<void> {
   if (!isMongo) return postManySample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
-function putOne<T extends object>(collection: string, data: T) {
+async function putOne<T extends object>(collection: string, data: T): Promise<void> {
   if (!isMongo) return putOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
-function putMany<T extends object>(collection: string, data: T[]) {
+async function putMany<T extends object>(collection: string, data: T[]): Promise<void> {
   if (!isMongo) return putManySample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
-function patchOne<T extends object>(collection: string, data: T) {
+async function patchOne<T extends object>(collection: string, data: T): Promise<void> {
   if (!isMongo) return patchOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
-function patchMany<T extends object>(collection: string, data: T[]) {
+async function patchMany<T extends object>(collection: string, data: T[]): Promise<void> {
   if (!isMongo) return patchManySample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
-function deleteOne<T extends object>(collection: string, data: T) {
+async function deleteOne<T extends object>(collection: string, data: T): Promise<void> {
   if (!isMongo) return deleteOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
-function deleteMany<T extends object>(collection: string, data: T[]) {
+async function deleteMany<T extends object>(collection: string, data: T[]): Promise<void> {
   if (!isMongo) return deleteManySample<T>(collection, data)
 
   // TODO: implement mongo
@@ -118,7 +118,7 @@ function deleteMany<T extends object>(collection: string, data: T[]) {
 }
 
 
-function getManySample<T extends object, R>(collection: string, data?: T): R[] {
+async function getManySample<T extends object, R>(collection: string, data?: T): Promise<R[]> {
   const key = collection as keyof typeof sampleDb
   const docs = (sampleDb?.[key] ?? []).filter(doc => {
     if (data === undefined)
@@ -132,8 +132,8 @@ function getManySample<T extends object, R>(collection: string, data?: T): R[] {
   return docs as R[]
 }
 
-function getOneSample<T extends object, R>(collection: string, data: T): R | null {
-  const docs = getMany<T, R>(collection)
+async function getOneSample<T extends object, R>(collection: string, data: T): Promise<R | null> {
+  const docs = await getMany<T, R>(collection)
   const doc = docs.find(doc => {
     const givenPropertiesMatch = Object.entries(data).every(([key, value]) => {
       const docKey = key as keyof typeof doc
@@ -145,7 +145,7 @@ function getOneSample<T extends object, R>(collection: string, data: T): R | nul
   return doc ?? null
 }
 
-function postOneSample<T extends object>(collection: string, data: T) {
+async function postOneSample<T extends object>(collection: string, data: T): Promise<void> {
   const name = 'name' in data && typeof data.name === 'string' ? data.name : ''
   const doc = {
     ...data,
@@ -161,7 +161,7 @@ function postOneSample<T extends object>(collection: string, data: T) {
   }
 }
 
-function postManySample<T extends object>(collection: string, data: T[]) {
+async function postManySample<T extends object>(collection: string, data: T[]): Promise<void> {
   const docs = data.map(item => {
     const name = 'name' in item && typeof item.name === 'string' ? item.name : ''
     return {
@@ -179,8 +179,8 @@ function postManySample<T extends object>(collection: string, data: T[]) {
   }
 }
 
-function putOneSample<T extends object>(collection: string, data: T) {
-  const col = getMany<T, T>(collection).map(doc => 
+async function putOneSample<T extends object>(collection: string, data: T): Promise<void> {
+  const col = (await getMany<T, T>(collection)).map(doc => 
     '_id' in doc && '_id' in data && doc._id === data._id 
       ? data 
       : doc
@@ -192,8 +192,8 @@ function putOneSample<T extends object>(collection: string, data: T) {
   }
 }
 
-function putManySample<T extends object>(collection: string, data: T[]) {
-  const col = getMany<T, T>(collection).map(doc => 
+async function putManySample<T extends object>(collection: string, data: T[]): Promise<void> {
+  const col = (await getMany<T, T>(collection)).map(doc => 
     data.find(item => 
       '_id' in doc && '_id' in item && doc._id === item._id
     ) ?? doc
@@ -205,8 +205,8 @@ function putManySample<T extends object>(collection: string, data: T[]) {
   }
 }
 
-function patchOneSample<T extends object>(collection: string, data: T) {
-  const col = getMany<T, T>(collection).map(doc => 
+async function patchOneSample<T extends object>(collection: string, data: T): Promise<void> {
+  const col = (await getMany<T, T>(collection)).map(doc => 
     !('_id' in doc) || !('_id' in data) || doc._id !== data._id
       ? doc
       : { ...doc, ...data }
@@ -218,8 +218,8 @@ function patchOneSample<T extends object>(collection: string, data: T) {
   }
 }
 
-function patchManySample<T extends object>(collection: string, data: T[]) {
-  const col = getMany<T, T>(collection).map(doc => ({
+async function patchManySample<T extends object>(collection: string, data: T[]): Promise<void> {
+  const col = (await getMany<T, T>(collection)).map(doc => ({
     ...doc,
     ...(data.find(item => 
       '_id' in doc && '_id' in item && doc._id === item._id
@@ -232,8 +232,8 @@ function patchManySample<T extends object>(collection: string, data: T[]) {
   }
 }
 
-function deleteOneSample<T extends object>(collection: string, data: T) {
-  const col = getMany<T, T>(collection).filter(doc => 
+async function deleteOneSample<T extends object>(collection: string, data: T): Promise<void> {
+  const col = (await getMany<T, T>(collection)).filter(doc => 
     !('_id' in doc) || !('_id' in data) || doc._id !== data._id
   )
 
@@ -243,8 +243,8 @@ function deleteOneSample<T extends object>(collection: string, data: T) {
   }
 }
 
-function deleteManySample<T extends object>(collection: string, data: T[]) {
-  const col = getMany<T, T>(collection).filter(doc => 
+async function deleteManySample<T extends object>(collection: string, data: T[]): Promise<void> {
+  const col = (await getMany<T, T>(collection)).filter(doc => 
     !data.find(item => '_id' in doc && '_id' in item && doc._id === item._id)
   )
 

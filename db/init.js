@@ -22,7 +22,6 @@ db.createCollection('instruments')
 if (db.instruments.countDocuments({}) == 0) {
   db.instruments.insertOne({
     name: 'guitar',
-    baseNotes: 6,
     defaultTuning: null,
   })
 }
@@ -37,12 +36,12 @@ if (db.tunings.countDocuments({}) === 0) {
     instrument: guitar._id,
     name: 'E Standard',
     notes: [
-      { note: notes.E._id, octave: 2 },
-      { note: notes.A._id, octave: 2 },
-      { note: notes.D._id, octave: 3 },
-      { note: notes.G._id, octave: 3 },
-      { note: notes.B._id, octave: 3 },
-      { note: notes.E._id, octave: 4 },
+      { name: notes.E._id, octave: 2 },
+      { name: notes.A._id, octave: 2 },
+      { name: notes.D._id, octave: 3 },
+      { name: notes.G._id, octave: 3 },
+      { name: notes.B._id, octave: 3 },
+      { name: notes.E._id, octave: 4 },
     ],
   })
 
@@ -53,20 +52,19 @@ db.createCollection('scales')
 if (db.scales.countDocuments({}) === 0) {
   db.scales.insertOne({
     name: 'Major (Ionian)',
-    keywords: ['major', 'ionian'],
     steps: [2, 2, 1, 2, 2, 2, 1],
   })
 }
 
-db.createCollection('refs')
-if (db.refs.countDocuments({}) === 0) {
-  const noteA = db.notes.findOne({ name: 'A' })
+// db.createCollection('refs')
+// if (db.refs.countDocuments({}) === 0) {
+//   const noteA = db.notes.findOne({ name: 'A' })
 
-  db.refs.insertOne({
-    sound: {
-      note: noteA._id,
-      octave: 4,
-      pitch: 440,
-    }
-  })
-}
+//   db.refs.insertOne({
+//     sound: {
+//       note: noteA._id,
+//       octave: 4,
+//       pitch: 440,
+//     }
+//   })
+// }

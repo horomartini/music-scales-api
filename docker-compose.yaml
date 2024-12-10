@@ -11,6 +11,7 @@ services:
       - db
     environment:
       PORT: ${SERVER_PORT}
+      NODE_ENV: development
       MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"

@@ -20,7 +20,14 @@ const tuningsSchemaDef = {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'instruments',
   },
-  notes: [{ name: String, octave: Number }],
+  notes: [{ 
+    name: { 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'notes',
+      required: true,
+    }, 
+    octave: { type: Number, required: true } 
+  }],
 } as const
 
 const scalesSchemaDef = {

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
-import { log } from '../utils/logger'
-import { ResponseError } from '../types/errors'
+import { Log } from '../utils/logger'
+import { ResponseError } from '../utils/errors'
 
 export const globalErrorHandler = (
   err: Error, 
@@ -8,7 +8,7 @@ export const globalErrorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
-  log('error', err.stack || err)
+  Log.error(err.stack || err)
 
   if (err instanceof ResponseError) 
     res

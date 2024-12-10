@@ -1,7 +1,7 @@
 import type { Note, PhysicalNote } from 'types/api'
 
 import { flatSymbols, flatToSharp, sharpSymbols } from './sound'
-import { ResponseError } from '../types/errors'
+import { ResponseError } from '../utils/errors'
 
 
 export const parseNote = (note: string): PhysicalNote | Note => {

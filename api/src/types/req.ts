@@ -1,6 +1,8 @@
 export type SortOrder = 'asc' | 'desc'
 
 
+export type ParamUnknown = Record<string, string>
+
 export type ParamNoteName = {
   note: string
 }

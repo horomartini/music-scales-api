@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 
 import { getPrintableInterfaceType, isInterface } from '../utils/types'
-import { ResponseError } from '../types/errors'
+import { ResponseError } from '../utils/errors'
 
 
 export const checkBody = <T extends object>(

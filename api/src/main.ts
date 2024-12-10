@@ -6,10 +6,10 @@ import apiRouter from './api/main'
 import { logger } from './middleware/logger'
 import { globalErrorHandler } from './middleware/errors-handlers'
 
-import { log } from './utils/logger'
+import { Log } from './utils/logger'
+import { ObjectId } from './types/db' // TODO: debug import
 
 import db from './db/crud' // TODO: debug import
-import { ObjectId } from 'types/db'
 
 const PORT = process.env.PORT || 8080
 const MONGO_URI = process.env.MONGO_URI || undefined
@@ -30,17 +30,17 @@ app.use('/test2', (req, res) => {
 app.use(globalErrorHandler)
 
 app.listen(PORT, () => {
-  log('info', 'Server is running on port', PORT)
+  Log.info('Server is running on port', PORT)
 
   if (MONGO_URI === undefined)
-    log('warn', 'MONG_URI has not been defined - connection to database will not be established!')
+    Log.warn('MONG_URI has not been defined - connection to database will not be established!')
   else 
     mongoose
       .connect(MONGO_URI, {})
       .then(() => { 
-        log('info', 'Connected to db') 
+        Log.info('Connected to db') 
       })
       .catch(error => { 
-        log('error', 'Error connecting to db:', error.message) 
+        Log.error('Error connecting to db:', error.message) 
       })
 })

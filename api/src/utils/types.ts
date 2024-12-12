@@ -28,7 +28,7 @@ type SchemaObjectType = {
   schema: SchemaDefinition
 }
 
-type SchemaDefinition = 
+export type SchemaDefinition = 
   | SchemaPrimitiveType
   | SchemaObjectType
   | Record<string, SchemaPrimitiveType | SchemaObjectType>
@@ -197,3 +197,24 @@ export function getPrintableType(value: any): any {
  */
 export const stringToObjectId = (v: string): ObjectId => 
   (v as unknown) as ObjectId
+
+/**
+ * Converts given generic value to its string representation.
+ */
+export const objectToReadableString = <T>(x: T): string => {
+  if (Array.isArray(x))
+    return `[${x.map(objectToReadableString).join(', ')}]`
+
+  switch (x) {
+    case String:  return 'string'
+    case Number:  return 'number'
+    case Boolean: return 'boolean'
+    case Array:   return 'array'
+    case Object:  return 'object'
+  }
+
+  if (typeof x === 'object' && x !== null && !('prototype' in x))
+    return `{${Object.entries(x).map(([k, v]) => `${k}: ${objectToReadableString(v)}`).join(', ')}}`
+
+  return typeof x === 'string' ? `'${x}'` : `${x}`
+}

@@ -1,10 +1,13 @@
 import type { Request, Response, NextFunction } from 'express'
 
-import { getPrintableInterfaceType, isInterface } from '../utils/types'
-import { ResponseError } from '../utils/errors'
+import { getPrintableInterfaceType, isInterface, isType, objectToReadableString, SchemaDefinition } from '../utils/types'
+import { BadBodySchemaError, ResponseError } from '../utils/errors'
 
 
-export const checkBody = <T extends object>(
+/**
+ * @deprecated
+ */
+export const checkBodyOld = <T extends object>(
   _: Request, 
   res: Response<{}, { data: T | T[], expected: T }>, 
   next: NextFunction,
@@ -23,5 +26,27 @@ export const checkBody = <T extends object>(
       getPrintableInterfaceType(expected)
     )
 
+  next()
+}
+
+export const checkBody = <T extends object>(
+  _: Request, 
+  res: Response<{}, { data: T | T[], schema: SchemaDefinition }>, 
+  next: NextFunction,
+) => {
+  console.log(2, 1)
+  const data = res.locals.data
+  const schema = res.locals.schema
+  console.log(data, schema)
+
+  const isOfType = isType(data, schema)
+  console.log(2, 2, isOfType)
+
+  if (!isOfType)
+    throw new BadBodySchemaError({
+      body: objectToReadableString(data),
+      schema: objectToReadableString(schema),
+    })
+  
   next()
 }

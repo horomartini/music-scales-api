@@ -1,3 +1,69 @@
+export class ExtendedError extends Error {
+  status?: number = undefined
+  type?: string = undefined
+  body?: string = undefined
+  schema?: string = undefined
+
+  constructor({ message, status, type, body, schema }: {
+    message: string
+    status?: number
+    type?: string
+    body?: string
+    schema?: string
+  }) {
+    super(message)
+
+    this.name = 'ExtendedError'
+    this.status = status
+    this.type = type
+    this.body = body
+    this.schema = schema
+
+    Object.setPrototypeOf(this, ExtendedError.prototype)
+  }
+}
+
+export class BadBodySchemaError extends ExtendedError {
+  constructor({ message, body, schema }: {
+    message?: string
+    body?: string
+    schema?: string
+  }) {
+    super({ 
+      message: message || 'Bad body given.', 
+      status: 400,  
+      type: 'body.schema.failed', 
+      body: body, 
+      schema: schema, 
+    })
+
+    this.name = 'BadBodySchemaError'
+
+    Object.setPrototypeOf(this, BadBodySchemaError.prototype)
+  }
+}
+
+export class BadParamError extends ExtendedError {
+  constructor({ message, schema }: {
+    message?: string
+    schema?: string
+  }) {
+    super({ 
+      message: message || 'Bad param given.', 
+      status: 400,  
+      type: 'param.schema.failed', 
+      schema: schema
+    })
+
+    this.name = 'BadParamError'
+
+    Object.setPrototypeOf(this, BadParamError.prototype)
+  }
+}
+
+/**
+ * @deprecated
+ */
 export class ResponseError extends Error {
   code: number = 0
   expected: string | undefined = undefined
@@ -13,7 +79,9 @@ export class ResponseError extends Error {
   }
 }
 
-
+/**
+ * @deprecated
+ */
 export const handleError = (func: any) => async (req: any, res: any, next: any) => {
   try {
     await func(req, res, next)

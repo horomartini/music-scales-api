@@ -1,39 +1,62 @@
 import type { Request, Response, NextFunction } from 'express'
 import type { Instrument, Note } from 'types/api'
-import type { BodyInstrumentOrMany, ParamNote } from 'types/req'
+import type { InstrumentDoc, NoteDoc } from 'types/db'
+import type { ParamId } from 'types/req'
 
 import express from 'express'
+import mongoose from 'mongoose'
 
-import { checkBody } from '../../middleware/request'
+import { checkLocalsData } from '../../middleware/request'
 
-import db from '../../db/crud'
-import { InstrumentDoc, NoteDoc, ObjectId } from 'types/db'
+import db from '../../db'
+
+import { stringToObjectId } from '../../utils/types'
 
 
 const router = express.Router()
 
 
 router.put(
-  '/notes/:note',
-  (req: Request<ParamNote, {}, Note | Note[]>, res: Response, next: NextFunction) => {
-    const { note: noteId } = req.params
-    res.locals.objectId = noteId
-    res.locals.cokolwiek = null
-    res.locals.data = req.body
+  '/notes/:id',
+  (req: Request<ParamId, {}, Note>, res: Response, next: NextFunction) => {
+    const { id } = req.params
+    res.locals.data = { ...req.body, _id: stringToObjectId(id) }
     res.locals.schema = {
+      _id: { type: mongoose.Types.ObjectId, required: true },
       name: { type: String, required: true },
     }
     next()
   },
-  checkBody<Note | Note[], { objectId: string }>,
-  async (_: Request, res: Response<{}, { data: Note | Note[], objectId: string, cokolwiek: any }>, next: NextFunction) => {
-    const objectId = res.locals.objectId
-    const cc = res.locals.cokolwiek
-    const data = res.locals.data
-    const noteDb = await db.putNote({...data, _id: objectId })
-    res.locals.data = noteDb
+  checkLocalsData<NoteDoc>,
+  async (_: Request, res: Response<{}, { data: NoteDoc }>, next: NextFunction) => {
+    await db.notes.putOne(res.locals.data)
     next()
   },
+  (_: Request, res: Response) => {
+    res.status(204).json({ success: true })
+  }
+)
+
+router.put(
+  '/instruments/:id',
+  (req: Request<ParamId, {}, Instrument>, res: Response, next: NextFunction) => {
+    const { id } = req.params
+    res.locals.data = { ...req.body, _id: stringToObjectId(id) }
+    res.locals.schema = {
+      _id: { type: mongoose.Types.ObjectId, required: true },
+      name: { type: String, required: true },
+      defaultTuning: { type: mongoose.Types.ObjectId }
+    }
+    next()
+  },
+  checkLocalsData<InstrumentDoc>,
+  async (_: Request, res: Response<{}, { data: InstrumentDoc }>, next: NextFunction) => {
+    await db.instruments.putOne(res.locals.data)
+    next()
+  },
+  (_: Request, res: Response) => {
+    res.status(204).json({ success: true })
+  }
 )
 
 

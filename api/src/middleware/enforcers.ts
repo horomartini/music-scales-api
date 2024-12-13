@@ -21,8 +21,6 @@ export const enforceHeaderContentTypeAsJson = (req: Request, res: Response, next
 export const enforceAcceptAsJson = (req: Request, res: Response, next: NextFunction) => {
   const accept = req.headers['accept']
 
-  console.log(accept)
-
   // throw if Accept specified and has value different than */*
   if (accept && accept !== '*/*' && !accept.includes('application/json'))
     throw new BadHeaderError({ 

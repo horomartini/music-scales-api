@@ -1,5 +1,4 @@
-import type { InstrumentDoc, NoteDoc } from 'types/db'
-import type { Instrument, Note } from 'types/api'
+import type { ObjectIdField } from 'types/db'
 
 import sampleDbJson from './data.json'
 
@@ -10,71 +9,49 @@ import { hasMongo } from '../utils/env'
 let sampleDb = sampleDbJson
 
 
-const getNote = async (note: Partial<NoteDoc>) => 
-  await getOne<Partial<NoteDoc>, NoteDoc>('notes', note)
+export class CrudCollection<T_API extends object, T_DB extends object & ObjectIdField> {
+  constructor(private name: string) {}
+  
+  async getOne(data: Partial<T_DB>): Promise<T_DB | null> {
+    return await getOne(this.name, data)
+  }
 
-const getNotes = async (note?: Partial<NoteDoc>) => 
-  await getMany<Partial<NoteDoc>, NoteDoc>('notes', note)
-
-const postNote = async (note: Note) => 
-  await postOne<Note>('notes', note)
-
-const postNotes = async (notes: Note[]) =>
-  await postMany<Note>('notes', notes)
-
-const putNote = async (note: NoteDoc) => 
-  await putOne<NoteDoc>('notes', note)
-
-// db.putNotes([
-//   { _id: ('id.notes.c' as unknown) as ObjectId, name: 'not C' },
-//   { _id: ('id.notes.cs' as unknown) as ObjectId, name: 'not C#' }
-// ])
-const putNotes = async (notes: NoteDoc[]) => 
-  await putMany<NoteDoc>('notes', notes)
-
-const patchNote = async (note: Partial<NoteDoc>) => 
-  await patchOne<Partial<NoteDoc>>('notes', note)
-
-const patchNotes = async (notes: Partial<NoteDoc>[]) => 
-  await patchMany<Partial<NoteDoc>>('notes', notes)
-
-const deleteNote = async (note: Pick<NoteDoc, '_id'>) => 
-  await deleteOne<Pick<NoteDoc, '_id'>>('notes', note)
-
-const deleteNotes = async (notes: Pick<NoteDoc, '_id'>[]) => 
-  await deleteMany<Pick<NoteDoc, '_id'>>('notes', notes)
-
-
-const getInstrument = async (instrument: Partial<InstrumentDoc>) => 
-  await getOne<Partial<InstrumentDoc>, InstrumentDoc>('instruments', instrument)
-
-const getInstruments = async (instrument?: Partial<InstrumentDoc>) => 
-  await getMany<Partial<InstrumentDoc>, InstrumentDoc>('instruments', instrument)
-
-const postInstrument = async (instrument: Instrument) => 
-  await postOne<Instrument>('instruments', instrument)
-
-const postInstruments = async (instruments: Instrument[]) => 
-  await postMany<Instrument>('instruments', instruments)
-
-const putInstrument = async (instrument: InstrumentDoc) => 
-  await putOne<InstrumentDoc>('instruments', instrument)
-
-const putInstruments = async (instruments: InstrumentDoc[]) => 
-  await putMany<InstrumentDoc>('instruments', instruments)
-
-const patchInstrument = async (instrument: Partial<InstrumentDoc>) => 
-  await patchOne<Partial<InstrumentDoc>>('instruments', instrument)
-
-const patchInstruments = async (instruments: Partial<InstrumentDoc>[]) => 
-  await patchMany<Partial<InstrumentDoc>>('instruments', instruments)
-
-const deleteInstrument = async (instrument: Pick<InstrumentDoc, '_id'>) => 
-  await deleteOne<Pick<InstrumentDoc, '_id'>>('instruments', instrument)
-
-const deleteInstruments = async (instruments: Pick<InstrumentDoc, '_id'>[]) => 
-  await deleteMany<Pick<InstrumentDoc, '_id'>>('instruments', instruments)
-
+  async getMany(data?: Partial<T_DB>): Promise<T_DB[]> {
+    return await getMany(this.name, data)
+  }
+  
+  async postOne(data: T_API): Promise<void> {
+    return postOne(this.name, data)
+  }
+  
+  async postMany(data: T_API[]): Promise<void> {
+    return await postMany(this.name, data)
+  }
+  
+  async putOne(data: T_DB): Promise<void> {
+    return await putOne(this.name, data)
+  }
+  
+  async putMany(data: T_DB[]): Promise<void> {
+    return await putMany(this.name, data)
+  }
+  
+  async patchOne(data: Partial<T_DB>): Promise<void> {
+    return await patchOne(this.name, data)
+  }
+  
+  async patchMany(data: Partial<T_DB>[]): Promise<void> {
+    return await patchMany(this.name, data)
+  }
+  
+  async deleteOne(data: Pick<T_DB, '_id'>): Promise<void> {
+    return await deleteOne(this.name, data)
+  }
+  
+  async deleteMany(data: Pick<T_DB, '_id'>[]): Promise<void> {
+    return await deleteMany(this.name, data)
+  }
+}
 
 
 async function getMany<T extends object, R>(collection: string, data?: T): Promise<R[]> {
@@ -286,29 +263,4 @@ async function deleteManySample<T extends object>(collection: string, data: T[])
 
 function createSampleId(collection: string, name: string) {
   return `id.${collection}.${toKebabCase(name).replace('#', 's')}`
-}
-
-
-export default {
-  getNote,
-  getNotes,
-  postNote,
-  postNotes,
-  putNote,
-  putNotes,
-  patchNote,
-  patchNotes,
-  deleteNote,
-  deleteNotes,
-
-  getInstrument,
-  getInstruments,
-  postInstrument,
-  postInstruments,
-  putInstrument,
-  putInstruments,
-  patchInstrument,
-  patchInstruments,
-  deleteInstrument,
-  deleteInstruments,
 }

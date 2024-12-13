@@ -29,6 +29,9 @@ export const checkBodyOld = <T extends object>(
   next()
 }
 
+/**
+ * @deprecated
+ */
 export const checkBody = <T extends Object>(
   _: Request, 
   res: Response<{}, { data: T, schema: SchemaDefinition }>, 
@@ -56,8 +59,8 @@ export const checkLocalsData = <T extends object, U extends Locals = {}>(
   const data = res.locals.data
   const schema = res.locals.schema
 
-  if (data === undefined || schema === undefined)
-    throw Error('res.locals.data or res.locals.schema cannot be undefined.')
+  if (!data || !schema)
+    throw new Error('res.locals.data and res.locals.schema need to be defined.')
 
   const isOfType = isType(data, schema)
 

@@ -44,6 +44,11 @@ const isSchemaObjectType = (def: SchemaDefinition): def is SchemaObjectType =>
 const isSchemaPrimitiveType = (def: SchemaDefinition): def is SchemaPrimitiveType =>
   'type' in def && Object.keys(def).length < 3
 
+const isSampleObjectId = (v: string): boolean => {
+  const parts = v.split('.')
+  return parts.length === 3 && parts[0] === 'id'
+}
+
 
 export const isType = <T>(value: unknown, def: SchemaDefinition): value is T => {
   const isRequired = 'required' in def && def.required === true
@@ -71,6 +76,11 @@ export const isType = <T>(value: unknown, def: SchemaDefinition): value is T => 
   else if (isSchemaPrimitiveType(def)) { // primitive value -> { type: PrimitiveConstructor }: SchemaPrimitiveType
     if (value === null || value === undefined) // if values unset, check if they are required
       return !isRequired 
+
+    if ('name' in def.type && def.type.name === 'ObjectId')
+      return hasMongo() 
+        ? typeof value === 'string' && mongoose.Types.ObjectId.isValid(value)
+        : typeof value === 'string' && isSampleObjectId(value)
     
     return typeof value === typeof def.type()
   } 
@@ -200,7 +210,7 @@ export function getPrintableType(value: any): any {
  * Converts string type to ObjectId type, when using strings as strict id types.
  * If mongo db is connected, it creates an ObjectID from given string, otherwise it softly casts to ObjectId, but does not convert.
  */
-export const stringToObjectId = (v: string): ObjectId => 
+export const stringToObjectId = (v: string): ObjectId => // use isValidObjectId??
   hasMongo() 
     ? new mongoose.Types.ObjectId(v) 
     : (v as unknown) as ObjectId
@@ -213,11 +223,12 @@ export const objectToReadableString = <T>(x: T): string => {
     return `[${x.map(objectToReadableString).join(', ')}]`
 
   switch (x) {
-    case String:  return 'string'
-    case Number:  return 'number'
+    case String: return 'string'
+    case Number: return 'number'
     case Boolean: return 'boolean'
-    case Array:   return 'array'
-    case Object:  return 'object'
+    case Array: return 'array'
+    case Object: return 'object'
+    case mongoose.Types.ObjectId: return 'ObjectId'
   }
 
   if (typeof x === 'object' && x !== null && !('prototype' in x))

@@ -1,9 +1,9 @@
 import type { PhysicalNote } from './api'
 
-import { Types as mongooseTypes } from 'mongoose'
+import mongoose from 'mongoose'
 
 
-export type ObjectId = mongooseTypes.ObjectId
+export type ObjectId = mongoose.Types.ObjectId
 export type ObjectIdField = { '_id': ObjectId }
 
 export type NoteDoc = ObjectIdField & {
@@ -12,13 +12,13 @@ export type NoteDoc = ObjectIdField & {
 
 export type InstrumentDoc = ObjectIdField & {
   name: string
-  defaultTuning: ObjectIdField
+  defaultTuning?: ObjectId
 }
 
 export type TuningDoc = ObjectIdField & {
   name: string
-  instrument: ObjectIdField
-  notes: PhysicalNote[] | null
+  instrument?: ObjectId
+  notes?: PhysicalNote[]
 }
 
 export type ScaleDoc = ObjectIdField & {

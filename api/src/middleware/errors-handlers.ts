@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 
 import { Log } from '../utils/logger'
-import { BadBodySchemaError, BadParamError, ExtendedError } from '../utils/errors'
+import { BadBodySchemaError, BadHeaderError, BadParamError, ExtendedError } from '../utils/errors'
 
 export const globalErrorHandler = (
   err: ExtendedError, 
@@ -36,6 +36,14 @@ export const globalErrorHandler = (
         message: message,
         body: body,
         expected: schema,
+      })
+  
+  else if (err instanceof BadHeaderError && type?.includes('header'))
+    res
+      .status(status)
+      .json({
+        success: false,
+        message: message,
       })
 
   else if (status === 400 && type === 'entity.parse.failed') { // TODO: make this in enum?

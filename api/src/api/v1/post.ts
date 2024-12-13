@@ -7,7 +7,7 @@ import express from 'express'
 import { checkBody } from '../../middleware/request'
 
 import db from '../../db/crud'
-import { InstrumentDoc } from 'types/db'
+import { InstrumentDoc, NoteDoc } from 'types/db'
 
 
 const router = express.Router()
@@ -15,19 +15,20 @@ const router = express.Router()
 
 router.post(
   '/notes',
-  (req: Request<{}, {}, Note | Note[], {}>, res: Response, next: NextFunction) => {
+  (req: Request<{}, {}, Note, {}>, res: Response, next: NextFunction) => {
     res.locals.data = req.body
     res.locals.schema = {
       name: { type: String, required: true },
     }
     next()
   },
-  checkBody<Note | Note[]>, // TODO: here collection (no Doc)!
-  async (_: Request, res: Response<{}, { data: Note | Note[] }>, next: NextFunction) => {
+  checkBody<Note>,
+  async (_: Request, res: Response<{}, { data: Note  }>, next: NextFunction) => {
     const data = res.locals.data
-    Array.isArray(data)
-      ? await db.postNotes(data)
-      : await db.postNote(data)
+    await db.postNote(data)
+    // Array.isArray(data)
+    //   ? await db.postNotes(data)
+    //   : await db.postNote(data)
     next()
   },
   (_: Request, res: Response) => {
@@ -37,7 +38,7 @@ router.post(
 
 router.post(
   '/instruments',
-  (req: Request<{}, {}, BodyInstrumentOrMany, {}>, res: Response, next: NextFunction) => {
+  (req: Request<{}, {}, Instrument, {}>, res: Response, next: NextFunction) => {
     res.locals.data = req.body
     res.locals.schema = {
       name: { type: String, required: true },
@@ -45,12 +46,15 @@ router.post(
     }
     next()
   },
-  checkBody<InstrumentDoc>, // TODO: here collectionDoc!
-  async (_: Request, res: Response<{}, { data: InstrumentDoc | InstrumentDoc[] }>, next: NextFunction) => {
+  checkBody<Instrument>,
+  async (_: Request, res: Response<{}, { data: Instrument }>, next: NextFunction) => {
     let data = res.locals.data
-    Array.isArray(data) // TODO: if defaultTuning was not given, it is completely ommited in insertion to db
-      ? await db.postInstruments(data)
-      : await db.postInstrument(data)
+
+    await db.postInstrument(data)
+
+    // Array.isArray(data) // TODO: if defaultTuning was not given, it is completely ommited in insertion to db
+    //   ? await db.postInstruments(data)
+    //   : await db.postInstrument(data)
     next()
   },
   (_: Request, res: Response) => {

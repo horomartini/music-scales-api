@@ -15,13 +15,13 @@ export type Sound = PhysicalNote & {
 
 export type Instrument = {
   name: string
-  defaultTuning: string | null
+  defaultTuning?: string
 }
 
 export type Tuning = {
   name: string
-  instrument: string | null
-  notes: PhysicalNote[] | null
+  instrument?: string
+  notes?: PhysicalNote[]
 }
 
 export type Scale = {

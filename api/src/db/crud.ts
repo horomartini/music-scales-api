@@ -1,10 +1,11 @@
 import type { InstrumentDoc, NoteDoc } from 'types/db'
+import type { Instrument, Note } from 'types/api'
 
 import sampleDbJson from './data.json'
+
 import { toKebabCase } from '../utils/rest'
+import { hasMongo } from '../utils/env'
 
-
-const isMongo = Boolean(process.env.MONGO_URI)
 
 let sampleDb = sampleDbJson
 
@@ -15,11 +16,11 @@ const getNote = async (note: Partial<NoteDoc>) =>
 const getNotes = async (note?: Partial<NoteDoc>) => 
   await getMany<Partial<NoteDoc>, NoteDoc>('notes', note)
 
-const postNote = async (note: Omit<NoteDoc, '_id'>) => 
-  await postOne<Omit<NoteDoc, '_id'>>('notes', note)
+const postNote = async (note: Note) => 
+  await postOne<Note>('notes', note)
 
-const postNotes = async (notes: Omit<NoteDoc, '_id'>[]) =>
-  await postMany<Omit<NoteDoc, '_id'>>('notes', notes)
+const postNotes = async (notes: Note[]) =>
+  await postMany<Note>('notes', notes)
 
 const putNote = async (note: NoteDoc) => 
   await putOne<NoteDoc>('notes', note)
@@ -50,11 +51,11 @@ const getInstrument = async (instrument: Partial<InstrumentDoc>) =>
 const getInstruments = async (instrument?: Partial<InstrumentDoc>) => 
   await getMany<Partial<InstrumentDoc>, InstrumentDoc>('instruments', instrument)
 
-const postInstrument = async (instrument: Omit<InstrumentDoc, '_id'>) => 
-  await postOne<Omit<InstrumentDoc, '_id'>>('instruments', instrument)
+const postInstrument = async (instrument: Instrument) => 
+  await postOne<Instrument>('instruments', instrument)
 
-const postInstruments = async (instruments: Omit<InstrumentDoc, '_id'>[]) => 
-  await postMany<Omit<InstrumentDoc, '_id'>>('instruments', instruments)
+const postInstruments = async (instruments: Instrument[]) => 
+  await postMany<Instrument>('instruments', instruments)
 
 const putInstrument = async (instrument: InstrumentDoc) => 
   await putOne<InstrumentDoc>('instruments', instrument)
@@ -77,70 +78,70 @@ const deleteInstruments = async (instruments: Pick<InstrumentDoc, '_id'>[]) =>
 
 
 async function getMany<T extends object, R>(collection: string, data?: T): Promise<R[]> {
-  if (!isMongo) return getManySample<T, R>(collection, data)
+  if (!hasMongo()) return getManySample<T, R>(collection, data)
 
   // TODO: implement mongo
   return [] as R[]
 }
 
 async function getOne<T extends object, R>(collection: string, data: T): Promise<R | null> {
-  if (!isMongo) return getOneSample<T, R>(collection, data)
+  if (!hasMongo()) return getOneSample<T, R>(collection, data)
 
   // TODO: implement mongo
   return {} as R
 }
 
 async function postOne<T extends object>(collection: string, data: T): Promise<void> {
-  if (!isMongo) return postOneSample<T>(collection, data)
+  if (!hasMongo()) return postOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
 async function postMany<T extends object>(collection: string, data: T[]): Promise<void> {
-  if (!isMongo) return postManySample<T>(collection, data)
+  if (!hasMongo()) return postManySample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
 async function putOne<T extends object>(collection: string, data: T): Promise<void> {
-  if (!isMongo) return putOneSample<T>(collection, data)
+  if (!hasMongo()) return putOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
 async function putMany<T extends object>(collection: string, data: T[]): Promise<void> {
-  if (!isMongo) return putManySample<T>(collection, data)
+  if (!hasMongo()) return putManySample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
 async function patchOne<T extends object>(collection: string, data: T): Promise<void> {
-  if (!isMongo) return patchOneSample<T>(collection, data)
+  if (!hasMongo()) return patchOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
 async function patchMany<T extends object>(collection: string, data: T[]): Promise<void> {
-  if (!isMongo) return patchManySample<T>(collection, data)
+  if (!hasMongo()) return patchManySample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
 async function deleteOne<T extends object>(collection: string, data: T): Promise<void> {
-  if (!isMongo) return deleteOneSample<T>(collection, data)
+  if (!hasMongo()) return deleteOneSample<T>(collection, data)
 
   // TODO: implement mongo
   return
 }
 
 async function deleteMany<T extends object>(collection: string, data: T[]): Promise<void> {
-  if (!isMongo) return deleteManySample<T>(collection, data)
+  if (!hasMongo()) return deleteManySample<T>(collection, data)
 
   // TODO: implement mongo
   return

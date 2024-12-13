@@ -5,6 +5,10 @@ export type SortOrder = 'asc' | 'desc'
 
 export type ParamUnknown = Record<string, string>
 
+export type ParamId = {
+  id: string
+}
+
 export type ParamNote = {
   note: string
 }

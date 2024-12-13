@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express'
+import type { Request, Response, NextFunction, Locals } from 'express'
 
 import { getPrintableInterfaceType, isInterface, isType, objectToReadableString, SchemaDefinition } from '../utils/types'
 import { BadBodySchemaError, ResponseError } from '../utils/errors'
@@ -29,13 +29,35 @@ export const checkBodyOld = <T extends object>(
   next()
 }
 
-export const checkBody = <T extends object, U>(
+export const checkBody = <T extends Object>(
+  _: Request, 
+  res: Response<{}, { data: T, schema: SchemaDefinition }>, 
+  next: NextFunction,
+) => {
+  const data = res.locals.data
+  const schema = res.locals.schema
+
+  const isOfType = isType(data, schema)
+
+  if (!isOfType)
+    throw new BadBodySchemaError({
+      body: objectToReadableString(data),
+      schema: objectToReadableString(schema),
+    })
+  
+  next()
+}
+
+export const checkLocalsData = <T extends object, U extends Locals = {}>(
   _: Request, 
   res: Response<{}, { data: T, schema: SchemaDefinition } & U>, 
   next: NextFunction,
 ) => {
   const data = res.locals.data
   const schema = res.locals.schema
+
+  if (data === undefined || schema === undefined)
+    throw Error('res.locals.data or res.locals.schema cannot be undefined.')
 
   const isOfType = isType(data, schema)
 

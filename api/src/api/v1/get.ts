@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import type { ParamInstrumentName, ParamNoteName } from 'types/req'
+import type { ParamId, ParamInstrumentName, ParamNoteName } from 'types/req'
 import type { Note } from 'types/api'
 import type { InstrumentDoc, NoteDoc } from 'types/db'
 
@@ -10,6 +10,7 @@ import { applyFiltering, applyPagination, applySorting } from '../../middleware/
 import db from '../../db/crud'
 
 import { parseNote } from '../../utils/parse'
+import { stringToObjectId } from '../../utils/types'
 
 
 const router = express.Router()
@@ -39,14 +40,16 @@ router.get(
 )
 
 router.get(
-  '/notes/:note',
-  (req: Request<ParamNoteName>, res: Response, next: NextFunction) => {
-    const { note: noteName } = req.params
-    if (noteName !== undefined)
-      res.locals.query = parseNote(noteName) as Partial<Note>
+  '/notes/:id',
+  (req: Request<ParamId>, res: Response, next: NextFunction) => {
+    const { id: noteId } = req.params
+    if (noteId !== undefined)
+      res.locals.query = { _id: stringToObjectId(noteId) } as Partial<NoteDoc>
+    // if (noteName !== undefined)
+    //   res.locals.query = parseNote(noteName) as Partial<Note>
     next()
   },
-  async (_: Request, res: Response<{}, { query?: Partial<Note>, data: NoteDoc | null }>, next: NextFunction) => {
+  async (_: Request, res: Response<{}, { query?: Partial<NoteDoc>, data: NoteDoc | null }>, next: NextFunction) => {
     const noteDb = await db.getNote(res.locals.query ?? {})
     res.locals.data = noteDb
     next()
@@ -72,11 +75,13 @@ router.get(
 )
 
 router.get(
-  '/instruments/:instrument',
-  (req: Request<ParamInstrumentName>, res: Response, next: NextFunction) => {
-    const { instrument: instrumentName } = req.params
-    if (instrumentName !== undefined)
-      res.locals.query = { name: instrumentName } as Partial<InstrumentDoc>
+  '/instruments/:id',
+  (req: Request<ParamId>, res: Response, next: NextFunction) => {
+    const { id: instrumentId } = req.params
+    if (instrumentId !== undefined)
+      res.locals.query = { _id: stringToObjectId(instrumentId) } as Partial<InstrumentDoc>
+    // if (instrumentName !== undefined)
+    //   res.locals.query = { name: instrumentName } as Partial<InstrumentDoc>
     next()
   },
   async (_: Request, res: Response<{}, { query?: Partial<InstrumentDoc>, data: InstrumentDoc | null }>, next: NextFunction) => {

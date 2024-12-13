@@ -1,5 +1,9 @@
 import type { ObjectId } from 'types/db'
 
+import mongoose from 'mongoose'
+
+import { hasMongo } from './env'
+
 type Primitive<T> = 
   T extends StringConstructor ? string : 
   T extends NumberConstructor ? number : 
@@ -194,9 +198,12 @@ export function getPrintableType(value: any): any {
 
 /**
  * Converts string type to ObjectId type, when using strings as strict id types.
+ * If mongo db is connected, it creates an ObjectID from given string, otherwise it softly casts to ObjectId, but does not convert.
  */
 export const stringToObjectId = (v: string): ObjectId => 
-  (v as unknown) as ObjectId
+  hasMongo() 
+    ? new mongoose.Types.ObjectId(v) 
+    : (v as unknown) as ObjectId
 
 /**
  * Converts given generic value to its string representation.

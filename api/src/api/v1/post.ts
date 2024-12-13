@@ -10,7 +10,6 @@ import db from '../../db/crud'
 import { InstrumentDoc } from 'types/db'
 
 
-
 const router = express.Router()
 
 
@@ -23,7 +22,7 @@ router.post(
     }
     next()
   },
-  checkBody<Note>, // TODO: here collection (no Doc)!
+  checkBody<Note | Note[]>, // TODO: here collection (no Doc)!
   async (_: Request, res: Response<{}, { data: Note | Note[] }>, next: NextFunction) => {
     const data = res.locals.data
     Array.isArray(data)

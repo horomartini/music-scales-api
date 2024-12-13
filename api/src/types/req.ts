@@ -1,7 +1,13 @@
+import type { ObjectId } from './db'
+
 export type SortOrder = 'asc' | 'desc'
 
 
 export type ParamUnknown = Record<string, string>
+
+export type ParamNote = {
+  note: string
+}
 
 export type ParamNoteName = {
   note: string

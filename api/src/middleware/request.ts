@@ -29,18 +29,15 @@ export const checkBodyOld = <T extends object>(
   next()
 }
 
-export const checkBody = <T extends object>(
+export const checkBody = <T extends object, U>(
   _: Request, 
-  res: Response<{}, { data: T | T[], schema: SchemaDefinition }>, 
+  res: Response<{}, { data: T, schema: SchemaDefinition } & U>, 
   next: NextFunction,
 ) => {
-  console.log(2, 1)
   const data = res.locals.data
   const schema = res.locals.schema
-  console.log(data, schema)
 
   const isOfType = isType(data, schema)
-  console.log(2, 2, isOfType)
 
   if (!isOfType)
     throw new BadBodySchemaError({

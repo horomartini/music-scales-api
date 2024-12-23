@@ -12,6 +12,7 @@ import { Log } from './utils/logger'
 import { ObjectId } from './types/db' // TODO: debug import
 
 import db from './db' // TODO: debug import
+import graphql from './graphql'
 
 const PORT = process.env.PORT || 8080
 const MONGO_URI = process.env.MONGO_URI || undefined
@@ -49,41 +50,6 @@ if (!NO_APOLLO)
 
 startServer()
 
-// if (!NO_APOLLO) {
-//   const { ApolloServer, gql } = require('@apollo/server')
-//   const { expressMiddleware } = require('@apollo/server/express4')
-//   const { ApolloServerPluginDrainHtppServer } = require('@apollo/server/plugin/drainHttpServer')
-
-//   const typeDefs = gql`
-//     type Book {
-//       title: String
-//       author: String
-//     }
-
-//     type Query {
-//       books: [Book]
-//     }
-//   `
-
-//   const resolvers = {
-//     Query: {
-//       books: () => books,
-//     },
-//   }
-
-//   const apollo = new ApolloServer({ typeDefs, resolvers, plugins: [ApolloServerPluginDrainHtppServer({ httpServer })] })
-  
-//   await apollo.start()
-  
-//   app.use(
-//     '/graphql',
-//     cors<cors.CorsRequest>(),
-//     express.json(),
-//     expressMiddleware(apollo),
-//   )
-// }
-
-
 
 async function startServer() {
   await new Promise<void>((resolve) => {
@@ -106,6 +72,8 @@ async function startServer() {
 }
 
 async function startApollo() {
+  Log.info('Starting Apollo Graphql server alongside Express')
+
   const { ApolloServer } = require('@apollo/server')
   const { expressMiddleware } = require('@apollo/server/express4')
   const { ApolloServerPluginDrainHttpServer } = require('@apollo/server/plugin/drainHttpServer')
@@ -127,7 +95,11 @@ async function startApollo() {
     },
   }
 
-  const apollo = new ApolloServer({ typeDefs, resolvers, plugins: [ApolloServerPluginDrainHttpServer({ httpServer })] })
+  const apollo = new ApolloServer({ 
+    typeDefs: graphql.typeDefs, 
+    resolvers: graphql.resolvers, 
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })] 
+  })
   
   await apollo.start()
   
@@ -138,19 +110,3 @@ async function startApollo() {
     expressMiddleware(apollo),
   )
 }
-
-// app.listen(PORT, () => {
-//   Log.info('Server is running on port', PORT)
-
-//   if (MONGO_URI === undefined)
-//     Log.warn('MONG_URI has not been defined - connection to database will not be established!')
-//   else 
-//     mongoose
-//       .connect(MONGO_URI, {})
-//       .then(() => { 
-//         Log.info('Connected to db') 
-//       })
-//       .catch(error => { 
-//         Log.error('Error connecting to db:', error.message) 
-//       })
-// })

@@ -18,10 +18,15 @@ export type InstrumentDoc = ObjectIdField & {
 export type TuningDoc = ObjectIdField & {
   name: string
   instrument?: ObjectId
-  notes?: PhysicalNote[]
+  notes?: TuningNote[]
 }
 
 export type ScaleDoc = ObjectIdField & {
   name: string
   steps: number[]
+}
+
+export type TuningNote = {
+  note: ObjectId
+  octave: number
 }

@@ -1,0 +1,92 @@
+type Query {
+  notes: [Note]
+  instruments: [Instrument]
+  tunings: [Tuning]
+  scales: [Scale]
+}
+
+type Mutation {
+  addNote(name: String): Note
+  addInstrument(name: String, defaultTuning: TuningInput): Instrument
+  addTuning(name: String, instrument: InstrumentInput, notes: PhysicalNoteInput): Tuning
+  addScale(name: String, steps: [Int]): Scale
+}
+
+
+type Note {
+  _id: ID
+  name: String
+}
+
+type Instrument {
+  _id: ID
+  name: String
+  defaultTuning: Tuning
+}
+
+type Tuning {
+  _id: ID
+  name: String
+  instrument: Instrument
+  notes: [TuningNotes!]
+}
+
+type Scale {
+  _id: ID
+  name: String
+  steps: [Int]
+}
+
+type TuningNotes {
+  note: Note!
+  octave: Int!
+}
+
+
+input InstrumentInput {
+  name: String!
+}
+
+input TuningInput {
+  name: String!
+  notes: [PhysicalNoteInput!]
+}
+
+input PhysicalNoteInput {
+  note: String!
+  octave: Int!
+}
+
+
+query GetNotes {
+  notes {
+    name
+  }
+}
+
+query GetInstruments {
+  instruments {
+    name
+    defaultTuning {
+      name
+      notes
+    }
+  }
+}
+
+query GetTunings {
+  tunings {
+    name
+    instrument {
+      name
+    }
+    notes
+  }
+}
+
+query GetScale {
+  scale {
+    name
+    steps
+  }
+}

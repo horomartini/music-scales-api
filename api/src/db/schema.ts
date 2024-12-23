@@ -21,7 +21,7 @@ const tuningsSchemaDef = {
     ref: 'instruments',
   },
   notes: [{ 
-    name: { 
+    note: { 
       type: mongoose.Schema.Types.ObjectId,
       ref: 'notes',
       required: true,

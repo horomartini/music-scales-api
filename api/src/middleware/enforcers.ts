@@ -22,7 +22,7 @@ export const enforceAcceptAsJson = (req: Request, res: Response, next: NextFunct
   const accept = req.headers['accept']
 
   // throw if Accept specified and has value different than */*
-  if (accept && accept !== '*/*' && !accept.includes('application/json'))
+  if (accept && !accept.includes('*/*') && !accept.includes('application/json'))
     throw new BadHeaderError({ 
       message: `Not Acceptable Media Type. Use 'application/json'.`,
       status: 406,

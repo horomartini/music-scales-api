@@ -10,7 +10,7 @@ export const enforceHeaderContentTypeAsJson = (req: Request, res: Response, next
     const contentType = req.headers['content-type']
 
     // throw if Content-Type not specified or is not application/json
-    if (!contentType || !contentType.includes('application/json'))
+    if (!contentType || !contentType.includes('application/json')) // TODO: makes it not work in web browser??
       throw new BadMediaTypeErrror({ message: `Unsupported Media Type. Use 'application/json'.` })
   }
 

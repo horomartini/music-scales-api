@@ -8,6 +8,7 @@ export const logger = (
   next: NextFunction,
 ) => {
   Log.info(req.method, req.url)
-  Log.debug(req?.params, req?.body, req?.query, res?.locals)
+  if (req.url !== '/graphql') // Apollo Playground sends requests every 2 seconds - this eases with verbosity of debug logs
+    Log.debug(req?.params, req?.body, req?.query, res?.locals)
   next()
 }

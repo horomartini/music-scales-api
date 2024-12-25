@@ -1,7 +1,9 @@
 import type { Request, Response, NextFunction, Locals } from 'express'
 
 import { getPrintableInterfaceType, isInterface, isType, objectToReadableString, SchemaDefinition } from '../utils/types'
-import { BadBodySchemaError, ResponseError } from '../utils/errors'
+import { BadBodySchemaError, NotFoundError, ResponseError } from '../utils/errors'
+import { ObjectIdField } from 'types/db'
+import { ParamId } from 'types/req'
 
 
 /**
@@ -70,5 +72,27 @@ export const checkLocalsData = <T extends object, U extends Locals = {}>(
       schema: objectToReadableString(schema),
     })
   
+  next()
+}
+
+export const checkIfFound = <T extends object & ObjectIdField>(
+  _: Request, 
+  res: Response<{}, { query?: Partial<T>, data: T | null }>,
+  next: NextFunction,
+) => {
+  if (res.locals.data === null)
+    throw new NotFoundError({ message: `Note ${res.locals.query?._id} not found.` })
+
+  next()
+}
+
+export const checkIfExist = <T extends object & ObjectIdField>(
+  req: Request<ParamId>, 
+  res: Response<{}, { exists?: T }>,
+  next: NextFunction,
+) => {
+  if (res.locals.exists === undefined)
+    throw new NotFoundError({ message: `Note ${req.params.id} not found.` })
+
   next()
 }

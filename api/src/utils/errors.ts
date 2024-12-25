@@ -23,6 +23,22 @@ export class ExtendedError extends Error {
   }
 }
 
+export class NotFoundError extends ExtendedError {
+  constructor({ message }: {
+    message?: string
+  }) {
+    super({ 
+      message: message ?? 'Not found.', 
+      status: 404,  
+      type: 'db.find.failed', 
+    })
+
+    this.name = 'NotFoundError'
+
+    Object.setPrototypeOf(this, NotFoundError.prototype)
+  }
+}
+
 export class BadBodySchemaError extends ExtendedError {
   constructor({ message, body, schema }: {
     message?: string

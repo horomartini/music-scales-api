@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 
 import { Log } from '../utils/logger'
-import { BadBodySchemaError, BadHeaderError, BadParamError, ExtendedError } from '../utils/errors'
+import { BadBodySchemaError, BadHeaderError, BadParamError, ExtendedError, NotFoundError } from '../utils/errors'
 
 export const globalErrorHandler = (
   err: ExtendedError, 
@@ -19,7 +19,15 @@ export const globalErrorHandler = (
 
   Log.error(`[${status} :: <${type}>] ${stack}`)
 
-  if (err instanceof BadParamError && type === 'param.schema.failed')
+  if (err instanceof NotFoundError && type === 'db.find.failed')
+    res
+      .status(status)
+      .json({
+        success: false,
+        message: message,
+      })
+
+  else if (err instanceof BadParamError && type === 'param.schema.failed')
     res
       .status(status)
       .json({

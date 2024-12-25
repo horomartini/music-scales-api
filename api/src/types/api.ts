@@ -21,7 +21,7 @@ export type Instrument = {
 export type Tuning = {
   name: string
   instrument?: string
-  notes?: PhysicalNote[]
+  notes?: { note: string, octave: number }[]
 }
 
 export type Scale = {

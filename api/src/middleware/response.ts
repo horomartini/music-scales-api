@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 import type { QueryFilter, QueryPaginator, QuerySorter, QueryUnknown } from 'types/req'
+import { ResponseBody } from 'types/res'
 
 
 export const applyFiltering = <T>(
@@ -70,5 +71,32 @@ export const applyPagination = <T>(
   data = data.slice(start, end)
 
   res.locals.data = data
+  next()
+}
+
+/**
+ * @unused
+ */
+export const applyHateoas = (
+  req: Request<{}, {}, {}, QueryUnknown & { hateoas?: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.query?.hateoas === 'true') {
+
+  }
+  next()
+}
+
+/**
+ * @unused
+ */
+export const responseVerbosity = <T>(
+  req: Request<{}, {}, {}, QueryUnknown & { verbose?: string }>,
+  res: Response<{}, { data: T, response?: ResponseBody<T> }>,
+  next: NextFunction,
+) => {
+  if (req.query?.verbose !== 'false')
+    res.locals.response = { success: true, data: res.locals.data }
   next()
 }

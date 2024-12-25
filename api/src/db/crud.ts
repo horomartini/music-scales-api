@@ -1,9 +1,10 @@
-import type { ObjectIdField } from 'types/db'
+import type { ObjectId, ObjectIdField } from 'types/db'
 
 import sampleDbJson from './data.json'
 
 import { toKebabCase } from '../utils/rest'
 import { hasMongo } from '../utils/env'
+import { stringToObjectId } from '../utils/types'
 
 
 let sampleDb = sampleDbJson
@@ -20,11 +21,11 @@ export class CrudCollection<T_API extends object, T_DB extends object & ObjectId
     return await getMany(this.name, data)
   }
   
-  async postOne(data: T_API): Promise<void> {
-    return postOne(this.name, data)
+  async postOne(data: T_API): Promise<ObjectId | null> {
+    return await postOne(this.name, data)
   }
   
-  async postMany(data: T_API[]): Promise<void> {
+  async postMany(data: T_API[]): Promise<ObjectId[]> {
     return await postMany(this.name, data)
   }
   
@@ -68,18 +69,18 @@ async function getOne<T extends object, R>(collection: string, data: T): Promise
   return {} as R
 }
 
-async function postOne<T extends object>(collection: string, data: T): Promise<void> {
+async function postOne<T extends object>(collection: string, data: T): Promise<ObjectId | null> {
   if (!hasMongo()) return postOneSample<T>(collection, data)
 
   // TODO: implement mongo
-  return
+  return null
 }
 
-async function postMany<T extends object>(collection: string, data: T[]): Promise<void> {
+async function postMany<T extends object>(collection: string, data: T[]): Promise<ObjectId[]> {
   if (!hasMongo()) return postManySample<T>(collection, data)
 
   // TODO: implement mongo
-  return
+  return []
 }
 
 async function putOne<T extends object>(collection: string, data: T): Promise<void> {
@@ -152,7 +153,7 @@ async function getOneSample<T extends object, R>(collection: string, data: T): P
   return doc ?? null
 }
 
-async function postOneSample<T extends object>(collection: string, data: T): Promise<void> {
+async function postOneSample<T extends object>(collection: string, data: T): Promise<ObjectId> {
   const name = 'name' in data && typeof data.name === 'string' ? data.name : ''
   const doc = {
     ...data,
@@ -166,9 +167,11 @@ async function postOneSample<T extends object>(collection: string, data: T): Pro
       doc
     ]
   }
+
+  return stringToObjectId(doc._id)
 }
 
-async function postManySample<T extends object>(collection: string, data: T[]): Promise<void> {
+async function postManySample<T extends object>(collection: string, data: T[]): Promise<ObjectId[]> {
   const docs = data.map(item => {
     const name = 'name' in item && typeof item.name === 'string' ? item.name : ''
     return {
@@ -184,6 +187,8 @@ async function postManySample<T extends object>(collection: string, data: T[]): 
       ...docs
     ]
   }
+
+  return docs.map(doc => stringToObjectId(doc._id))
 }
 
 async function putOneSample<T extends object>(collection: string, data: T): Promise<void> {

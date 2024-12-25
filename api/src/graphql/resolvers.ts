@@ -1,18 +1,35 @@
 import type { InstrumentDoc, TuningDoc, TuningNote } from 'types/db'
+import type { FilterForType } from './scalars'
 
 import { stringToObjectId } from '../utils/types'
+import { filterForTypeScalar } from './scalars'
 
 import db from '../db'
 
 
+type FilterType = 
+  | 'equals'
+  | 'not_equals'
+  | 'greater_than'
+  | 'greater_or_equals'
+  | 'less_than'
+  | 'less_or_equals'
+  | 'includes'
+  | 'not_includes'
+
+type SortOrder = 
+  | 'asc' 
+  | 'desc'
+
 type FilteringInput = { 
   filterBy?: string 
-  filterFor?: string 
+  filterType?: FilterType
+  filterFor?: FilterForType
 }
 
 type SortingInput = {
   sortBy?: string
-  order?: 'asc' | 'desc'
+  order?: SortOrder
 }
 
 type PaginatingInput = {
@@ -28,12 +45,59 @@ type UXInputs = {
 
 
 // TODO: those three are super similair to in /src/middleware/response.tx
-const applyFiltering = <T>(data: T[], { filterBy, filterFor }: FilteringInput = {}) => {
+const applyFiltering = <T>(data: T[], { filterBy, filterType, filterFor }: FilteringInput = {}) => {
   if (filterBy === undefined || filterFor === undefined)
     return data
 
+  filterType = filterType ? filterType.toLowerCase() as FilterType : 'equals'
+
   const key = filterBy as keyof typeof data[number]
-  return data.filter(obj => obj?.[key] && obj[key] === filterFor)
+  const filterForNumber = (value: number): boolean => {
+    if (typeof filterFor !== 'number')
+      return false
+
+    switch (filterType) {
+      case 'equals':            return value === filterFor
+      case 'not_equals':        return value !== filterFor
+      case 'greater_than':      return filterFor > value
+      case 'greater_or_equals': return filterFor >= value
+      case 'less_than':         return filterFor < value
+      case 'less_or_equals':    return filterFor <= value
+      default:                  return false
+    }
+  }
+  const filterForString = (value: string): boolean => {
+    if (typeof filterFor !== 'string')
+      return false
+
+    switch (filterType) {
+      case 'equals':       return value === filterFor
+      case 'not_equals':   return value !== filterFor
+      case 'includes':     return value.includes(filterFor)
+      case 'not_includes': return !value.includes(filterFor)
+      default:             return false
+    }
+  }
+  const filterForBoolean = (value: boolean): boolean => {
+    if (typeof filterFor !== 'boolean')
+      return false
+
+    switch (filterType) {
+      case 'equals':     return value === filterFor
+      case 'not_equals': return value !== filterFor
+      default:           return false
+    }
+  }
+  const filterForType = (value: unknown): boolean => {
+    switch (typeof value) {
+      case 'number':  return filterForNumber(value)
+      case 'string':  return filterForString(value)
+      case 'boolean': return filterForBoolean(value)
+      default:        return false
+    }
+  }
+
+  return data.filter(obj => obj?.[key] && filterForType(obj[key]))
 }
 
 const applySorting = <T>(data: T[], { sortBy, order }: SortingInput = {}) => {
@@ -126,4 +190,5 @@ export const resolvers = {
   TuningNotes: {
     note: async (parent: TuningNote) => await db.notes.getOne({ _id: parent.note }),
   },
+  FilterForType: filterForTypeScalar,
 }

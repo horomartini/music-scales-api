@@ -47,15 +47,30 @@ type TuningNotes {
 }
 
 
+enum FilterType {
+  EQUALS
+  NOT_EQUALS
+  GREATER_THAN
+  GREATER_OR_EQUALS
+  LESS_THAN
+  LESS_OR_EQUALS
+  INCLUDES
+  NOT_INCLUDES
+}
+
 enum SortOrder {
   ASC
   DESC
 }
 
 
+scalar FilterForType
+
+
 input FilteringInput {
   filterBy: String!
-  filterFor: String!
+  filterType: FilterType!
+  filterFor: FilterForType!
 }
 
 input SortingInput {

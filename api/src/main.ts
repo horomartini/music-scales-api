@@ -34,17 +34,6 @@ app.use('/test2', (req, res) => {
 
 app.use(globalErrorHandler)
 
-const books = [
-  {
-    title: 'The Awakening',
-    author: 'Kate Chopin',
-  },
-  {
-    title: 'City of Glass',
-    author: 'Paul Auster',
-  },
-]
-
 if (!NO_APOLLO)
   startApollo()
 
@@ -77,23 +66,6 @@ async function startApollo() {
   const { ApolloServer } = require('@apollo/server')
   const { expressMiddleware } = require('@apollo/server/express4')
   const { ApolloServerPluginDrainHttpServer } = require('@apollo/server/plugin/drainHttpServer')
-
-  const typeDefs = `
-    type Book {
-      title: String
-      author: String
-    }
-
-    type Query {
-      books: [Book]
-    }
-  `
-
-  const resolvers = {
-    Query: {
-      books: () => books,
-    },
-  }
 
   const apollo = new ApolloServer({ 
     typeDefs: graphql.typeDefs, 

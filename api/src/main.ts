@@ -14,6 +14,7 @@ import { ObjectId } from './types/db' // TODO: debug import
 import db from './db' // TODO: debug import
 import graphql from './graphql'
 
+
 const PORT = process.env.PORT || 8080
 const MONGO_URI = process.env.MONGO_URI || undefined
 const NO_APOLLO = process.env.NO_APOLLO || false
@@ -76,7 +77,7 @@ async function startApollo() {
   const apollo = new ApolloServer({ 
     typeDefs: graphql.typeDefs, 
     resolvers: graphql.resolvers, 
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })] 
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   })
   
   await apollo.start()

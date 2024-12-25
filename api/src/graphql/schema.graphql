@@ -1,8 +1,12 @@
 type Query {
-  notes: [Note]
-  instruments: [Instrument]
-  tunings: [Tuning]
-  scales: [Scale]
+  notes(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Note]
+  note(_id: ID!): Note
+  instruments(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Instrument]
+  instrument(_id: ID!): Instrument
+  tunings(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Tuning]
+  tuning(_id: ID!): Tuning
+  scales(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Scale]
+  scale(_id: ID!): Scale
 }
 
 type Mutation {
@@ -43,6 +47,27 @@ type TuningNotes {
 }
 
 
+enum SortOrder {
+  ASC
+  DESC
+}
+
+
+input FilteringInput {
+  filterBy: String!
+  filterFor: String!
+}
+
+input SortingInput {
+  sortBy: String!
+  order: SortOrder!
+}
+
+input PaginatingInput {
+  page: Int!
+  limit: Int!
+}
+
 input InstrumentInput {
   name: String!
 }
@@ -55,38 +80,4 @@ input TuningInput {
 input PhysicalNoteInput {
   note: String!
   octave: Int!
-}
-
-
-query GetNotes {
-  notes {
-    name
-  }
-}
-
-query GetInstruments {
-  instruments {
-    name
-    defaultTuning {
-      name
-      notes
-    }
-  }
-}
-
-query GetTunings {
-  tunings {
-    name
-    instrument {
-      name
-    }
-    notes
-  }
-}
-
-query GetScale {
-  scale {
-    name
-    steps
-  }
 }

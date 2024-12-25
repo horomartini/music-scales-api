@@ -20,7 +20,13 @@ const NO_APOLLO = process.env.NO_APOLLO || false
 
 const app = express()
 const httpServer = http.createServer(app)
+const corsOptions = {
+  origins: ['http://localhost:8044', 'http://localhost:27017'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Accept', 'User-Agent'],
+}
 
+app.use(cors<cors.CorsRequest>(corsOptions))
 app.use(express.json())
 app.use(logger)
 
@@ -77,7 +83,7 @@ async function startApollo() {
   
   app.use(
     '/graphql',
-    cors<cors.CorsRequest>(),
+    cors<cors.CorsRequest>(corsOptions),
     express.json(),
     expressMiddleware(apollo),
   )

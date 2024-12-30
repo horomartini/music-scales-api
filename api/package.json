@@ -10,6 +10,7 @@
     "build": "tsc -p .",
     "test": "jest --watch",
     "dev": "nodemon src/main.ts",
+    "dev:no-apollo": "tsc -p tsconfig.no-apollo.json",
     "dev-dockerless": "nodemon src/main.ts"
   },
   "dependencies": {

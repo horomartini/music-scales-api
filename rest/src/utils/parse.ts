@@ -1,7 +1,7 @@
 import type { Note, PhysicalNote } from 'types/api'
 
 import { flatSymbols, flatToSharp, sharpSymbols } from './sound'
-import { BadParamError } from '../utils/errors'
+import { BadParamError } from './errors'
 import { objectToReadableString } from './types'
 
 

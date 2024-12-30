@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-WORKDIR /usr/graphql
+WORKDIR /usr/apollo
 
 COPY package.json ./
 

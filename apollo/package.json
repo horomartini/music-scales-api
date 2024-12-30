@@ -1,5 +1,5 @@
 {
-  "name": "graphql",
+  "name": "music-scales-apollo",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

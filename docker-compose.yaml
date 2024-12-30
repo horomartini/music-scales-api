@@ -1,33 +1,59 @@
 version: '3.9'
 
 services:
-  api:
-    container_name: api
+  rest:
+    container_name: rest
     command: npm run dev
     build: 
-      context: ./api
+      context: ./rest
       dockerfile: Dockerfile
     depends_on:
       - db
     environment:
-      PORT: ${SERVER_PORT}
+      PORT: ${REST_PORT}
       NODE_ENV: development
       MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
       NO_APOLLO: true
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${REST_PORT}:${REST_PORT}"
     networks:
       - main-network
     develop:
       watch:
         - action: sync
-          path: ./api/src
-          target: /usr/api/src
+          path: ./rest/src
+          target: /usr/rest/src
           ignore:
             - node_modules/
         - action: rebuild
-          path: ./api/package.json
+          path: ./rest/package.json
   
+  apollo:
+    container_name: apollo
+    command: npm run dev
+    build:
+      context: './apollo'
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      PORT: ${APOLLO_PORT}
+      NODE_ENV: development
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
+    ports:
+      - "${APOLLO_PORT}:${APOLLO_PORT}"
+    networks:
+      - main-network
+    develop:
+      watch:
+        - action: sync
+          path: ./apollo/src
+          target: /usr/apollo/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./apollo/package.json
+
   db:
     container_name: db
     build:
@@ -50,9 +76,10 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     depends_on:
-      - api
+      - rest
+      - apollo
     environment:
-      SERVER_PORT: ${SERVER_PORT}
+      REST_PORT: ${REST_PORT}
     ports:
       - "127.0.0.1:8044:80"
     networks:

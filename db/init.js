@@ -39,12 +39,12 @@ if (maindb.tunings.countDocuments({}) === 0) {
     instrument: guitar._id,
     name: 'E Standard',
     notes: [
-      { name: notes.E._id, octave: 2 },
-      { name: notes.A._id, octave: 2 },
-      { name: notes.D._id, octave: 3 },
-      { name: notes.G._id, octave: 3 },
-      { name: notes.B._id, octave: 3 },
-      { name: notes.E._id, octave: 4 },
+      { note: notes.E._id, octave: 2 },
+      { note: notes.A._id, octave: 2 },
+      { note: notes.D._id, octave: 3 },
+      { note: notes.G._id, octave: 3 },
+      { note: notes.B._id, octave: 3 },
+      { note: notes.E._id, octave: 4 },
     ],
   })
 

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "rootDirs": ["src"],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "outDir": "build",
+    "lib": ["es2020"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "types": ["node"]
+  }
+}

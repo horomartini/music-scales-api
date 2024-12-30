@@ -1,0 +1,98 @@
+type Query {
+  notes(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Note]
+  note(_id: ID!): Note
+  instruments(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Instrument]
+  instrument(_id: ID!): Instrument
+  tunings(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Tuning]
+  tuning(_id: ID!): Tuning
+  scales(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Scale]
+  scale(_id: ID!): Scale
+}
+
+type Mutation {
+  addNote(name: String): Note
+  addInstrument(name: String, defaultTuning: TuningInput): Instrument
+  addTuning(name: String, instrument: InstrumentInput, notes: PhysicalNoteInput): Tuning
+  addScale(name: String, steps: [Int]): Scale
+}
+
+
+type Note {
+  _id: ID
+  name: String
+}
+
+type Instrument {
+  _id: ID
+  name: String
+  defaultTuning: Tuning
+}
+
+type Tuning {
+  _id: ID
+  name: String
+  instrument: Instrument
+  notes: [TuningNotes!]
+}
+
+type Scale {
+  _id: ID
+  name: String
+  steps: [Int]
+}
+
+type TuningNotes {
+  note: Note!
+  octave: Int!
+}
+
+
+enum FilterType {
+  EQUALS
+  NOT_EQUALS
+  GREATER_THAN
+  GREATER_OR_EQUALS
+  LESS_THAN
+  LESS_OR_EQUALS
+  INCLUDES
+  NOT_INCLUDES
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+
+scalar FilterForType
+
+
+input FilteringInput {
+  filterBy: String!
+  filterType: FilterType!
+  filterFor: FilterForType!
+}
+
+input SortingInput {
+  sortBy: String!
+  order: SortOrder!
+}
+
+input PaginatingInput {
+  page: Int!
+  limit: Int!
+}
+
+input InstrumentInput {
+  name: String!
+}
+
+input TuningInput {
+  name: String!
+  notes: [PhysicalNoteInput!]
+}
+
+input PhysicalNoteInput {
+  note: String!
+  octave: Int!
+}

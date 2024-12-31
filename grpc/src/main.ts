@@ -1,5 +1,5 @@
 import type { Document, Model } from 'mongoose'
-import type { GetRequestNotes, GetResponseNotes, GetRequestNote, GetResponseNote } from 'proto/note'
+import type { GetRequestNotes, GetResponseNotes, GetRequestNote, GetResponseNote } from "@proto/note"
 
 import * as grpc from '@grpc/grpc-js'
 import { loadSync } from '@grpc/proto-loader'

@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
-      "@shared/*": ["../../shared/*"]
+      "@shared/*": ["../../shared/*"],
+      "@proto/*": ["../../shared/src/proto/*"]
     },
     "rootDirs": ["src"],
     "typeRoots": ["./src/types", "./node_modules/@types"],

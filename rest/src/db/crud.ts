@@ -1,9 +1,8 @@
 import type { InstrumentDoc, NoteDoc, ObjectId, ObjectIdField, ScaleDoc, TuningDoc } from 'types/db'
-
-import { Document, Model } from 'mongoose'
+import type { Document, Model } from 'mongoose'
 
 import { toKebabCase } from '../utils/rest'
-import { hasMongo } from '../utils/env'
+import { hasMongo, useProto } from '../utils/env'
 import { stringToObjectId } from '../utils/types'
 
 import sampleDbJson from './data.json'
@@ -13,9 +12,11 @@ let sampleDb = sampleDbJson
 
 
 export class CrudCollection<T_API extends object, T_DB extends object & ObjectIdField> {
-  constructor(private name: string, private model: Model<T_DB>) {}
+  constructor(private name: string, private model: Model<T_DB>, private grpc?: any) {}
   
   async getOne(data: Partial<T_DB>): Promise<T_DB | null> {
+    if (useProto() && this.grpc)
+      return await this.grpc.getOne(data)
     return await getOne(this.name, this.model, data)
   }
 
@@ -52,7 +53,7 @@ export class CrudCollection<T_API extends object, T_DB extends object & ObjectId
   }
   
   async deleteMany(data: Pick<T_DB, '_id'>[]): Promise<void> {
-    return await deleteMany(this.name,this. model, data)
+    return await deleteMany(this.name, this.model, data)
   }
 }
 

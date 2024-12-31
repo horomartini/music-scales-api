@@ -12,7 +12,10 @@ import { Log } from './utils/logger'
 import { ObjectId } from './types/db' // TODO: debug import
 
 import db from './db' // TODO: debug import
-import graphql from './graphql'
+import graphql from './graphql-data'
+
+import { test } from '@shared/test'
+console.log(test)
 
 
 const PORT = process.env.PORT || 8080

@@ -1,0 +1,28 @@
+{
+  "name": "music-scales-grpc",
+  "version": "1.0.0",
+  "main": "main.jsx",
+  "scripts": {
+    "start": "NODE_PATH=./build node build/main.js",
+    "build": "tsc -p .",
+    "protoc:linux": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=. ./src/proto/*.proto",
+    "protoc:windows": "protoc --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" --ts_proto_out=. ./src/proto/*.proto",
+    "dev": "nodemon src/main.ts"
+  },
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.5",
+    "@grpc/proto-loader": "^0.7.13",
+    "mongoose": "^8.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "ts-proto": "^2.6.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.2"
+  }
+}

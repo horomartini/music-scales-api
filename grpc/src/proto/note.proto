@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package notes;
+
+service NoteService {
+  rpc GetNote (GetRequestNote) returns (GetResponseNote);
+  rpc GetNotes (GetRequestNotes) returns (GetResponseNotes);
+}
+
+message Note {
+  string id = 1;
+  string name = 2;
+}
+
+
+message GetRequestNote {
+  string id = 1;
+}
+
+message GetResponseNote {
+  Note note = 1;
+}
+
+message GetRequestNotes {
+
+}
+
+message GetResponseNotes {
+  repeated Note notes = 1;
+  int32 total = 2; // for pagination and such
+}

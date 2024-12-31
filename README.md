@@ -21,6 +21,12 @@ run `docker compose up --build --no-cache` to run dev mode or `docker compose bu
 npm jest package uses outdated packages Glob@7.2.3 and inflight@1.0.6, consider using an alternative to jest
 
 
+compile grpc protobufs to ts types example (has to be in powershell or cmd):
+```
+protoc --plugin=protoc-gen-ts_proto=".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd" --ts_proto_out=. ./src/proto/note.proto
+```
+
+
 ```
 Request<Params, ResBody, ReqBody, Query>
 Response<ResBody, Locals>

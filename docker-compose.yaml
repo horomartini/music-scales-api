@@ -16,6 +16,8 @@ services:
       NO_APOLLO: true
     ports:
       - "${REST_PORT}:${REST_PORT}"
+    volumes:
+      - ./shared:/usr/shared
     networks:
       - main-network
     develop:
@@ -86,6 +88,7 @@ services:
       - main-network
     
 volumes:
+  shared:
   db-data:
 
 networks:

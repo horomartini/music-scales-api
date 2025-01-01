@@ -1,31 +1,31 @@
 syntax = "proto3";
 
-package notes;
+package tunings;
 
 import "common.proto";
 
-service NoteService {
-  rpc GetNote (GetNoteRequest) returns (GetNoteResponse);
-  rpc GetNotes (GetNotesRequest) returns (GetNotesResponse);
+service TuningService {
+  rpc GetTuning (GetTuningRequest) returns (GetTuningResponse);
+  rpc GetTunings (GetTuningsRequest) returns (GetTuningsResponse);
 }
 
-message GetNoteRequest {
+message GetTuningRequest {
   string id = 1;
 }
 
-message GetNoteResponse {
-  common.Note note = 1;
+message GetTuningResponse {
+  common.Tuning tuning = 1;
 }
 
-message GetNotesRequest {
+message GetTuningsRequest {
   string filter = 1; // Filtering; Supports AIP-160
   string order_by = 2; // Ordering; Supports AIP-132
   int32 page_size = 3; // Paginating; Supports AIP-158
   string page_token = 4; // Conceptually treated as "page x", where x is page number
 }
 
-message GetNotesResponse {
-  repeated common.Note notes = 1; // Ordered and filtered array of items
+message GetTuningsResponse {
+  repeated common.Tuning tunings = 1; // Ordered and filtered array of items
   int32 total_count = 2; // Total number of items in database before filter, order and pagination
   string next_page_token = 3; // Next page cursor token as per AIP-158
   int32 total_pages = 4; // Total number of pages generated from given page_size in request

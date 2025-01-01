@@ -1,5 +1,10 @@
 {
   "files.watcherExclude": {
     "**/target": true
+  },
+  "protoc": {
+    "options": [
+      "--proto_path=${workspaceRoot}/grpc/src/proto",
+    ]
   }
 }

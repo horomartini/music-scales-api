@@ -1,31 +1,31 @@
 syntax = "proto3";
 
-package notes;
+package instruments;
 
 import "common.proto";
 
-service NoteService {
-  rpc GetNote (GetNoteRequest) returns (GetNoteResponse);
-  rpc GetNotes (GetNotesRequest) returns (GetNotesResponse);
+service InstrumentService {
+  rpc GetInstrument (GetInstrumentRequest) returns (GetInstrumentResponse);
+  rpc GetInstruments (GetInstrumentsRequest) returns (GetInstrumentsResponse);
 }
 
-message GetNoteRequest {
+message GetInstrumentRequest {
   string id = 1;
 }
 
-message GetNoteResponse {
-  common.Note note = 1;
+message GetInstrumentResponse {
+  common.Instrument instrument = 1;
 }
 
-message GetNotesRequest {
+message GetInstrumentsRequest {
   string filter = 1; // Filtering; Supports AIP-160
   string order_by = 2; // Ordering; Supports AIP-132
   int32 page_size = 3; // Paginating; Supports AIP-158
   string page_token = 4; // Conceptually treated as "page x", where x is page number
 }
 
-message GetNotesResponse {
-  repeated common.Note notes = 1; // Ordered and filtered array of items
+message GetInstrumentsResponse {
+  repeated common.Instrument instruments = 1; // Ordered and filtered array of items
   int32 total_count = 2; // Total number of items in database before filter, order and pagination
   string next_page_token = 3; // Next page cursor token as per AIP-158
   int32 total_pages = 4; // Total number of pages generated from given page_size in request

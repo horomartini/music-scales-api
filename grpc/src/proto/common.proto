@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package common;
+
+message Note {
+  string id = 1;
+  string name = 2;
+}
+
+message PhysicalNote {
+  Note note = 1;
+  int32 octave = 2;
+}
+
+message Instrument {
+  string id = 1;
+  string name = 2;
+  Tuning defaultTuning = 3;
+}
+
+message Tuning {
+  string id = 1;
+  string name = 2;
+  Instrument instrument = 3;
+  repeated PhysicalNote notes = 4;
+}
+
+message Scale {
+  string id = 1;
+  string name = 2;
+  repeated int32 steps = 3;
+}

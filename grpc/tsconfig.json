@@ -6,7 +6,6 @@
     "baseUrl": "./src",
     "paths": {
       "@shared/*": ["../../shared/*"],
-      "@proto/*": ["../../shared/src/proto/*"]
     },
     "rootDirs": ["src"],
     "typeRoots": ["./src/types", "./node_modules/@types"],

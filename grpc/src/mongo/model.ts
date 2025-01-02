@@ -1,17 +1,19 @@
 import type { InstrumentDoc, NoteDoc, ScaleDoc, TuningDoc } from 'types/db'
 
-import mongoose, { Model } from 'mongoose'
+import mongoose from 'mongoose'
 
 import schema from './schema'
 
-const Notes: Model<NoteDoc> = mongoose.model<NoteDoc>('notes', schema.notes)
-const Instruments: Model<InstrumentDoc> = mongoose.model<InstrumentDoc>('instruments', schema.instruments)
-const Tunings: Model<TuningDoc> = mongoose.model<TuningDoc>('tunings', schema.tunings)
-const Scales: Model<ScaleDoc> = mongoose.model<ScaleDoc>('scales', schema.scales)
+
+export const Notes = mongoose.model<NoteDoc>('notes', schema.notes)
+export const Instruments = mongoose.model<InstrumentDoc>('instruments', schema.instruments)
+export const Tunings = mongoose.model<TuningDoc>('tunings', schema.tunings)
+export const Scales = mongoose.model<ScaleDoc>('scales', schema.scales)
+
 
 export default {
-  Notes,
-  Instruments,
-  Tunings,
-  Scales,
+  notes: Notes,
+  instruments: Instruments,
+  tunings: Tunings,
+  scales: Scales,
 }

@@ -2,6 +2,7 @@ import type { InstrumentDoc, NoteDoc, ScaleDoc, TuningDoc } from 'types/db'
 
 import mongoose from 'mongoose'
 
+
 const notesSchemaDef = {
   name: { type: String, required: true },
 } as const
@@ -35,10 +36,12 @@ const scalesSchemaDef = {
   steps: { type: [Number], required: true },
 } as const
 
+
 const notesSchema = new mongoose.Schema<NoteDoc>(notesSchemaDef)
 const instrumentsSchema = new mongoose.Schema<InstrumentDoc>(instrumentsSchemaDef)
 const tuningsSchema = new mongoose.Schema<TuningDoc>(tuningsSchemaDef)
 const scalesSchema = new mongoose.Schema<ScaleDoc>(scalesSchemaDef)
+
 
 export default {
   notes: notesSchema,

@@ -5,9 +5,9 @@
   "scripts": {
     "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",
-    "protoc:linux": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=. ./src/proto/*.proto",
-    "protoc:windows": "protoc --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" --ts_proto_out=../shared --ts_proto_opt=outputEncodeMethods=false --ts_proto_opt=outputJsonMethods=false --ts_proto_opt=outputServices=false --ts_proto_opt=noDept=true ./src/proto/*.proto",
-    "protoc:test": "protoc --proto_path=./src/proto --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" --ts_proto_out=./src/proto/generated/ --ts_proto_opt=outputServices=grpc-js ./src/proto/*.proto",
+    "protoc": "protoc --proto_path=./src/proto --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/proto/generated/ --ts_proto_opt=outputServices=grpc-js ./src/proto/*.proto",
+    "protoc:linux": "npm run protoc -- --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto && cp ./src/proto/generated/*.ts ../shared/src/proto/generated/",
+    "protoc:windows": "npm run protoc -- --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" && copy .\\src\\proto\\generated\\*.ts ..\\shared\\src\\proto\\generated\\*.ts /Y",
     "dev": "nodemon src/main.ts"
   },
   "author": "",

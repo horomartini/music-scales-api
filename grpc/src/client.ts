@@ -84,20 +84,21 @@ import {
   ScaleServiceClient, 
 } from 'proto/generated/scale'
 
+const IP = process.env.IP || 'localhost'
 const PORT = process.env.PORT || 8084
 
 
-// const client = new NoteServiceClient(`localhost:${PORT}`, grpc.credentials.createInsecure())
-// const client = new InstrumentServiceClient(`localhost:${PORT}`, grpc.credentials.createInsecure())
-// const client = new TuningServiceClient(`localhost:${PORT}`, grpc.credentials.createInsecure())
-// const client = new ScaleServiceClient(`localhost:${PORT}`, grpc.credentials.createInsecure())
+const client = new NoteServiceClient(`${IP}:${PORT}`, grpc.credentials.createInsecure())
+// const client = new InstrumentServiceClient(`${IP}:${PORT}`, grpc.credentials.createInsecure())
+// const client = new TuningServiceClient(`${IP}:${PORT}`, grpc.credentials.createInsecure())
+// const client = new ScaleServiceClient(`${IP}:${PORT}`, grpc.credentials.createInsecure())
 
-/* // NoteService
+// NoteService
 // const request1: GetNotesRequestType = GetNotesRequest.create({ filter: 'name = C', orderBy: 'name desc', pageSize: 5 })
-// const request1: GetNotesRequestType = GetNotesRequest.create({})
-// client.getNotes(request1, (err: grpc.ServiceError | null, response: GetNotesResponse) => {
-//   console.log(err, response)
-// })
+const request1: GetNotesRequestType = GetNotesRequest.create({})
+client.getNotes(request1, (err: grpc.ServiceError | null, response: GetNotesResponse) => {
+  console.log(err, response)
+})
 
 // const request2: GetNoteRequestType = GetNoteRequest.create({ id: '3375' })
 // client.getNote(request2, (err: grpc.ServiceError | null, response: GetNoteResponse) => {
@@ -118,7 +119,7 @@ const PORT = process.env.PORT || 8084
 // client.deleteNote(request5, (err: grpc.ServiceError | null, response: DeleteNoteResponse) => {
 //   console.log(err, response)
 // })
-*/
+
 
 /* // InstrumentService
 // const request1: GetInstrumentsRequestType = GetInstrumentsRequest.create({})

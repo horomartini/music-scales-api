@@ -26,7 +26,7 @@ message GetScalesRequest {
   string filter = 1; // Optional; Filtering; Supports AIP-160
   string order_by = 2; // Optional; Ordering; Supports AIP-132
   int32 page_size = 3; // Optional; Paginating; Supports AIP-158
-  string page_token = 4; // Optional; Conceptually treated as "Page x", where x is page number
+  string page_token = 4; // Optional; Conceptually treated as "Page x", where x is page number in range [1, +INF]
 }
 
 message GetScalesResponse {
@@ -38,7 +38,7 @@ message GetScalesResponse {
 
 
 message AddScaleRequest {
-  string name = 1; // Required; name of new scale
+  string name = 1; // Required; Name of new scale
   repeated int32 steps = 2; // Required; half-tone steps between notes of scale
 }
 

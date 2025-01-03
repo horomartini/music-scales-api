@@ -11,7 +11,7 @@ export type NoteDoc = ObjectIdField & {
 }
 
 export type PhysicalNoteDoc = {
-  note: ObjectId
+  note?: ObjectId
   octave: number
 }
 
@@ -23,7 +23,7 @@ export type InstrumentDoc = ObjectIdField & {
 export type TuningDoc = ObjectIdField & {
   name: string
   instrument?: ObjectId
-  notes?: PhysicalNoteDoc[]
+  notes: PhysicalNoteDoc[]
 }
 
 export type ScaleDoc = ObjectIdField & {

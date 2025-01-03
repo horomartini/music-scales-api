@@ -4,24 +4,29 @@ package instruments;
 
 import "common.proto";
 
+
 service InstrumentService {
   rpc GetInstrument (GetInstrumentRequest) returns (GetInstrumentResponse);
   rpc GetInstruments (GetInstrumentsRequest) returns (GetInstrumentsResponse);
+  rpc AddInstrument (AddInstrumentRequest) returns (AddInstrumentResponse);
+  rpc UpdateInstrument (UpdateInstrumentRequest) returns (UpdateInstrumentResponse);
+  rpc DeleteInstrument (DeleteInstrumentRequest) returns (DeleteInstrumentResponse);
 }
 
+
 message GetInstrumentRequest {
-  string id = 1;
+  string id = 1; // Required; ID of the instrument to retrieve, must be a valid id per database schema; Supports AIP-217
 }
 
 message GetInstrumentResponse {
-  common.Instrument instrument = 1;
+  common.Instrument instrument = 1; // Retrieved instrument based on ID
 }
 
 message GetInstrumentsRequest {
-  string filter = 1; // Filtering; Supports AIP-160
-  string order_by = 2; // Ordering; Supports AIP-132
-  int32 page_size = 3; // Paginating; Supports AIP-158
-  string page_token = 4; // Conceptually treated as "page x", where x is page number
+  string filter = 1; // Optional; Filtering; Supports AIP-160
+  string order_by = 2; // Optional; Ordering; Supports AIP-132
+  int32 page_size = 3; // Optional; Paginating; Supports AIP-158
+  string page_token = 4; // Optional; Conceptually treated as "Page x", where x is page number in range [1, +INF]
 }
 
 message GetInstrumentsResponse {
@@ -29,4 +34,34 @@ message GetInstrumentsResponse {
   int32 total_count = 2; // Total number of items in database before filter, order and pagination
   string next_page_token = 3; // Next page cursor token as per AIP-158
   int32 total_pages = 4; // Total number of pages generated from given page_size in request
+}
+
+
+message AddInstrumentRequest {
+  string name = 1; // Required; Name of new note
+  string default_tuning_id = 2; // Optional; ID reference to existing tuning
+}
+
+message AddInstrumentResponse {
+  common.Instrument instrument = 1; // Newly created instrument
+}
+
+
+message UpdateInstrumentRequest {
+  string id = 1; // Required; ID of the instrument to update; Supports AIP-217
+  string name = 2; // Optional; New name to overwrite old instrument with
+  string default_tuning_id = 3; // Optional; New ID reference to existing tuning
+}
+
+message UpdateInstrumentResponse {
+  common.Instrument instrument = 1; // Updated instrument
+}
+
+
+message DeleteInstrumentRequest {
+  string id = 1; // Required; ID of the instrument to delete; Supports AIP-217
+}
+
+message DeleteInstrumentResponse {
+  string id = 1; // ID of the deleted instrument
 }

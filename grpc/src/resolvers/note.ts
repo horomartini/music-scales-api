@@ -1,4 +1,5 @@
 import type { NoteServiceServer } from '../proto/generated/note'
+import type { NoteDoc } from 'types/db'
 
 import mongoose from 'mongoose'
 
@@ -7,8 +8,6 @@ import { status as statusCode } from '@grpc/grpc-js'
 import { Notes } from '../mongo/model'
 import {
   parseProtoToMongoFilter,
-  parseProtoToMongoId,
-  parseMongoDocumentToJSO,
   parseProtoToMongoSort,
   parseProtoToMongoLimit,
   parseProtoToMongoSkip,
@@ -22,24 +21,29 @@ export const noteService: NoteServiceServer = {
   getNote: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
 
-    const [idError, id] = parseProtoToMongoId(call.request.id)
+    const { id } = call.request
 
-    if (idError !== null) {
-      Log.error(`[400 :: <param.schema.failed>]`, idError)
-      return callback({ code: statusCode.INVALID_ARGUMENT, message: idError }, null)
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const message = `Id ${id} is not a valid ObjectId`
+      Log.error(`[400 :: <param.schema.failed>]`, message)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
     }
 
     const noteDoc = await Notes.findById(id).exec()
 
     if (noteDoc === null) {
-      Log.error(`[404 :: <db.find.failed>]`, `Note with id ${id} was not found`)
-      return callback({ code: statusCode.NOT_FOUND, message: `Note with id ${id} was not found` }, null)
+      const message = `Note with id ${id} was not found`
+      Log.error(`[404 :: <db.find.failed>]`, message)
+      return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
-    const note = parseMongoDocumentToJSO(noteDoc)
+    const note = {
+      id: noteDoc._id.toString(),
+      name: noteDoc.name,
+    }
     const value = { note }
 
-    Log.debug(`Request @ ${call.getPath()}`, { id })
+    Log.debug(`Request @ ${call.getPath()}`, call.request)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
@@ -57,10 +61,13 @@ export const noteService: NoteServiceServer = {
     const [paginationError, { nextPageToken, totalPages }] = getProtoPaginationData(limit, skip, unpaginatedQuery.length)
 
     const noteDocs = await Notes.find(query).sort(sort).limit(limit).skip(paginationError ? 0 : skip).exec()
-    const notes = noteDocs.map(parseMongoDocumentToJSO)
+    const notes = noteDocs.map(doc => ({
+      id: doc._id.toString(),
+      name: doc.name,
+    }))
     const value = { notes, totalCount, nextPageToken, totalPages }
 
-    Log.debug(`Request @ ${call.getPath()}`, { query, sort, limit, skip })
+    Log.debug(`Request @ ${call.getPath()}`, call.request, { query, sort, limit, skip })
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
@@ -68,25 +75,34 @@ export const noteService: NoteServiceServer = {
   addNote: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
 
-    const noteToInsert = call.request
+    const { name } = call.request
 
-    if (!('name' in noteToInsert)) {
-      Log.error(`[400 :: <param.schema.failed>]`, `Note is missing 'name' property`, noteToInsert)
-      return callback({ code: statusCode.INVALID_ARGUMENT, message: `Note is missing 'name' property` }, null)
+    if (name === '') {
+      const message = `Note is missing required property: name`
+      Log.error(`[400 :: <param.schema.failed>]`, message, call.request)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
     }
 
-    const noteDocs = await Notes.insertMany([noteToInsert])
+    const noteToInsert: Omit<NoteDoc, '_id'> = {
+      name: name
+    }
+
+    const noteDocs = await Notes.insertMany([noteToInsert]) // TODO: replace with doc.save()
     const noteDoc = noteDocs?.[0] ?? null
 
     if (noteDoc === null) {
-      Log.error(`[500 :: <db.insert.failed>]`, `Note has not been returned after 'insertMany' call - result array is empty`)
+      const message = `Note has not been returned after 'insertMany' call - result array is empty`
+      Log.error(`[500 :: <db.insert.failed>]`, message, noteDocs)
       return callback({ code: statusCode.UNKNOWN }, null)
     }
 
-    const note = parseMongoDocumentToJSO(noteDoc)
+    const note = {
+      id: noteDoc._id.toString(),
+      name: noteDoc.name,
+    }
     const value = { note }
 
-    Log.debug(`Request @ ${call.getPath()}`, noteToInsert)
+    Log.debug(`Request @ ${call.getPath()}`, call.request, noteToInsert)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
@@ -94,20 +110,28 @@ export const noteService: NoteServiceServer = {
   updateNote: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
 
-    const { id, ...params } = call.request
+    const { id, ...fields } = call.request
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const message = `Id ${id} is not a valid ObjectId`
+      Log.error(`[400 :: <param.schema.failed>]`, message)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
+    }
+
     const noteDoc = await Notes.findById(id)
 
     if (noteDoc === null) {
-      Log.error(`[404 :: <db.find.failed>]`, `Note with id ${id} was not found`)
-      return callback({ code: statusCode.NOT_FOUND, message: `Note with id ${id} was not found` }, null)
+      const message = `Note with id ${id} was not found`
+      Log.error(`[404 :: <db.find.failed>]`, message)
+      return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
     for (const [key, val] of Object.entries(noteDoc.toObject())) {
       if (key === '_id')
         continue
 
-      if (key in params) {
-        const newVal: typeof val = params[key as keyof typeof params] || val
+      if (key in fields) {
+        const newVal = fields[key as keyof typeof fields] || val
         noteDoc.set(key, newVal)
       }
     }
@@ -123,10 +147,13 @@ export const noteService: NoteServiceServer = {
       else throw err
     }
     
-    const note = parseMongoDocumentToJSO(noteDoc)
+    const note = {
+      id: noteDoc._id.toString(),
+      name: noteDoc.name,
+    }
     const value = { note }
 
-    Log.debug(`Request @ ${call.getPath()}`, { id, ...params })
+    Log.debug(`Request @ ${call.getPath()}`, call.request)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
@@ -134,23 +161,25 @@ export const noteService: NoteServiceServer = {
   deleteNote: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
 
-    const [idError, id] = parseProtoToMongoId(call.request.id)
+    const { id } = call.request
 
-    if (idError !== null) {
-      Log.error(`[400 :: <param.schema.failed>]`, idError)
-      return callback({ code: statusCode.INVALID_ARGUMENT, message: idError }, null)
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const message = `Id ${id} is not a valid ObjectId`
+      Log.error(`[400 :: <param.schema.failed>]`, message)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
     }
 
     const { deletedCount } = await Notes.deleteOne({ _id: id }).exec()
 
     if (deletedCount !== 1) {
-      Log.error(`[500 :: <db.delete.failed>]`, `Encountered issues when deleting note with id ${id}`, { deletedCount })
-      return callback({ code: statusCode.UNKNOWN, message: `Encountered issues when deleting note with id ${id}` }, null)
+      const message = `Encountered issue when deleting note with id ${id} - deletedCount !== 1`
+      Log.error(`[500 :: <db.delete.failed>]`, message)
+      return callback({ code: statusCode.UNKNOWN }, null)
     }
 
     const value = { id: id.toString() }
 
-    Log.debug(`Request @ ${call.getPath()}`, { id })
+    Log.debug(`Request @ ${call.getPath()}`, call.request)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)

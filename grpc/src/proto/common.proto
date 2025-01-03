@@ -10,7 +10,7 @@ message Note {
 
 // Specifies a note with added octave for better descriptive sound
 message PhysicalNote {
-  Note note = 1; // Valid database-specific ID reference to specific Note with assigned octave to it
+  string note_id = 1; // Valid database-specific ID reference to specific Note with assigned octave to it
   int32 octave = 2; // Octave number in range [0, +Inf], e.g. 0, 8, etc.
 }
 
@@ -18,14 +18,14 @@ message PhysicalNote {
 message Instrument {
   string id = 1; // Valid database-specific ID
   string name = 2; // Name of the instrument, e.g. Guitar, Violin, etc.
-  Tuning defaultTuning = 3; // Valid database-specific ID reference to specific Tuning being the default tuning for this instrument
+  string default_tuning_id = 3; // Valid database-specific ID reference to specific Tuning being the default tuning for this instrument
 }
 
 // Specifies a possible tuning of root notes for specific instrument
 message Tuning {
   string id = 1; // Valid database-specific ID
   string name = 2; // Name of the tuning, e.g. E Standard, etc.
-  Instrument instrument = 3; // Valid database-specific ID reference to specific Instrument being assignable to / compatible with this tuning
+  string instrument_id = 3; // Valid database-specific ID reference to specific Instrument being assignable to / compatible with this tuning
   repeated PhysicalNote notes = 4; // Array of notes with octaves for this tuning, assigned from low-tone to high-tone note
 }
 

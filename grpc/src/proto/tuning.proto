@@ -7,21 +7,25 @@ import "common.proto";
 service TuningService {
   rpc GetTuning (GetTuningRequest) returns (GetTuningResponse);
   rpc GetTunings (GetTuningsRequest) returns (GetTuningsResponse);
+  rpc AddTuning (AddTuningRequest) returns (AddTuningResponse);
+  rpc UpdateTuning (UpdateTuningRequest) returns (UpdateTuningResponse);
+  rpc DeleteTuning (DeleteTuningRequest) returns (DeleteTuningResponse);
 }
 
+
 message GetTuningRequest {
-  string id = 1;
+  string id = 1; // Required; ID of the tuning to retrieve, must be a valid id per database schema; Supports AIP-217
 }
 
 message GetTuningResponse {
-  common.Tuning tuning = 1;
+  common.Tuning tuning = 1; // Retrieved tuning based on ID
 }
 
 message GetTuningsRequest {
-  string filter = 1; // Filtering; Supports AIP-160
-  string order_by = 2; // Ordering; Supports AIP-132
-  int32 page_size = 3; // Paginating; Supports AIP-158
-  string page_token = 4; // Conceptually treated as "page x", where x is page number
+  string filter = 1; // Optional; Filtering; Supports AIP-160
+  string order_by = 2; // Optional; Ordering; Supports AIP-132
+  int32 page_size = 3; // Optional; Paginating; Supports AIP-158
+  string page_token = 4; // Optional; Conceptually treated as "page x", where x is page number
 }
 
 message GetTuningsResponse {
@@ -29,4 +33,36 @@ message GetTuningsResponse {
   int32 total_count = 2; // Total number of items in database before filter, order and pagination
   string next_page_token = 3; // Next page cursor token as per AIP-158
   int32 total_pages = 4; // Total number of pages generated from given page_size in request
+}
+
+
+message AddTuningRequest {
+  string name = 1; // Required; Name of new tuning
+  string instrument_id = 2; // Optional; ID reference to existing instrument
+  repeated common.PhysicalNote notes = 3; // Optional; Array of two-prop objects consisting of octaves and ID references to existing notes
+}
+
+message AddTuningResponse {
+  common.Tuning tuning = 1; // Newly created tuning
+}
+
+
+message UpdateTuningRequest {
+  string id = 1;  // Required; ID of the tuning to update; Supports AIP-217
+  string name = 2; // Optional; New name to overwrite old tuning with
+  string instrument_id = 3; // Optional; New ID reference to existing instrument
+  repeated common.PhysicalNote notes = 4; // Optional; New array of two-prop objects consisting of octaves and ID references to existing notes
+}
+
+message UpdateTuningResponse {
+  common.Tuning tuning = 1; // Updated tuning
+}
+
+
+message DeleteTuningRequest {
+  string id = 1; // Required; ID of the tuning to delete; Supports AIP-217
+}
+
+message DeleteTuningResponse {
+  string id = 1; // ID of the deleted tuning
 }

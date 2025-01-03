@@ -1,4 +1,5 @@
 import type { ScaleServiceServer } from '../proto/generated/scale'
+import type { ScaleDoc } from 'types/db'
 
 import mongoose from 'mongoose'
 
@@ -7,8 +8,6 @@ import { status as statusCode } from '@grpc/grpc-js'
 import { Scales } from '../mongo/model'
 import {
   parseProtoToMongoFilter,
-  parseProtoToMongoId,
-  parseMongoDocumentToJSO,
   parseProtoToMongoSort,
   parseProtoToMongoLimit,
   parseProtoToMongoSkip,
@@ -19,32 +18,38 @@ import Log from '@shared/logger'
 
 
 export const scaleService: ScaleServiceServer = {
-  getScale: async (call, callback) => { // TODO: changed: scaleDoc, Scales, Scale, scale
+  getScale: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
     
-    const [idError, id] = parseProtoToMongoId(call.request.id)
-
-    if (idError !== null) {
-      Log.error(`[400 :: <param.schema.failed>]`, idError)
-      return callback({ code: statusCode.INVALID_ARGUMENT, message: idError }, null)
+    const { id } = call.request
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const message = `Id ${id} is not a valid ObjectId`
+      Log.error(`[400 :: <param.schema.failed>]`, message)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
     }
 
     const scaleDoc = await Scales.findById(id).exec()
 
     if (scaleDoc === null) {
-      Log.error(`[404 :: <db.find.failed>]`, `Scale with id ${id} was not found`)
-      return callback({ code: statusCode.NOT_FOUND, message: `Scale with id ${id} was not found` }, null)
+      const message = `Scale with id ${id} was not found`
+      Log.error(`[404 :: <db.find.failed>]`, message)
+      return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
-    const scale = parseMongoDocumentToJSO(scaleDoc)
+    const scale = {
+      id: scaleDoc._id.toString(),
+      name: scaleDoc.name,
+      steps: scaleDoc.steps,
+    }
     const value = { scale }
 
-    Log.debug(`Request @ ${call.getPath()}`, { id })
+    Log.debug(`Request @ ${call.getPath()}`, call.request)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
   },
-  getScales: async (call, callback) => { // TODO: changed: Scales, scaleDoc, scales
+  getScales: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
     
     const query = parseProtoToMongoFilter(call.request.filter)
@@ -57,57 +62,86 @@ export const scaleService: ScaleServiceServer = {
     const [paginationError, { nextPageToken, totalPages }] = getProtoPaginationData(limit, skip, unpaginatedQuery.length)
 
     const scaleDocs = await Scales.find(query).sort(sort).limit(limit).skip(paginationError ? 0 : skip).exec()
-    const scales = scaleDocs.map(parseMongoDocumentToJSO)
+    const scales = scaleDocs.map(doc => ({
+      id: doc._id.toString(),
+      name: doc.name,
+      steps: doc.steps,
+    }))
     const value = { scales, totalCount, nextPageToken, totalPages }
 
-    Log.debug(`Request @ ${call.getPath()}`, { query, sort, limit, skip })
+    Log.debug(`Request @ ${call.getPath()}`, call.request, { query, sort, limit, skip })
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
   },
-  addScale: async (call, callback) => { // TODO: changed: scaleToInsert, if (!('name' in noteToInsert))..., Scale, scaleDocs, Scales, scaleDoc, scale
+  addScale: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
     
-    const scaleToInsert = call.request
+    const { name, steps } = call.request
 
-    if (!('name' in scaleToInsert) || !('steps' in scaleToInsert)) { // TODO: needs a better way to check it
-      Log.error(`[400 :: <param.schema.failed>]`, `Scale is missing 'name' or 'steps' property`, scaleToInsert)
-      return callback({ code: statusCode.INVALID_ARGUMENT, message: `Scale is missing 'name' or 'steps' property` }, null)
+    if (name === '') {
+      const message = `Scale is missing required property: name`
+      Log.error(`[400 :: <param.schema.failed>]`, message, call.request)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
     }
 
-    const scaleDocs = await Scales.insertMany([scaleToInsert])
+    if (steps.length === 0) {
+      const message = `Scale is missing required property: steps`
+      Log.error(`[400 :: <param.schema.failed>]`, message, call.request)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
+    }
+
+    const scaleToInsert: Omit<ScaleDoc, '_id'> = {
+      name: name,
+      steps: steps,
+    }
+
+    const scaleDocs = await Scales.insertMany([scaleToInsert]) // TODO: replace with doc.save()
     const scaleDoc = scaleDocs?.[0] ?? null
 
     if (scaleDoc === null) {
-      Log.error(`[500 :: <db.insert.failed>]`, `Scale has not been returned after 'insertMany' call - result array is empty`)
+      const message = `Scale has not been returned after 'insertMany' call - result array is empty`
+      Log.error(`[500 :: <db.insert.failed>]`, message, scaleDocs)
       return callback({ code: statusCode.UNKNOWN }, null)
     }
 
-    const scale = parseMongoDocumentToJSO(scaleDoc)
+    const scale = {
+      id: scaleDoc._id.toString(),
+      name: scaleDoc.name,
+      steps: scaleDoc.steps,
+    }
     const value = { scale }
 
-    Log.debug(`Request @ ${call.getPath()}`, scaleToInsert)
+    Log.debug(`Request @ ${call.getPath()}`, call.request, scaleToInsert)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
   },
-  updateScale: async (call, callback) => { // TODO: changed: scaleDoc, Scales, Scale, scale
+  updateScale: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
     
-    const { id, ...params } = call.request
+    const { id, ...fields } = call.request
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const message = `Id ${id} is not a valid ObjectId`
+      Log.error(`[400 :: <param.schema.failed>]`, message)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
+    }
+
     const scaleDoc = await Scales.findById(id)
 
     if (scaleDoc === null) {
-      Log.error(`[404 :: <db.find.failed>]`, `Scale with id ${id} was not found`)
-      return callback({ code: statusCode.NOT_FOUND, message: `Scale with id ${id} was not found` }, null)
+      const message = `Scale with id ${id} was not found`
+      Log.error(`[404 :: <db.find.failed>]`, message)
+      return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
     for (const [key, val] of Object.entries(scaleDoc.toObject())) {
       if (key === '_id')
         continue
 
-      if (key in params) {
-        const newVal: typeof val = params[key as keyof typeof params] || val
+      if (key in fields) {
+        const newVal = fields[key as keyof typeof fields] || val
         scaleDoc.set(key, newVal)
       }
     }
@@ -123,34 +157,40 @@ export const scaleService: ScaleServiceServer = {
       else throw err
     }
     
-    const scale = parseMongoDocumentToJSO(scaleDoc)
+    const scale = {
+      id: scaleDoc._id.toString(),
+      name: scaleDoc.name,
+      steps: scaleDoc.steps,
+    }
     const value = { scale }
 
-    Log.debug(`Request @ ${call.getPath()}`, { id, ...params })
+    Log.debug(`Request @ ${call.getPath()}`, call.request)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)
   },
-  deleteScale: async (call, callback) => { // TODO: changed: Scales, scale
+  deleteScale: async (call, callback) => {
     Log.info('gRPC @', call.getPath())
     
-    const [idError, id] = parseProtoToMongoId(call.request.id)
-
-    if (idError !== null) {
-      Log.error(`[400 :: <param.schema.failed>]`, idError)
-      return callback({ code: statusCode.INVALID_ARGUMENT, message: idError }, null)
+    const { id } = call.request
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const message = `Id ${id} is not a valid ObjectId`
+      Log.error(`[400 :: <param.schema.failed>]`, message)
+      return callback({ code: statusCode.INVALID_ARGUMENT, message }, null)
     }
 
     const { deletedCount } = await Scales.deleteOne({ _id: id }).exec()
 
     if (deletedCount !== 1) {
-      Log.error(`[500 :: <db.delete.failed>]`, `Encountered issues when deleting scale with id ${id}`, { deletedCount })
-      return callback({ code: statusCode.UNKNOWN, message: `Encountered issues when deleting scale with id ${id}` }, null)
+      const message = `Encountered issue when deleting scale with id ${id} - deletedCount !== 1`
+      Log.error(`[500 :: <db.delete.failed>]`, message)
+      return callback({ code: statusCode.UNKNOWN }, null)
     }
 
     const value = { id: id.toString() }
 
-    Log.debug(`Request @ ${call.getPath()}`, { id })
+    Log.debug(`Request @ ${call.getPath()}`, call.request)
     Log.debug(`Response @ ${call.getPath()}`, value)
 
     callback(null, value)

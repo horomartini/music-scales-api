@@ -1,21 +1,19 @@
 version: '3.9'
 
 services:
-  db:
-    container_name: db
+  mongo:
+    container_name: mongo
     build:
-      context: ./db
+      context: ./mongo
       dockerfile: Dockerfile
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
-    ports:
-      - "${MONGO_PORT}:${MONGO_PORT}"
     volumes:
-      - db-data:/data/db
+      - mongo-data:/data/db
     networks:
-      - main-network
+      - database-network
 
   grpc:
     container_name: grpc
@@ -24,16 +22,17 @@ services:
       context: ./grpc
       dockerfile: Dockerfile
     depends_on:
-      - db
+      - mongo
     environment:
       PORT: ${GRPC_PORT}
-      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
     ports:
       - "${GRPC_PORT}:${GRPC_PORT}"
     volumes:
       - ./shared:/usr/shared
     networks:
-      - main-network
+      - public-network
+      - database-network
     develop:
       watch:
         - action: sync
@@ -46,8 +45,10 @@ services:
 
 volumes:
   shared:
-  db-data:
+  mongo-data:
 
 networks:
-  main-network:
+  public-network:
+    driver: bridge
+  database-network:
     driver: bridge 

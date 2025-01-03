@@ -4,24 +4,29 @@ package notes;
 
 import "common.proto";
 
+
 service NoteService {
   rpc GetNote (GetNoteRequest) returns (GetNoteResponse);
   rpc GetNotes (GetNotesRequest) returns (GetNotesResponse);
+  rpc AddNote (AddNoteRequest) returns (AddNoteResponse);
+  rpc UpdateNote (UpdateNoteRequest) returns (UpdateNoteResponse);
+  rpc DeleteNote (DeleteNoteRequest) returns (DeleteNoteResponse);
 }
 
+
 message GetNoteRequest {
-  string id = 1;
+  string id = 1; // Required; ID of the note to retrieve, must be a valid id per database schema; Supports AIP-217
 }
 
 message GetNoteResponse {
-  common.Note note = 1;
+  common.Note note = 1; // Retrieved note based on ID
 }
 
 message GetNotesRequest {
-  string filter = 1; // Filtering; Supports AIP-160
-  string order_by = 2; // Ordering; Supports AIP-132
-  int32 page_size = 3; // Paginating; Supports AIP-158
-  string page_token = 4; // Conceptually treated as "page x", where x is page number
+  string filter = 1; // Optional; Filtering; Supports AIP-160
+  string order_by = 2; // Optional; Ordering; Supports AIP-132
+  int32 page_size = 3; // Optional; Paginating; Supports AIP-158
+  string page_token = 4; // Optional; Conceptually treated as 'Page x', where x is page number
 }
 
 message GetNotesResponse {
@@ -29,4 +34,32 @@ message GetNotesResponse {
   int32 total_count = 2; // Total number of items in database before filter, order and pagination
   string next_page_token = 3; // Next page cursor token as per AIP-158
   int32 total_pages = 4; // Total number of pages generated from given page_size in request
+}
+
+
+message AddNoteRequest {
+  string name = 1; // Required; name of new note
+}
+
+message AddNoteResponse {
+  common.Note note = 1; // Newly created note
+}
+
+
+message UpdateNoteRequest {
+  string id = 1; // Required; ID of the note to update; Supports AIP-217
+  string name = 2; // Optional; New name to overwrite old note with
+}
+
+message UpdateNoteResponse {
+  common.Note note = 1; // Updated note
+}
+
+
+message DeleteNoteRequest {
+  string id = 1; // Required; ID of the note to delete; Supports AIP-217
+}
+
+message DeleteNoteResponse {
+  string id = 1; // ID of the deleted note
 }

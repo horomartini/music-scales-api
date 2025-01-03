@@ -1,5 +1,5 @@
 import type { ScaleServiceServer } from '../proto/generated/scale'
-import type { ScaleDoc } from 'types/db'
+import type { ScaleDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 

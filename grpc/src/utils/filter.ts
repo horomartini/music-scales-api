@@ -1,6 +1,3 @@
-import Log from "@shared/logger"
-
-
 export const comparisonOperator = {
   '<=': 'LESS_EQUALS',
   '<': 'LESS_THAN',

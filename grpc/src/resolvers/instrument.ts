@@ -1,5 +1,5 @@
 import type { InstrumentServiceServer } from '../proto/generated/instrument'
-import type { InstrumentDoc } from 'types/db'
+import type { InstrumentDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 

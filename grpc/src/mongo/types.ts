@@ -1,9 +1,8 @@
-import type { Document, HydratedDocument } from 'mongoose'
-
 import mongoose from 'mongoose'
 
 
-export type ObjectId = mongoose.Types.ObjectId
+type ObjectId = mongoose.Types.ObjectId
+
 export type ObjectIdField = { '_id': ObjectId }
 
 export type NoteDoc = ObjectIdField & {
@@ -29,12 +28,4 @@ export type TuningDoc = ObjectIdField & {
 export type ScaleDoc = ObjectIdField & {
   name: string
   steps: number[]
-}
-
-export type CrudInterface<T> = {
-  getOne: (id: string) => Promise<T | null>
-  getMany: () => Promise<T[]>
-  createOne: () => Promise<void>
-  updateOne: () => Promise<void>
-  deleteOne: () => Promise<void>
 }

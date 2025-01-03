@@ -1,5 +1,5 @@
 import type { TuningServiceServer } from '../proto/generated/tuning'
-import type { TuningDoc } from 'types/db'
+import type { TuningDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 

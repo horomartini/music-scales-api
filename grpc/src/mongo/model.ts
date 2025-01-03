@@ -1,4 +1,4 @@
-import type { InstrumentDoc, NoteDoc, ScaleDoc, TuningDoc } from 'types/db'
+import type { InstrumentDoc, NoteDoc, ScaleDoc, TuningDoc } from './types'
 
 import mongoose from 'mongoose'
 

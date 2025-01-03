@@ -1,5 +1,5 @@
 import type { Document } from 'mongoose'
-import type { ObjectIdField } from 'types/db'
+import type { ObjectIdField } from '../mongo/types'
 
 import mongoose from 'mongoose'
 

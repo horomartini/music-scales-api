@@ -1,5 +1,5 @@
 import type { NoteServiceServer } from '../proto/generated/note'
-import type { NoteDoc } from 'types/db'
+import type { NoteDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 

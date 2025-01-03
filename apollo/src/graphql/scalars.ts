@@ -1,38 +1,40 @@
 import { GraphQLScalarType, Kind, ValueNode } from 'graphql'
 
 
-export type FilterForType = 
-  | string 
+export type VariedPrimitive = 
   | number 
+  | string 
   | boolean
 
-export type FilterForTypeKind = 
+export type VariedPrimitiveKind = 
   | { kind: Kind.INT, value: string } 
   | { kind: Kind.FLOAT, value: string } 
   | { kind: Kind.STRING, value: string } 
   | { kind: Kind.BOOLEAN, value: boolean }
 
-const filterForTypeAsValue = ['string', 'number', 'boolean']
-const filterForTypeAsKind = [Kind.INT, Kind.FLOAT, Kind.STRING, Kind.BOOLEAN]
 
-const isFilterForTypeAsValue = (x: unknown): x is FilterForType => filterForTypeAsValue.includes(typeof x)
-const isFilterForTypeAsKind = (x: ValueNode): x is FilterForTypeKind => filterForTypeAsKind.includes(x.kind)
+const variedPrimitiveAsValue = ['number', 'string', 'boolean']
+const variedPrimitiveAsKind = [Kind.INT, Kind.FLOAT, Kind.STRING, Kind.BOOLEAN]
 
-export const filterForTypeScalar = new GraphQLScalarType<FilterForType>({
-  name: 'FilterForType',
-  description: `Multi-type scalar type for passing value to filter against in specific way, specified by FilterType. Supported types are ${filterForTypeAsValue.join(' | ')}.`,
-  serialize(value): FilterForType {
-    if (isFilterForTypeAsValue(value))
+const isVariedPrimitiveAsValue = (x: unknown): x is VariedPrimitive => variedPrimitiveAsValue.includes(typeof x)
+const isVariedPrimitiveAsKind = (x: ValueNode): x is VariedPrimitiveKind => variedPrimitiveAsKind.includes(x.kind)
+
+
+export const variedPrimitiveScalar = new GraphQLScalarType<VariedPrimitive>({
+  name: 'VariedPrimitive',
+  description: `Multi-type scalar for storing values of any supported primitive type. Supported types are ${variedPrimitiveAsValue.join(' | ')}.`,
+  serialize(value): VariedPrimitive {
+    if (isVariedPrimitiveAsValue(value))
       return value
-    throw new Error(`GraphQL FilterForType Scalar serializer expected a '${filterForTypeAsValue.join(' | ')}' type`)
+    throw new Error(`GraphQL VariedPrimitive Scalar serializer expected a '${variedPrimitiveAsValue.join(' | ')}' type`)
   },
-  parseValue(value): FilterForType {
-    if (isFilterForTypeAsValue(value))
+  parseValue(value): VariedPrimitive {
+    if (isVariedPrimitiveAsValue(value))
       return value
-    throw new Error(`GraphQL FilterForType Scalar parser expected a '${filterForTypeAsValue.join(' | ')}' type`)
+    throw new Error(`GraphQL VariedPrimitive Scalar parser expected a '${variedPrimitiveAsValue.join(' | ')}' type`)
   },
-  parseLiteral(ast): FilterForType {
-    if (isFilterForTypeAsKind(ast))
+  parseLiteral(ast): VariedPrimitive {
+    if (isVariedPrimitiveAsKind(ast))
       return ast.kind === Kind.INT || ast.kind === Kind.FLOAT ? Number(ast.value) : ast.value
     return ''
   },

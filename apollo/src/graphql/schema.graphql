@@ -1,98 +1,195 @@
 type Query {
-  notes(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Note]
-  note(_id: ID!): Note
-  instruments(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Instrument]
-  instrument(_id: ID!): Instrument
-  tunings(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Tuning]
-  tuning(_id: ID!): Tuning
-  scales(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Scale]
-  scale(_id: ID!): Scale
+  getNote(id: ID): Note
+  getNotes(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Note]
+
+  getInstrument(id: ID): Instrument
+  getInstruments(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Instrument]
+
+  getTuning(id: ID): Tuning
+  getTunings(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Tuning]
+
+  getScale(id: ID): Scale
+  getScales(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Scale]
 }
 
 type Mutation {
-  addNote(name: String): Note
-  addInstrument(name: String, defaultTuning: TuningInput): Instrument
-  addTuning(name: String, instrument: InstrumentInput, notes: PhysicalNoteInput): Tuning
-  addScale(name: String, steps: [Int]): Scale
+  addNote(input: AddNoteInput): Note
+  updateNote(id: ID, input: UpdateNoteInput): Note
+  deleteNote(id: ID): ID
+
+  addInstrument(input: AddInstrumentInput): Instrument
+  updateInstrument(id: ID, input: UpdateInstrumentInput): Instrument
+  deleteInstrument(id: ID): ID
+
+  addTuning(input: AddTuningInput): Tuning
+  updateTuning(id: ID, input: UpdateTuningInput): Tuning
+  deleteTuning(id: ID): ID
+
+  addScale(input: AddScaleInput): Scale
+  updateScale(id: ID, input: UpdateScaleInput): Scale
+  deleteScale(id: ID): ID
 }
 
 
+#* Data Types
+
+# Specifies a certain sound being based from 12 TET
 type Note {
-  _id: ID
-  name: String
+  id: ID! # Valid database-specific ID
+  name: String! # Name of the note, e.g. C#, B, etc.
 }
 
+# Specifies a note with added octave for better descriptive sound
+type PhysicalNote {
+  note: Note # Note with assigned octave to it
+  octave: Int! # Octave number in range [0, +Inf], e.g. 0, 8, etc.
+}
+
+# Specifies an instrument and a way to tune it (and available root sounds)
 type Instrument {
-  _id: ID
-  name: String
-  defaultTuning: Tuning
+  id: ID! # Valid database-specific ID
+  name: String! # Name of the instrument, e.g. Guitar, Violin, etc.
+  defaultTuning: Tuning # Tuning being the default tuning for this instrument
 }
 
+# Specifies a possible tuning of root notes for specific instrument
 type Tuning {
-  _id: ID
-  name: String
-  instrument: Instrument
-  notes: [TuningNotes!]
+  id: ID! # Valid database-specific ID
+  name: String! # Name of the tuning, e.g. E Standard, etc.
+  instrument: Instrument # Instrument being assignable to / compatible with this tuning
+  notes: [PhysicalNote] # Notes with octaves for this tuning, assigned from low-tone to high-tone note
 }
 
+# Specifies a set of complementary notes with number of half-tone steps to take between each note
 type Scale {
-  _id: ID
-  name: String
-  steps: [Int]
-}
-
-type TuningNotes {
-  note: Note!
-  octave: Int!
+  id: ID! # Valid database-specific ID
+  name: String! # Name of the scale, e.g. Aeolian, Double Harmonic, etc.
+  steps: [Int!]! # Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid
 }
 
 
-enum FilterType {
-  EQUALS
-  NOT_EQUALS
-  GREATER_THAN
-  GREATER_OR_EQUALS
+#* Enums
+
+# Comparison and inclusion operators for field <-> value checks
+enum FilterOperator {
+  LESS_EQUALS
   LESS_THAN
-  LESS_OR_EQUALS
+  GREATER_EQUALS
+  GREATER_THAN
+  NOT_EQUALS
+  EQUALS
   INCLUDES
   NOT_INCLUDES
 }
 
+# Sorting orders
 enum SortOrder {
   ASC
   DESC
 }
 
 
-scalar FilterForType
+#* Scalars
+
+# Scalar describing primitive GraphQl values (Int, Float, String and Boolean, without ID) as one value able to be any of those primitives to be valid
+scalar VariedPrimitive
 
 
+#* UX Inputs
+
+# Input for filtering result; One of given fields should only be set, otherwise first encountered set field will be chosen
 input FilteringInput {
-  filterBy: String!
-  filterType: FilterType!
-  filterFor: FilterForType!
+  singleFieldFilter: SingleFieldFilteringInput # Filtering for singular field
+  withString: String # AIP-160 compliant filtering
 }
 
+# Input for sorting result; One of given fields should only be set, otherwise first encountered set field will be chosen
 input SortingInput {
-  sortBy: String!
-  order: SortOrder!
+  singleFieldSort: SingleFieldSortingInput # Sorting for singular field
+  withString: String # AIP-132 compliant ordering
 }
 
+# Input for paginating result
 input PaginatingInput {
-  page: Int!
-  limit: Int!
+  page: Int! # Number of the page to return; Accepts only natural numbers
+  limit: Int! # Limits number of results for pages; Accepts only natural numbers
 }
 
-input InstrumentInput {
-  name: String!
+# Input for filtering against singular field and its value
+input SingleFieldFilteringInput {
+  field: String! # Name of the field in type
+  operation: FilterOperator! # Operation to execute for following value against this field
+  value: VariedPrimitive! # Varied value of primitive GraphQL types
 }
 
-input TuningInput {
-  name: String!
-  notes: [PhysicalNoteInput!]
+# Input for sorting result against singular field in a list
+input SingleFieldSortingInput {
+  field: String! # Name of the field in type
+  order: SortOrder! # Sorting order to execute
 }
 
-input PhysicalNoteInput {
-  note: String!
-  octave: Int!
+
+#* Add Types Inputs
+
+# Note fields for adding new document to database
+input AddNoteInput {
+  name: String! # Name of new note
+}
+
+# PhysicalNote fields for adding new document to list of notes in AddTuningInput
+input AddPhysicalNoteInput {
+  noteId: ID # ID reference to existing note
+  octave: Int! # New octave number
+}
+
+# Instrument fields for adding new document to database
+input AddInstrumentInput {
+  name: String! # Name of new instrument
+  defaultTuningId: ID # ID reference to existing tuning
+}
+
+# Tuning fields for adding new document to database
+input AddTuningInput {
+  name: String! # Name of new tuning
+  instrumentId: ID # ID reference to existing instrument
+  notes: [AddPhysicalNoteInput] # Array of two-prop objects consisting of octaves and ID references to existing notes
+}
+
+# Scale fields for adding new document to database
+input AddScaleInput {
+  name: String! # Name of new scale
+  steps: [Int!]! # Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid
+}
+
+
+#* Update Types Inputs
+
+# Optional Note fields for updating existing document in database
+input UpdateNoteInput {
+  name: String # New name to overwrite old tuning with
+}
+
+# Optional PhysicalNote fields for overwriting existing list of physical notes in UpdateTuningInput
+input UpdatePhysicalNoteInput {
+  noteId: ID # ID reference to existing note
+  octave: Int # New octave to overwrite old physical note with
+}
+
+# Optional Instrument fields for updating existing document in database
+input UpdateInstrumentInput {
+  name: String # New name to overwrite old instrument with
+  defaultTuningId: ID # ID reference to existing tuning
+}
+
+# Optional Tuning fields for updating existing document in database
+input UpdateTuningInput {
+  name: String # New name to overwrite old tuning with
+  instrumentId: ID # ID reference to existing instrument
+  notes: [UpdatePhysicalNoteInput] # Array of two-prop objects consisting of octaves and ID references to existing notes
+}
+
+# Optional Scale fields for updating existing document in database
+input UpdateScaleInput {
+  name: String # New name to overwrite old scale with
+  steps: [Int] # Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid; Overwrites whole list
 }

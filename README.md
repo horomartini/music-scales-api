@@ -28,6 +28,13 @@ compile grpc protobufs to ts types example (has to be in powershell or cmd):
 protoc --plugin=protoc-gen-ts_proto=".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd" --ts_proto_out=. ./src/proto/note.proto
 ```
 
+npm install with deps as `@graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-resolvers` generates these deprecated warnings:
+- inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests 
+by a key value, which is much more comprehensive and powerful.
+- glob@7.2.3: Glob versions prior to v9 are no longer supported
+- @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+- @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please 
+use @babel/plugin-transform-object-rest-spread instead.
 
 ```
 Request<Params, ResBody, ReqBody, Query>

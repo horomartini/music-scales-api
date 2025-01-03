@@ -1,97 +1,54 @@
 version: '3.9'
 
 services:
-  rest:
-    container_name: rest
-    command: npm run dev
-    build: 
-      context: ./rest
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    environment:
-      PORT: ${REST_PORT}
-      NODE_ENV: development
-      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
-      NO_APOLLO: true
-    ports:
-      - "${REST_PORT}:${REST_PORT}"
-    volumes:
-      - ./shared:/usr/shared
-    networks:
-      - main-network
-    develop:
-      watch:
-        - action: sync
-          path: ./rest/src
-          target: /usr/rest/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./rest/package.json
-  
-  apollo:
-    container_name: apollo
-    command: npm run dev
+  mongo:
+    container_name: mongo
     build:
-      context: './apollo'
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    environment:
-      PORT: ${APOLLO_PORT}
-      NODE_ENV: development
-      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
-    ports:
-      - "${APOLLO_PORT}:${APOLLO_PORT}"
-    networks:
-      - main-network
-    develop:
-      watch:
-        - action: sync
-          path: ./apollo/src
-          target: /usr/apollo/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./apollo/package.json
-
-  db:
-    container_name: db
-    build:
-      context: ./db
+      context: ./mongo
       dockerfile: Dockerfile
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
-    ports:
-      - "${MONGO_PORT}:${MONGO_PORT}"
     volumes:
-      - db-data:/data/db
+      - mongo-data:/data/db
     networks:
-      - main-network
-  
-  nginx:
-    container_name: nginx
+      - database-network
+
+  grpc:
+    container_name: grpc
+    command: npm run dev
     build:
-      context: ./nginx
+      context: ./grpc
       dockerfile: Dockerfile
     depends_on:
-      - rest
-      - apollo
+      - mongo
     environment:
-      REST_PORT: ${REST_PORT}
+      PORT: ${GRPC_PORT}
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
     ports:
-      - "127.0.0.1:8044:80"
+      - "${GRPC_PORT}:${GRPC_PORT}"
+    volumes:
+      - ./shared:/usr/shared
     networks:
-      - main-network
-    
+      - public-network
+      - database-network
+    develop:
+      watch:
+        - action: sync
+          path: ./grpc/src
+          target: /usr/grpc/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./grpc/package.json
+
 volumes:
   shared:
-  db-data:
+  mongo-data:
 
 networks:
-  main-network:
+  public-network:
+    driver: bridge
+  database-network:
     driver: bridge 
-    # TODO: make more networks so that only nginx is accessible from outside

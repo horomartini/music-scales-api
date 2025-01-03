@@ -12,6 +12,8 @@
   "description": "",
   "dependencies": {
     "@apollo/server": "^4.11.2",
+    "@bufbuild/protobuf": "^2.2.3",
+    "@grpc/grpc-js": "^1.12.5",
     "graphql": "^16.10.0",
     "mongoose": "^8.9.2"
   },

@@ -3,19 +3,18 @@
   "version": "1.0.0",
   "main": "main.jsx",
   "scripts": {
-    "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",
+    "dev": "nodemon src/main.ts",
+    "test:client": "node --nolazy -r ts-node/register -r tsconfig-paths/register src/test/client.ts",
     "protoc": "protoc --proto_path=./src/proto --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/proto/generated/ --ts_proto_opt=outputServices=grpc-js ./src/proto/*.proto",
     "protoc:linux": "npm run protoc -- --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto && cp ./src/proto/generated/*.ts ../shared/src/proto/generated/",
-    "protoc:windows": "npm run protoc -- --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" && copy .\\src\\proto\\generated\\*.ts ..\\shared\\src\\proto\\generated\\*.ts /Y",
-    "dev": "nodemon src/main.ts"
+    "protoc:windows": "npm run protoc -- --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" && copy .\\src\\proto\\generated\\*.ts ..\\apollo\\src\\proto\\generated\\*.ts /Y && copy .\\src\\proto\\generated\\*.ts ..\\rest\\src\\proto\\generated\\*.ts /Y"
   },
   "author": "",
   "license": "MIT",
   "description": "",
   "dependencies": {
     "@grpc/grpc-js": "^1.12.5",
-    "@grpc/proto-loader": "^0.7.13",
     "mongoose": "^8.9.2"
   },
   "devDependencies": {

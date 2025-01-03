@@ -2,31 +2,36 @@ syntax = "proto3";
 
 package common;
 
+// Specifies a certain sound being based from 12 TET
 message Note {
-  string id = 1;
-  string name = 2;
+  string id = 1; // Valid database-specific ID
+  string name = 2; // Name of the note, e.g. C#, B, etc.
 }
 
+// Specifies a note with added octave for better descriptive sound
 message PhysicalNote {
-  Note note = 1;
-  int32 octave = 2;
+  Note note = 1; // Valid database-specific ID reference to specific Note with assigned octave to it
+  int32 octave = 2; // Octave number in range [0, +Inf], e.g. 0, 8, etc.
 }
 
+// Specifies an instrument and a way to tune it (and available root sounds)
 message Instrument {
-  string id = 1;
-  string name = 2;
-  Tuning defaultTuning = 3;
+  string id = 1; // Valid database-specific ID
+  string name = 2; // Name of the instrument, e.g. Guitar, Violin, etc.
+  Tuning defaultTuning = 3; // Valid database-specific ID reference to specific Tuning being the default tuning for this instrument
 }
 
+// Specifies a possible tuning of root notes for specific instrument
 message Tuning {
-  string id = 1;
-  string name = 2;
-  Instrument instrument = 3;
-  repeated PhysicalNote notes = 4;
+  string id = 1; // Valid database-specific ID
+  string name = 2; // Name of the tuning, e.g. E Standard, etc.
+  Instrument instrument = 3; // Valid database-specific ID reference to specific Instrument being assignable to / compatible with this tuning
+  repeated PhysicalNote notes = 4; // Array of notes with octaves for this tuning, assigned from low-tone to high-tone note
 }
 
+// Specifies a set of complementary notes with number of half-tone steps to take between each note
 message Scale {
-  string id = 1;
-  string name = 2;
-  repeated int32 steps = 3;
+  string id = 1; // Valid database-specific ID
+  string name = 2; // Name of the scale, e.g. Aeolian, Double Harmonic, etc.
+  repeated int32 steps = 3; // Array of half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid
 }

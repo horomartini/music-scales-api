@@ -1,5 +1,4 @@
 import type { NoteServiceServer } from '../proto/generated/note'
-import type { NoteDoc } from 'types/db'
 
 import mongoose from 'mongoose'
 
@@ -59,7 +58,7 @@ export const noteService: NoteServiceServer = {
 
     const noteDocs = await Notes.find(query).sort(sort).limit(limit).skip(paginationError ? 0 : skip).exec()
     const notes = noteDocs.map(parseMongoDocumentToJSO)
-    const value = { notes: notes, totalCount, nextPageToken, totalPages }
+    const value = { notes, totalCount, nextPageToken, totalPages }
 
     Log.debug(`Request @ ${call.getPath()}`, { query, sort, limit, skip })
     Log.debug(`Response @ ${call.getPath()}`, value)

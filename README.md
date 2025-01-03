@@ -20,6 +20,8 @@ run `docker compose up --build --no-cache` to run dev mode or `docker compose bu
 
 npm jest package uses outdated packages Glob@7.2.3 and inflight@1.0.6, consider using an alternative to jest
 
+node --inspect might be a security vulnerability when exposed with 0.0.0.0:port: https://nodejs.org/en/learn/getting-started/debugging#exposing-the-debug-port-publicly-is-unsafe
+node --nolazy is so that breakpoints and debugging on IDEs work with async/await
 
 compile grpc protobufs to ts types example (has to be in powershell or cmd):
 ```

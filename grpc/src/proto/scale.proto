@@ -4,24 +4,29 @@ package scales;
 
 import "common.proto";
 
+
 service ScaleService {
   rpc GetScale (GetScaleRequest) returns (GetScaleResponse);
   rpc GetScales (GetScalesRequest) returns (GetScalesResponse);
+  rpc AddScale (AddScaleRequest) returns (AddScaleResponse);
+  rpc UpdateScale (UpdateScaleRequest) returns (UpdateScaleResponse);
+  rpc DeleteScale (DeleteScaleRequest) returns (DeleteScaleResponse);
 }
 
+
 message GetScaleRequest {
-  string id = 1;
+  string id = 1; // Required; ID of the scale to retrieve, must be a valid id per database schema; Supports AIP-217
 }
 
 message GetScaleResponse {
-  common.Scale scale = 1;
+  common.Scale scale = 1; // Retrieved scale based on ID
 }
 
 message GetScalesRequest {
-  string filter = 1; // Filtering; Supports AIP-160
-  string order_by = 2; // Ordering; Supports AIP-132
-  int32 page_size = 3; // Paginating; Supports AIP-158
-  string page_token = 4; // Conceptually treated as "page x", where x is page number
+  string filter = 1; // Optional; Filtering; Supports AIP-160
+  string order_by = 2; // Optional; Ordering; Supports AIP-132
+  int32 page_size = 3; // Optional; Paginating; Supports AIP-158
+  string page_token = 4; // Optional; Conceptually treated as "Page x", where x is page number
 }
 
 message GetScalesResponse {
@@ -29,4 +34,34 @@ message GetScalesResponse {
   int32 total_count = 2; // Total number of items in database before filter, order and pagination
   string next_page_token = 3; // Next page cursor token as per AIP-158
   int32 total_pages = 4; // Total number of pages generated from given page_size in request
+}
+
+
+message AddScaleRequest {
+  string name = 1; // Required; name of new scale
+  repeated int32 steps = 2; // Required; half-tone steps between notes of scale
+}
+
+message AddScaleResponse {
+  common.Scale scale = 1; // Newly created scale
+}
+
+
+message UpdateScaleRequest {
+  string id = 1; // Required; ID of the scale to update; Supports AIP-217
+  string name = 2; // Optional; New name to overwrite old scale with
+  repeated int32 steps = 3; // Optional; New steps to overwrite old scale with
+}
+
+message UpdateScaleResponse {
+  common.Scale scale = 1; // Updated scale
+}
+
+
+message DeleteScaleRequest {
+  string id = 1; // Required; ID of the scale to delete; Supports AIP-217
+}
+
+message DeleteScaleResponse {
+  string id = 1; // ID of the deleted scale
 }

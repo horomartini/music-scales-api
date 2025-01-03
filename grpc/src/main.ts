@@ -1,11 +1,13 @@
 import * as grpc from '@grpc/grpc-js'
 
 import { NoteServiceService } from './proto/generated/note'
-import { noteService } from 'resolvers'
+import { ScaleServiceService } from 'proto/generated/scale'
+import { noteService, scaleService } from 'resolvers'
 
 import mongoose from 'mongoose'
 
 import Log from '@shared/logger'
+
 
 
 const IP = process.env.IP || '0.0.0.0'
@@ -19,6 +21,7 @@ Log.init(() => ['prod', 'production'].includes(NODE_ENV))
 const server = new grpc.Server()
 
 server.addService(NoteServiceService, noteService)
+server.addService(ScaleServiceService, scaleService)
 server.bindAsync(`${IP}:${PORT}`, grpc.ServerCredentials.createInsecure(), () => {
   Log.info(`Service gRPC is running on ${IP}:${PORT}`)
 

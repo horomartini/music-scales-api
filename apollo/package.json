@@ -6,7 +6,7 @@
     "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",
     "dev": "nodemon src/main.ts",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config graphql-codegen-config.ts"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +26,7 @@
     "@types/node": "^22.10.2",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2"
   }
 }

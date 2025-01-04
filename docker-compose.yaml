@@ -1,19 +1,31 @@
-version: '3.9'
-
 services:
-  mongo:
-    container_name: mongo
+  apollo:
+    container_name: apollo
+    command: npm run dev
     build:
-      context: ./mongo
+      context: ./apollo
       dockerfile: Dockerfile
+    depends_on:
+      - grpc
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+      PORT: ${APOLLO_PORT}
+      NODE_ENV: development
+      GRPC_ADDRESS: grpc:${GRPC_PORT}
+    ports:
+      - ${APOLLO_PORT}:${APOLLO_PORT}
     volumes:
-      - mongo-data:/data/db
+      - ./shared:/usr/shared
     networks:
-      - database-network
+      - public-network
+    develop:
+      watch:
+        - action: sync
+          path: ./apollo/src
+          target: /usr/apollo/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./apollo/package.json
 
   grpc:
     container_name: grpc
@@ -42,6 +54,20 @@ services:
             - node_modules/
         - action: rebuild
           path: ./grpc/package.json
+
+  mongo:
+    container_name: mongo
+    build:
+      context: ./mongo
+      dockerfile: Dockerfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - database-network
 
 volumes:
   shared:

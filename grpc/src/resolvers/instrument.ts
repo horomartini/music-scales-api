@@ -1,11 +1,11 @@
-import type { InstrumentServiceServer } from '../proto/generated/instrument'
+import type { InstrumentServiceServer } from '../proto/__generated__/instrument'
 import type { InstrumentDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
-import { UpdateInstrumentRequest } from '../proto/generated/instrument'
+import { UpdateInstrumentRequest } from '../proto/__generated__/instrument'
 import { Instruments } from '../mongo/model'
 import {
   parseProtoToMongoFilter,

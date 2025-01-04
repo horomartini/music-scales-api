@@ -1,46 +1,41 @@
-import mongoose from 'mongoose'
+import type { ApolloContext } from './graphql/context'
 
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
 import { readFileSync } from 'fs'
 
+import { createContext } from './graphql/context'
 import { resolvers } from './graphql/resolvers'
 
+import grpc from './proto/grpc'
 
-interface GraphQLContext {
-  dataSources: {
-    
-  }
-}
+import Log from '@shared/logger'
+
+import { isProd } from '@shared/env'
 
 
 const PORT = Number(process.env.PORT || 4000)
-// const MONGO_URI = process.env.MONGO_URI || undefined
+const NODE_ENV = process.env.NODE_ENV
+const GRPC_ADDRESS = process.env.GRPC_ADDRESS
+
+
+Log.init(() => isProd(NODE_ENV))
+
+if (GRPC_ADDRESS === undefined)
+  Log.warn('GRPC_ADDRESS has not been defined - data fetch requests will result in connection errors')
+else {
+  grpc.Client.init(GRPC_ADDRESS, grpc.getInsecureCredentials())
+  Log.info(`gRPC connection established at ${GRPC_ADDRESS}`)
+}
+
 
 const typeDefs = readFileSync('./src/graphql/schema.graphql', { encoding: 'utf-8' })
 
+const server = new ApolloServer<ApolloContext>({ typeDefs, resolvers })
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+
+startStandaloneServer(server, { 
+  listen: { port: PORT },
+  context: async (): Promise<ApolloContext> => createContext(),
 })
-
-startServer()
-
-
-async function startServer() {
-  const { url } = await startStandaloneServer(server, { listen: { port: PORT } })
-  console.info(`Apollo Server readt at ${url}`)
-
-  // if (MONGO_URI === undefined)
-  //   console.warn('MONG_URI has not been defined - connection to database will not be established!')
-  // else 
-  //   mongoose
-  //     .connect(MONGO_URI, {})
-  //     .then(() => { 
-  //       console.info('Connected to db') 
-  //     })
-  //     .catch(error => { 
-  //       console.error('Error connecting to db:', error.message) 
-  //     })
-}
+.then(({ url }) => Log.info(`Service Apollo GraphQL is running on ${url}`))

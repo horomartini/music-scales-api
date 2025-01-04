@@ -1,11 +1,11 @@
-import type { ScaleServiceServer } from '../proto/generated/scale'
+import type { ScaleServiceServer } from '../proto/__generated__/scale'
 import type { ScaleDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
-import { UpdateScaleRequest } from '../proto/generated/scale'
+import { UpdateScaleRequest } from '../proto/__generated__/scale'
 import { Scales } from '../mongo/model'
 import {
   parseProtoToMongoFilter,

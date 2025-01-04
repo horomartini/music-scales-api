@@ -1,9 +1,9 @@
 import * as grpc from '@grpc/grpc-js'
 
-import { NoteServiceService } from './proto/generated/note'
-import { InstrumentServiceService } from 'proto/generated/instrument'
-import { TuningServiceService } from 'proto/generated/tuning'
-import { ScaleServiceService } from 'proto/generated/scale'
+import { NoteServiceService } from './proto/__generated__/note'
+import { InstrumentServiceService } from 'proto/__generated__/instrument'
+import { TuningServiceService } from 'proto/__generated__/tuning'
+import { ScaleServiceService } from 'proto/__generated__/scale'
 import { noteService, instrumentService, tuningService, scaleService } from 'resolvers'
 
 import mongoose from 'mongoose'

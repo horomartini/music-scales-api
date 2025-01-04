@@ -6,9 +6,9 @@
     "build": "tsc -p .",
     "dev": "nodemon src/main.ts",
     "test:client": "node --nolazy -r ts-node/register -r tsconfig-paths/register src/test/client.ts",
-    "protoc": "protoc --proto_path=./src/proto --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/proto/generated/ --ts_proto_opt=outputServices=grpc-js ./src/proto/*.proto",
-    "protoc:linux": "npm run protoc -- --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto && cp ./src/proto/generated/*.ts ../shared/src/proto/generated/",
-    "protoc:windows": "npm run protoc -- --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" && copy .\\src\\proto\\generated\\*.ts ..\\apollo\\src\\proto\\generated\\*.ts /Y && copy .\\src\\proto\\generated\\*.ts ..\\rest\\src\\proto\\generated\\*.ts /Y"
+    "protoc": "protoc --proto_path=./src/proto --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/proto/__generated__/ --ts_proto_opt=outputServices=grpc-js ./src/proto/*.proto",
+    "protoc:linux": "npm run protoc -- --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto && cp ./src/proto/__generated__/*.ts ../shared/src/proto/__generated__/",
+    "protoc:windows": "npm run protoc -- --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" && copy .\\src\\proto\\__generated__\\*.ts ..\\apollo\\src\\proto\\__generated__\\*.ts /Y && copy .\\src\\proto\\__generated__\\*.ts ..\\rest\\src\\proto\\__generated__\\*.ts /Y"
   },
   "author": "",
   "license": "MIT",

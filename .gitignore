@@ -130,5 +130,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Generated proto ts files
-**/proto/**/*.ts
+# Generated files (from protoc and graphql-codegen)
+**/__generated__/**/*.ts
+**/__generated__/**/*.schema.json

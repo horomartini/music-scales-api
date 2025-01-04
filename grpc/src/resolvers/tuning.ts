@@ -1,11 +1,11 @@
-import type { TuningServiceServer } from '../proto/generated/tuning'
+import type { TuningServiceServer } from '../proto/__generated__/tuning'
 import type { TuningDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
-import { UpdateTuningRequest } from '../proto/generated/tuning'
+import { UpdateTuningRequest } from '../proto/__generated__/tuning'
 import { Tunings } from '../mongo/model'
 import {
   parseProtoToMongoFilter,

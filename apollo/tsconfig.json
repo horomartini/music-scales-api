@@ -4,6 +4,9 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "baseUrl": "./src",
+    "paths": {
+      "@shared/*": ["../../shared/*"],
+    },
     "rootDirs": ["src"],
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "outDir": "build",

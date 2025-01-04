@@ -1,11 +1,11 @@
-import type { NoteServiceServer } from '../proto/generated/note'
+import type { NoteServiceServer } from '../proto/__generated__/note'
 import type { NoteDoc } from '../mongo/types'
 
 import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
-import { UpdateNoteRequest } from '../proto/generated/note'
+import { UpdateNoteRequest } from '../proto/__generated__/note'
 import { Notes } from '../mongo/model'
 import {
   parseProtoToMongoFilter,

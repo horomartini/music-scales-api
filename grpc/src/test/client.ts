@@ -11,7 +11,7 @@ import type {
   UpdateNoteResponse, 
   DeleteNoteRequest as DeleteNoteRequestType, 
   DeleteNoteResponse, 
-} from '../proto/generated/note'
+} from '../proto/__generated__/note'
 import { 
   GetNotesRequest, 
   GetNoteRequest, 
@@ -19,7 +19,7 @@ import {
   UpdateNoteRequest, 
   DeleteNoteRequest, 
   NoteServiceClient, 
-} from '../proto/generated/note'
+} from '../proto/__generated__/note'
 
 import type { 
   GetInstrumentRequest as GetInstrumentRequestType, 
@@ -32,7 +32,7 @@ import type {
   UpdateInstrumentResponse, 
   DeleteInstrumentRequest as DeleteInstrumentRequestType, 
   DeleteInstrumentResponse, 
-} from '../proto/generated/instrument'
+} from '../proto/__generated__/instrument'
 import { 
   GetInstrumentRequest, 
   GetInstrumentsRequest, 
@@ -40,7 +40,7 @@ import {
   UpdateInstrumentRequest, 
   DeleteInstrumentRequest, 
   InstrumentServiceClient, 
-} from '../proto/generated/instrument'
+} from '../proto/__generated__/instrument'
 
 import type { 
   GetTuningRequest as GetTuningRequestType, 
@@ -53,7 +53,7 @@ import type {
   UpdateTuningResponse, 
   DeleteTuningRequest as DeleteTuningRequestType, 
   DeleteTuningResponse, 
-} from '../proto/generated/tuning'
+} from '../proto/__generated__/tuning'
 import { 
   GetTuningRequest, 
   GetTuningsRequest, 
@@ -61,7 +61,7 @@ import {
   UpdateTuningRequest, 
   DeleteTuningRequest, 
   TuningServiceClient, 
-} from '../proto/generated/tuning'
+} from '../proto/__generated__/tuning'
 
 import type {
   GetScaleRequest as GetScaleRequestType, 
@@ -74,7 +74,7 @@ import type {
   UpdateScaleResponse, 
   DeleteScaleRequest as DeleteScaleRequestType, 
   DeleteScaleResponse, 
-} from '../proto/generated/scale'
+} from '../proto/__generated__/scale'
 import {
   GetScaleRequest, 
   GetScalesRequest, 
@@ -82,7 +82,7 @@ import {
   UpdateScaleRequest, 
   DeleteScaleRequest,  
   ScaleServiceClient, 
-} from '../proto/generated/scale'
+} from '../proto/__generated__/scale'
 
 import Log from '@shared/logger'
 

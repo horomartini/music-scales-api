@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
+import { UpdateInstrumentRequest } from '../proto/generated/instrument'
 import { Instruments } from '../mongo/model'
 import {
   parseProtoToMongoFilter,
@@ -121,6 +122,7 @@ export const instrumentService: InstrumentServiceServer = {
     Log.info('gRPC @', call.getPath())
 
     const { id, ...fields} = call.request
+    const defaultFields = UpdateInstrumentRequest.create()
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const message = `Id ${id} is not a valid ObjectId`
@@ -136,14 +138,16 @@ export const instrumentService: InstrumentServiceServer = {
       return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
-    for (const [key, val] of Object.entries(instrumentDoc.toObject())) {
-      if (key === '_id')
+    for (const [key, defaultValue] of Object.entries(defaultFields)) {
+      if (!(key in fields))
         continue
 
-      if (key in fields) {
-        const newVal = fields[key as keyof typeof fields] || val
-        instrumentDoc.set(key, newVal)
-      }
+      const newVal = fields[key as keyof typeof fields]
+
+      if (newVal === defaultValue)
+        continue
+
+      instrumentDoc.set(key, newVal)
     }
 
     try {

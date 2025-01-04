@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
+import { UpdateNoteRequest } from '../proto/generated/note'
 import { Notes } from '../mongo/model'
 import {
   parseProtoToMongoFilter,
@@ -111,6 +112,7 @@ export const noteService: NoteServiceServer = {
     Log.info('gRPC @', call.getPath())
 
     const { id, ...fields } = call.request
+    const defaultFields = UpdateNoteRequest.create()
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const message = `Id ${id} is not a valid ObjectId`
@@ -126,14 +128,16 @@ export const noteService: NoteServiceServer = {
       return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
-    for (const [key, val] of Object.entries(noteDoc.toObject())) {
-      if (key === '_id')
+    for (const [key, defaultValue] of Object.entries(defaultFields)) {
+      if (!(key in fields))
         continue
 
-      if (key in fields) {
-        const newVal = fields[key as keyof typeof fields] || val
-        noteDoc.set(key, newVal)
-      }
+      const newVal = fields[key as keyof typeof fields]
+
+      if (newVal === defaultValue)
+        continue
+
+      noteDoc.set(key, newVal)
     }
 
     try {

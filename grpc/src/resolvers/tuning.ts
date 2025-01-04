@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
+import { UpdateTuningRequest } from '../proto/generated/tuning'
 import { Tunings } from '../mongo/model'
 import {
   parseProtoToMongoFilter,
@@ -131,6 +132,7 @@ export const tuningService: TuningServiceServer = {
     Log.info('gRPC @', call.getPath())
 
     const { id, ...fields} = call.request
+    const defaultFields = UpdateTuningRequest.create()
     
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const message = `Id ${id} is not a valid ObjectId`
@@ -146,20 +148,19 @@ export const tuningService: TuningServiceServer = {
       return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
-    for (const [key, val] of Object.entries(tuningDoc.toObject())) {
-      if (key === '_id')
+    for (const [key, defaultValue] of Object.entries(defaultFields)) {
+      if (!(key in fields))
         continue
 
-      if (key in fields) {
-        if (key === 'notes') {
-          const newNotes = fields.notes.map(({ noteId, octave }) => ({ note: new mongoose.Types.ObjectId(noteId), octave }))
-          tuningDoc.set(key, newNotes)
-          continue
-        }
-        
-        const newVal = fields[key as keyof typeof fields] || val
-        tuningDoc.set(key, newVal)
-      }
+      const newVal = fields[key as keyof typeof fields]
+
+      if (Array.isArray(newVal) && newVal.length === 0)
+        continue
+
+      if (newVal === defaultValue)
+        continue
+
+      tuningDoc.set(key, newVal)
     }
 
     try {

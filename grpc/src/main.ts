@@ -32,10 +32,10 @@ server.bindAsync(`${IP}:${PORT}`, grpc.ServerCredentials.createInsecure(), () =>
   Log.info(`Service gRPC is running on ${IP}:${PORT}`)
 
   if (MONGO_URI === undefined)
-    Log.warn('MONG_URI has not been defined - connection to database will not be established')
+    Log.warn('MONGO_URI has not been defined - connection to database will not be established')
   else
     mongoose
       .connect(MONGO_URI, {})
-      .then(() => Log.info('Connected to MongoDB succesfully'))
+      .then(() => Log.info('MongoDB connection established with URI'))
       .catch(err => Log.error('Error connecting to MongoDB', err.message))
 })

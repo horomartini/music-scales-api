@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 
 import { status as statusCode } from '@grpc/grpc-js'
 
+import { UpdateScaleRequest } from '../proto/generated/scale'
 import { Scales } from '../mongo/model'
 import {
   parseProtoToMongoFilter,
@@ -121,6 +122,7 @@ export const scaleService: ScaleServiceServer = {
     Log.info('gRPC @', call.getPath())
     
     const { id, ...fields } = call.request
+    const defaultFields = UpdateScaleRequest.create()
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const message = `Id ${id} is not a valid ObjectId`
@@ -136,14 +138,19 @@ export const scaleService: ScaleServiceServer = {
       return callback({ code: statusCode.NOT_FOUND, message }, null)
     }
 
-    for (const [key, val] of Object.entries(scaleDoc.toObject())) {
-      if (key === '_id')
+    for (const [key, defaultValue] of Object.entries(defaultFields)) {
+      if (!(key in fields))
         continue
 
-      if (key in fields) {
-        const newVal = fields[key as keyof typeof fields] || val
-        scaleDoc.set(key, newVal)
-      }
+      const newVal = fields[key as keyof typeof fields]
+
+      if (Array.isArray(newVal) && newVal.length === 0)
+        continue
+
+      if (newVal === defaultValue)
+        continue
+
+      scaleDoc.set(key, newVal)
     }
 
     try {

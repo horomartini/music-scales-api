@@ -1,14 +1,29 @@
 type Query {
+  """Fetch a single Note by its ID."""
   getNote(id: ID!): Note
+
+  """Fetch Notes that can be filtered, sorted and paginated."""
   getNotes(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Note]
 
+
+  """Fetch a single Instrument by its ID."""
   getInstrument(id: ID!): Instrument
+
+  """Fetch Instruments that can be filtered, sorted and paginated."""
   getInstruments(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Instrument]
 
+
+  """Fetch a single Tuning by its ID."""
   getTuning(id: ID!): Tuning
+
+  """Fetch Tunings that can be filtered, sorted and paginated."""
   getTunings(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Tuning]
 
+
+  """Fetch a single Scale by its ID."""
   getScale(id: ID!): Scale
+
+  """Fetch Scales that can be filtered, sorted and paginated."""
   getScales(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Scale]
 }
 
@@ -33,96 +48,180 @@ type Mutation {
 
 #* Data Types
 
-# Specifies a certain sound being based from 12 TET
+"""
+Specifies a certain sound being based from 12 TET.
+"""
 type Note {
-  id: ID! # Valid database-specific ID
-  name: String! # Name of the note, e.g. C#, B, etc.
+  """Valid database-specific ID."""
+  id: ID!
+
+  """Name of the note, e.g. C#, B, etc."""
+  name: String!
 }
 
-# Specifies a note with added octave for better descriptive sound
+"""
+Specifies a note with added octave for better descriptive sound.
+"""
 type PhysicalNote {
-  note: Note # Note with assigned octave to it
-  octave: Int! # Octave number in range [0, +Inf], e.g. 0, 8, etc.
+  """Note with assigned octave to it."""
+  note: Note
+
+  """Octave number in range [0, +Inf], e.g. 0, 8, etc."""
+  octave: Int!
 }
 
-# Specifies an instrument and a way to tune it (and available root sounds)
+"""
+Specifies an instrument and a way to tune it (and available root sounds).
+"""
 type Instrument {
-  id: ID! # Valid database-specific ID
-  name: String! # Name of the instrument, e.g. Guitar, Violin, etc.
-  defaultTuning: Tuning # Tuning being the default tuning for this instrument
+  """Valid database-specific ID."""
+  id: ID!
+
+  """Name of the instrument, e.g. Guitar, Violin, etc."""
+  name: String!
+
+  """Tuning being the default tuning for this instrument."""
+  defaultTuning: Tuning
 }
 
-# Specifies a possible tuning of root notes for specific instrument
+"""
+Specifies a possible tuning of root notes for specific instrument.
+"""
 type Tuning {
-  id: ID! # Valid database-specific ID
-  name: String! # Name of the tuning, e.g. E Standard, etc.
-  instrument: Instrument # Instrument being assignable to / compatible with this tuning
-  notes: [PhysicalNote] # Notes with octaves for this tuning, assigned from low-tone to high-tone note
+  """Valid database-specific ID."""
+  id: ID!
+
+  """Name of the tuning, e.g. E Standard, etc."""
+  name: String!
+
+  """Instrument being assignable to / compatible with this tuning."""
+  instrument: Instrument
+
+  """Notes with octaves for this tuning, assigned from low-tone to high-tone note."""
+  notes: [PhysicalNote]
 }
 
-# Specifies a set of complementary notes with number of half-tone steps to take between each note
+"""
+Specifies a set of complementary notes with number of half-tone steps to take between each note.
+"""
 type Scale {
-  id: ID! # Valid database-specific ID
-  name: String! # Name of the scale, e.g. Aeolian, Double Harmonic, etc.
-  steps: [Int!]! # Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid
+  """Valid database-specific ID."""
+  id: ID!
+
+  """Name of the scale, e.g. Aeolian, Double Harmonic, etc."""
+  name: String!
+
+  """Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid."""
+  steps: [Int!]!
 }
 
 
 #* Enums
 
-# Comparison and inclusion operators for field <-> value checks
+"""
+Comparison and inclusion operators for field <-> value checks.
+"""
 enum FilterOperator {
+  """Specifies less or equal comparison operation, e.g. X <= Y"""
   LESS_EQUALS
+
+  """Specifies less than comparison operation, e.g. X < Y."""
   LESS_THAN
+
+  """Specifies greater or equal comparison operation, e.g. X >= Y."""
   GREATER_EQUALS
+
+  """Specifies greater than comparison operation, e.g. X > Y."""
   GREATER_THAN
+
+  """Specifies not equal comparison operation, e.g. X != Y."""
   NOT_EQUALS
+
+  """Specifies equal comparison operation, e.g. X = Y or X == Y."""
   EQUALS
+  
+  """Unimplemented; Specifies inclusion comparison operation, e.g. Y.includes(X) or X in Y."""
   INCLUDES
+
+  """Unimplemented; Specifies exclusion comparison operation, e.g. !Y.includes(X) or X not in Y."""
   NOT_INCLUDES
 }
 
-# Sorting orders
+"""
+Sorting orders.
+"""
 enum SortOrder {
+  """Ascending order, e.g. [a, b, c] or [1, 2, 3]."""
   ASC
+
+  """Descending order, e.g. [c, b, a] or [3, 2, 1]."""
   DESC
 }
 
 
 #* Scalars
 
-# Scalar describing primitive GraphQl values (Int, Float, String and Boolean, without ID) as one value able to be any of those primitives to be valid
+"""
+Scalar describing primitive GraphQl values (Int, Float, String and Boolean, without ID) as one value able to be any of those primitives to be valid.
+Works in a similair way as a union, but for primitive types.
+"""
 scalar VariedPrimitive
 
 
 #* UX Inputs
 
-# Input for filtering result; One of given fields should only be set, otherwise first encountered set field will be chosen
+"""
+Input for filtering result.
+One of given fields should only be set, otherwise first encountered set field will be chosen.
+"""
 input FilteringInput {
-  singleFieldFilter: SingleFieldFilteringInput # Filtering for singular field
-  withString: String # AIP-160 compliant filtering
+  """Filtering for singular field."""
+  singleFieldFilter: SingleFieldFilteringInput
+
+  """AIP-160 compliant filtering."""
+  withString: String
 }
 
-# Input for sorting result; One of given fields should only be set, otherwise first encountered set field will be chosen
+"""
+Input for sorting result. 
+One of given fields should only be set, otherwise first encountered set field will be chosen.
+"""
 input SortingInput {
-  singleFieldSort: SingleFieldSortingInput # Sorting for singular field
-  withString: String # AIP-132 compliant ordering
+  """Sorting for singular field."""
+  singleFieldSort: SingleFieldSortingInput
+
+  """AIP-132 compliant ordering."""
+  withString: String
 }
 
-# Input for paginating result
+"""
+Input for paginating result.
+"""
 input PaginatingInput {
-  page: Int! # Number of the page to return; Accepts only natural numbers
-  limit: Int! # Limits number of results for pages; Accepts only natural numbers
+  """Number of the page to return; Accepts only natural numbers."""
+  page: Int!
+
+  """Limits number of results for pages; Accepts only natural numbers."""
+  limit: Int!
 }
 
-# Input for filtering against singular field and its value
+"""
+Input for filtering against singular field and its value.
+"""
 input SingleFieldFilteringInput {
-  field: String! # Name of the field in type
-  operation: FilterOperator! # Operation to execute for following value against this field
-  value: VariedPrimitive! # Varied value of primitive GraphQL types
+  """Name of the field in type."""
+  field: String!
+
+  """Operation to execute for following value against this field."""
+  operation: FilterOperator!
+
+  """Varied value of primitive GraphQL types."""
+  value: VariedPrimitive!
 }
 
-# Input for sorting result against singular field in a list
+"""
+Input for sorting result against singular field in a list.
+"""
 input SingleFieldSortingInput {
   field: String! # Name of the field in type
   order: SortOrder! # Sorting order to execute
@@ -131,65 +230,115 @@ input SingleFieldSortingInput {
 
 #* Add Types Inputs
 
-# Note fields for adding new document to database
+"""
+Note fields for adding new document to database.
+"""
 input AddNoteInput {
-  name: String! # Name of new note
+  """Name of new note."""
+  name: String!
 }
 
-# PhysicalNote fields for adding new document to list of notes in AddTuningInput
+"""
+PhysicalNote fields for adding new document to list of notes in AddTuningInput.
+"""
 input AddPhysicalNoteInput {
-  noteId: ID # ID reference to existing note
-  octave: Int! # New octave number
+  """ID reference to existing note."""
+  noteId: ID
+
+  """New octave number."""
+  octave: Int!
 }
 
-# Instrument fields for adding new document to database
+"""
+Instrument fields for adding new document to database.
+"""
 input AddInstrumentInput {
-  name: String! # Name of new instrument
-  defaultTuningId: ID # ID reference to existing tuning
+  """Name of new instrument."""
+  name: String!
+
+  """ID reference to existing tuning."""
+  defaultTuningId: ID
 }
 
-# Tuning fields for adding new document to database
+"""
+Tuning fields for adding new document to database.
+"""
 input AddTuningInput {
-  name: String! # Name of new tuning
-  instrumentId: ID # ID reference to existing instrument
-  notes: [AddPhysicalNoteInput] # Array of two-prop objects consisting of octaves and ID references to existing notes
+  """Name of new tuning."""
+  name: String!
+
+  """ID reference to existing instrument."""
+  instrumentId: ID
+
+  """Array of two-prop objects consisting of octaves and ID references to existing notes."""
+  notes: [AddPhysicalNoteInput]
 }
 
-# Scale fields for adding new document to database
+"""
+Scale fields for adding new document to database.
+"""
 input AddScaleInput {
-  name: String! # Name of new scale
-  steps: [Int!]! # Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid
+  """Name of new scale."""
+  name: String!
+
+  """Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid."""
+  steps: [Int!]!
 }
 
 
 #* Update Types Inputs
 
-# Optional Note fields for updating existing document in database
+"""
+Optional Note fields for updating existing document in database.
+"""
 input UpdateNoteInput {
-  name: String # New name to overwrite old tuning with
+  """New name to overwrite old tuning with."""
+  name: String
 }
 
-# Optional PhysicalNote fields for overwriting existing list of physical notes in UpdateTuningInput
+"""
+Optional PhysicalNote fields for overwriting existing list of physical notes in UpdateTuningInput.
+"""
 input UpdatePhysicalNoteInput {
-  noteId: ID # ID reference to existing note
-  octave: Int # New octave to overwrite old physical note with
+  """ID reference to existing note."""
+  noteId: ID
+  
+  """New octave to overwrite old physical note with."""
+  octave: Int
 }
 
-# Optional Instrument fields for updating existing document in database
+"""
+Optional Instrument fields for updating existing document in database.
+"""
 input UpdateInstrumentInput {
-  name: String # New name to overwrite old instrument with
-  defaultTuningId: ID # ID reference to existing tuning
+  """New name to overwrite old instrument with."""
+  name: String
+  
+  """ID reference to existing tuning."""
+  defaultTuningId: ID
 }
 
-# Optional Tuning fields for updating existing document in database
+"""
+Optional Tuning fields for updating existing document in database.
+"""
 input UpdateTuningInput {
-  name: String # New name to overwrite old tuning with
-  instrumentId: ID # ID reference to existing instrument
-  notes: [UpdatePhysicalNoteInput] # Array of two-prop objects consisting of octaves and ID references to existing notes
+  """New name to overwrite old tuning with."""
+  name: String
+
+  """ID reference to existing instrument."""
+  instrumentId: ID
+
+  """Array of two-prop objects consisting of octaves and ID references to existing notes."""
+  notes: [UpdatePhysicalNoteInput]
 }
 
-# Optional Scale fields for updating existing document in database
+"""
+Optional Scale fields for updating existing document in database.
+"""
 input UpdateScaleInput {
-  name: String # New name to overwrite old scale with
-  steps: [Int] # Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid; Overwrites whole list
+  """New name to overwrite old scale with."""
+  name: String
+
+  """Half-tone steps (in 12 TET) to take between each successive note, sum of this array needs to always result 12 to be valid; Overwrites whole list."""
+  steps: [Int]
 }

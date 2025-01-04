@@ -1,16 +1,17 @@
 {
   "name": "music-scales-apollo",
+  "description": "Apollo GraphQL service for Music Scales API project",
+  "author": "s25429",
+  "license": "MIT",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.js",
+  "private": true,
   "scripts": {
     "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",
     "dev": "nodemon src/main.ts",
     "codegen": "graphql-codegen --config graphql-codegen-config.ts"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@apollo/server": "^4.11.2",
     "@bufbuild/protobuf": "^2.2.3",

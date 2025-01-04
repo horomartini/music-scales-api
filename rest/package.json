@@ -1,10 +1,11 @@
 {
   "name": "music-scales-rest",
+  "description": "REST API service for Music Scales API project",
+  "author": "s25429",
+  "license": "MIT",
   "version": "1.0.0",
   "main": "main.js",
-  "author": "",
-  "license": "MIT",
-  "description": "",
+  "private": true,
   "scripts": {
     "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",

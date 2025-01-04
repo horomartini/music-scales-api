@@ -1,18 +1,19 @@
 {
   "name": "music-scales-grpc",
+  "description": "gRPC service for Music Scales API project",
+  "author": "s25429",
+  "license": "MIT",
   "version": "1.0.0",
-  "main": "main.jsx",
+  "main": "main.js",
+  "private": true,
   "scripts": {
     "build": "tsc -p .",
     "dev": "nodemon src/main.ts",
     "test:client": "node --nolazy -r ts-node/register -r tsconfig-paths/register src/test/client.ts",
     "protoc": "protoc --proto_path=./src/proto --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/proto/__generated__/ --ts_proto_opt=outputServices=grpc-js ./src/proto/*.proto",
-    "protoc:linux": "npm run protoc -- --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto && cp ./src/proto/__generated__/*.ts ../shared/src/proto/__generated__/",
-    "protoc:windows": "npm run protoc -- --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" && copy .\\src\\proto\\__generated__\\*.ts ..\\apollo\\src\\proto\\__generated__\\*.ts /Y && copy .\\src\\proto\\__generated__\\*.ts ..\\rest\\src\\proto\\__generated__\\*.ts /Y"
+    "protoc:linux": "npm run protoc -- --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto && cp -a ./src/proto/__generated__/. ../apollo/src/proto/__generated__/ && cp -a ./src/proto/__generated__/. ../rest/src/proto/__generated__/ && cp -a ./src/proto/__generated__/. ../shared/src/proto/__generated__/",
+    "protoc:windows": "npm run protoc -- --plugin=protoc-gen-ts_proto=\".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd\" && copy .\\src\\proto\\__generated__\\*.ts ..\\apollo\\src\\proto\\__generated__\\*.ts /Y && copy .\\src\\proto\\__generated__\\*.ts ..\\rest\\src\\proto\\__generated__\\*.ts /Y && copy .\\src\\proto\\__generated__\\*.ts ..\\shared\\proto\\__generated__\\*.ts /Y"
   },
-  "author": "",
-  "license": "MIT",
-  "description": "",
   "dependencies": {
     "@grpc/grpc-js": "^1.12.5",
     "mongoose": "^8.9.2"

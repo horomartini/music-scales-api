@@ -160,6 +160,11 @@ export const tuningService: TuningServiceServer = {
       if (newVal === defaultValue)
         continue
 
+      if (key === 'notes' && Array.isArray(newVal)) {
+        tuningDoc.set(key, newVal.map(obj => ({ ...obj, note: obj.noteId })))
+        continue
+      }
+
       tuningDoc.set(key, newVal)
     }
 

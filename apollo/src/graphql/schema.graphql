@@ -1,33 +1,33 @@
 type Query {
-  getNote(id: ID): Note
+  getNote(id: ID!): Note
   getNotes(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Note]
 
-  getInstrument(id: ID): Instrument
+  getInstrument(id: ID!): Instrument
   getInstruments(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Instrument]
 
-  getTuning(id: ID): Tuning
+  getTuning(id: ID!): Tuning
   getTunings(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Tuning]
 
-  getScale(id: ID): Scale
+  getScale(id: ID!): Scale
   getScales(filter: FilteringInput, sort: SortingInput, paginate: PaginatingInput): [Scale]
 }
 
 type Mutation {
-  addNote(input: AddNoteInput): Note
-  updateNote(id: ID, input: UpdateNoteInput): Note
-  deleteNote(id: ID): ID
+  addNote(input: AddNoteInput!): Note
+  updateNote(id: ID!, input: UpdateNoteInput): Note
+  deleteNote(id: ID!): ID
 
-  addInstrument(input: AddInstrumentInput): Instrument
-  updateInstrument(id: ID, input: UpdateInstrumentInput): Instrument
-  deleteInstrument(id: ID): ID
+  addInstrument(input: AddInstrumentInput!): Instrument
+  updateInstrument(id: ID!, input: UpdateInstrumentInput): Instrument
+  deleteInstrument(id: ID!): ID
 
-  addTuning(input: AddTuningInput): Tuning
-  updateTuning(id: ID, input: UpdateTuningInput): Tuning
-  deleteTuning(id: ID): ID
+  addTuning(input: AddTuningInput!): Tuning
+  updateTuning(id: ID!, input: UpdateTuningInput): Tuning
+  deleteTuning(id: ID!): ID
 
-  addScale(input: AddScaleInput): Scale
-  updateScale(id: ID, input: UpdateScaleInput): Scale
-  deleteScale(id: ID): ID
+  addScale(input: AddScaleInput!): Scale
+  updateScale(id: ID!, input: UpdateScaleInput): Scale
+  deleteScale(id: ID!): ID
 }
 
 

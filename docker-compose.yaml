@@ -1,4 +1,48 @@
 services:
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    depends_on:
+      - apollo
+    environment:
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
+      REST_PORT: ${REST_PORT}
+      APOLLO_PORT: ${APOLLO_PORT}
+    ports:
+      - 127.0.0.1:${NGINX_PASSTHROUGH_PORT}:80
+    networks:
+      - public-network
+
+  rest:
+    container_name: rest
+    command: npm run dev
+    build:
+      context: ./rest
+      dockerfile: Dockerfile
+    depends_on:
+      - grpc
+    environment:
+      PORT: ${REST_PORT}
+      NODE_END: development
+      GRPC_ADDRESS: grpc:${GRPC_PORT}
+    ports:
+      - ${REST_PORT}:${REST_PORT}
+    volumes:
+      - ./shared:/usr/shared
+    networks:
+      - public-network
+    develop:
+      watch:
+        - action: sync
+          path: ./rest/src
+          target: /usr/rest/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./rest/package.json
+
   apollo:
     container_name: apollo
     command: npm run dev

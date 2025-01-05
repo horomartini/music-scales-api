@@ -1,5 +1,3 @@
-import type { NextFunction, Request, Response } from 'express'
-
 import { Router } from 'express'
 
 import getNotes from './get'

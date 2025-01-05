@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 
-import { BadBodySchemaError, BadHeaderError, BadParamError, ExtendedError, NotFoundError } from '../utils/errors'
+import { ErrorTypes, BadBodySchemaError, BadHeaderError, BadParamError, ExtendedError, NotFoundError, MissingParamError } from '../utils/errors'
 
 import Log from '@shared/logger'
 
@@ -15,61 +15,59 @@ export const globalErrorHandler = (
   const message = err.message
   const stack = err?.stack || `${name}: ${message}\n\t at undefined`
   const status = err?.status || 500
-  const type = err?.type
+  const type = err?.type || ErrorTypes.UNKNOWN
   const body = err?.body || ''
   const schema = err?.schema || ''
 
   Log.error(`[${status} :: <${type}>] ${stack}`)
 
-  if (err instanceof NotFoundError && type === 'db.find.failed')
-    res
-      .status(status)
-      .json({
-        success: false,
-        message: message,
-      })
+  if (err instanceof NotFoundError && type === ErrorTypes.DB_FIND)
+    res.status(status).json({
+      success: false,
+      error: message,
+    })
 
-  else if (err instanceof BadParamError && type === 'param.schema.failed')
-    res
-      .status(status)
-      .json({
-        success: false,
-        message: message,
-        expected: schema,
-      })
+  else if (err instanceof BadParamError && type === ErrorTypes.PARAM_INVALID)
+    res.status(status).json({
+      success: false,
+      error: message,
+      details: {
+        expectedSchema: schema,
+      },
+    })
   
-  else if (err instanceof BadBodySchemaError && type === 'body.schema.failed')
-    res
-      .status(status)
-      .json({
-        success: false, 
-        message: message,
-        body: body,
-        expected: schema,
-      })
+  else if (err instanceof MissingParamError && type === ErrorTypes.PARAM_REQUIRED)
+    res.status(status).json({
+      success: false,
+      error: message,
+    })
+  
+  else if (err instanceof BadBodySchemaError && type === ErrorTypes.BODY_INVALID)
+    res.status(status).json({
+      success: false, 
+      error: message,
+      details: {
+        receivedBody: body,
+        expectedSchema: schema,
+      },
+    })
   
   else if (err instanceof BadHeaderError && type?.includes('header'))
-    res
-      .status(status)
-      .json({
-        success: false,
-        message: message,
-      })
+    res.status(status).json({
+      success: false,
+      error: message,
+    })
 
-  else if (status === 400 && type === 'entity.parse.failed') { // TODO: make this in enum?
-    res
-      .status(status)
-      .json({ 
-        success: false, 
-        message: 'Error parsing request body.', // TODO: better hints?
-      })
+  else if (status === 400 && type === ErrorTypes.ENTITY_PARSE) {
+    res.status(status).json({ 
+      success: false, 
+      error: 'Error parsing request body.',
+    })
   }
   
   else
-    res
-      .status(500)
-      .json({ 
-        success: false, 
-        message: 'An unexpected error occured.' 
-      })
+    res.status(500).json({ 
+      success: false, 
+      error: 'An unexpected error occured.' 
+    })
 }

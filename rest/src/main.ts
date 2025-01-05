@@ -7,7 +7,7 @@ import healthcheck from './api/healthcheck'
 import { logger } from './middleware/logger'
 import { globalErrorHandler } from './middleware/errors-handlers'
 
-import grpc from 'proto/grpc'
+import grpc from './proto/grpc'
 
 import Log from '@shared/logger'
 

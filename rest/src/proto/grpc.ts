@@ -57,6 +57,11 @@ import {
 
 
 abstract class Client {
+  public static Note?: NoteService = undefined
+  public static Instrument?: InstrumentService = undefined
+  public static Tuning?: TuningService = undefined
+  public static Scale?: ScaleService = undefined
+
   public static init = (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>) => {
     this.Note = new NoteService(new NoteServiceClient(address, credentials, options))
     this.Instrument = new InstrumentService(new InstrumentServiceClient(address, credentials, options))
@@ -64,10 +69,16 @@ abstract class Client {
     this.Scale = new ScaleService(new ScaleServiceClient(address, credentials, options))
   }
 
-  public static Note?: NoteService = undefined
-  public static Instrument?: InstrumentService = undefined
-  public static Tuning?: TuningService = undefined
-  public static Scale?: ScaleService = undefined
+  public static isInitialized = () => 
+    this.isNoteInitialized() && 
+    this.isInstrumentInitialized() && 
+    this.isTuningInitialized() && 
+    this.isScaleInitialized()
+
+  private static isNoteInitialized = (x = this.Note): x is NoteService => this.Note !== undefined
+  private static isInstrumentInitialized = (x = this.Instrument): x is InstrumentService => this.Instrument !== undefined
+  private static isTuningInitialized = (x = this.Tuning): x is TuningService => this.Tuning !== undefined
+  private static isScaleInitialized = (x = this.Scale): x is ScaleService => this.Scale !== undefined
 }
 
 class NoteService {

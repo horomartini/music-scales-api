@@ -1,0 +1,16 @@
+services:
+  rest:
+    ports:
+      - ${REST_PORT}:${REST_PORT}
+
+  apollo:
+    ports:
+      - ${APOLLO_PORT}:${APOLLO_PORT}
+
+  grpc:
+    ports:
+      - ${GRPC_PORT}:${GRPC_PORT}
+
+  mongo:
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}

@@ -5,15 +5,17 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     depends_on:
+      - rest
       - apollo
     environment:
       NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
-      REST_PORT: ${REST_PORT}
-      APOLLO_PORT: ${APOLLO_PORT}
+      REST_ADDRESS: rest:${REST_PORT}
+      APOLLO_ADDRESS: apollo:${APOLLO_PORT}
     ports:
-      - 127.0.0.1:${NGINX_PASSTHROUGH_PORT}:80
+      - ${NGINX_IP}:${NGINX_PORT}:80
     networks:
       - public-network
+      - client-proxy-network
 
   rest:
     container_name: rest
@@ -27,12 +29,11 @@ services:
       PORT: ${REST_PORT}
       NODE_END: development
       GRPC_ADDRESS: grpc:${GRPC_PORT}
-    ports:
-      - ${REST_PORT}:${REST_PORT}
     volumes:
       - ./shared:/usr/shared
     networks:
-      - public-network
+      - client-proxy-network
+      - server-proxy-network
     develop:
       watch:
         - action: sync
@@ -55,12 +56,11 @@ services:
       PORT: ${APOLLO_PORT}
       NODE_ENV: development
       GRPC_ADDRESS: grpc:${GRPC_PORT}
-    ports:
-      - ${APOLLO_PORT}:${APOLLO_PORT}
     volumes:
       - ./shared:/usr/shared
     networks:
-      - public-network
+      - client-proxy-network
+      - server-proxy-network
     develop:
       watch:
         - action: sync
@@ -82,12 +82,10 @@ services:
     environment:
       PORT: ${GRPC_PORT}
       MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
-    ports:
-      - "${GRPC_PORT}:${GRPC_PORT}"
     volumes:
       - ./shared:/usr/shared
     networks:
-      - public-network
+      - server-proxy-network
       - database-network
     develop:
       watch:
@@ -120,5 +118,12 @@ volumes:
 networks:
   public-network:
     driver: bridge
+
+  client-proxy-network:
+    driver: bridge
+
+  server-proxy-network:
+    driver: bridge
+
   database-network:
     driver: bridge 

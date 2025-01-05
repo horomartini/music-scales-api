@@ -1,7 +1,9 @@
 import type { Request, Response, NextFunction } from 'express'
 
-import { Log } from '../utils/logger'
 import { BadBodySchemaError, BadHeaderError, BadParamError, ExtendedError, NotFoundError } from '../utils/errors'
+
+import Log from '@shared/logger'
+
 
 export const globalErrorHandler = (
   err: ExtendedError, 

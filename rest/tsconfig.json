@@ -111,6 +111,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/types/*.d.ts", "jest.config.ts", "src/api/v1/post.old.ts,"],
-  "exclude": ["src/**/*.old.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/types/*.d.ts"],
+  "exclude": ["src/**/*.old.ts", "src/**/api/v1-old/*"]
 }

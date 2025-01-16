@@ -71,7 +71,8 @@ export const parseSorters = (
     .map(([key, val]) => `${key} ${val}`)
     .join(',')
   
-  res.locals.ux = { ...res.locals.ux, sort: sortString }
+  console.log(sortString)
+  res.locals.ux = { ...res.locals.ux, orderBy: sortString }
 
   next()
 }

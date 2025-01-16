@@ -19,6 +19,27 @@ type Notes = Exclude<GetNotesResponse['notes'], undefined>
 
 const notes = Router()
 
+/**
+ * @swagger
+ * /notes:
+ *  get:
+ *    summary: Get all notes
+ *    description: Fetch a list of all notes.
+ *    responses:
+ *      200:
+ *        description: A list of notes.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    type: string
+ *                  name:
+ *                    type: string
+ */
 notes.get('/',
   checkGRPC,
   parseFilters,

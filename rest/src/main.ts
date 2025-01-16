@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 
 import express from 'express'
 import cors from 'cors'
+import swaggerJSDoc from 'swagger-jsdoc'
 
 import apiRouter from './api/router'
 import healthcheck from './api/healthcheck'
@@ -32,12 +33,27 @@ else {
 
 
 const app = express()
+
 const corsOptions = {
-  origins: ['http://localhost:8044'],
+  origins: ['http://nginx:8044'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Accept', 'User-Agent'],
   optionsSuccessStatus: 204,
 }
+
+const swaggerOptions: swaggerJSDoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Music Scales API Documentation',
+      version: '1.0.0',
+      description: 'Generated API documentation using OpenAPI',
+    },
+  },
+  apis: ['./src/api/v1/**/*.ts'],
+}
+
+const openAPISpec = swaggerJSDoc(swaggerOptions)
 
 
 app.use(cors<cors.CorsRequest>(corsOptions))
@@ -45,6 +61,9 @@ app.use(express.json())
 app.use(logger)
 
 app.use('/api', healthcheck, apiRouter)
+app.get('/api/openapi.json', (_: Request, res: Response) => {
+  res.json(openAPISpec)
+})
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({

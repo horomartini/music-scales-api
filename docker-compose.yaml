@@ -11,6 +11,7 @@ services:
       NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
       REST_ADDRESS: rest:${REST_PORT}
       APOLLO_ADDRESS: apollo:${APOLLO_PORT}
+      DOCS_ADDRESS: docs:${DOCS_PORT}
     ports:
       - ${NGINX_IP}:${NGINX_PORT}:80
     networks:
@@ -110,6 +111,23 @@ services:
       - mongo-data:/data/db
     networks:
       - database-network
+
+  docs:
+    container_name: docs
+    command: npm run dev
+    build: 
+      context: ./docs
+      dockerfile: Dockerfile
+    depends_on:
+      - nginx
+    environment:
+      PORT: ${DOCS_PORT}
+      NODE_END: development
+      OPENAPI_SPEC_PATH: http://localhost:${NGINX_PORT}/api/openapi.json
+    volumes:
+      - ./shared:/usr/shared
+    networks:
+      - public-network
 
 volumes:
   shared:

@@ -14,3 +14,7 @@ services:
   mongo:
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
+
+  docs:
+    ports:
+      - ${DOCS_PORT}:${DOCS_PORT}

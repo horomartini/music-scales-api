@@ -1,3 +1,5 @@
+import type { Request, Response } from 'express'
+
 import express from 'express'
 import cors from 'cors'
 
@@ -44,6 +46,12 @@ app.use(logger)
 
 app.use('/api', healthcheck, apiRouter)
 
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    error: `Cannot ${req.method} ${req.originalUrl}`,
+  })
+})
 app.use(globalErrorHandler)
 
 app.listen(PORT, () => {

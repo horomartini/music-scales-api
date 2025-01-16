@@ -33,7 +33,7 @@ notes.get('/',
       res.locals.paginationData = {
         totalCount: response.totalCount, 
         pagesCount: response.totalPages, 
-        nextPage: response.nextPageToken, 
+        nextPage: Number(response.nextPageToken.split(' ')?.[1] || -1), 
       }
     } 
     catch (error) {
@@ -45,8 +45,8 @@ notes.get('/',
 
     next()
   },
-  checkGRPCErrors, // TODO: does not quite work
-  (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, error?: ErrorData, ux?: GetNotesRequest }>, next: NextFunction) => {
+  checkGRPCErrors, // TODO: does not quite work ... does it?
+  (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, ux?: GetNotesRequest }>, next: NextFunction) => {
     res.status(200).json({ 
       success: true, 
       data: res.locals.data, 
@@ -58,12 +58,12 @@ notes.get('/',
 notes.get('/:id',
   checkGRPC,
   validateParamId,
-  async (req: Request<ParamId>, res: Response, next: NextFunction) => {
+  async (req: Request<ParamId>, res: Response<ResponseBody<Note | null>, { data: Note | null, error?: ErrorData }>, next: NextFunction) => {
     const request = grpc.Client.Note!.req.get({ id: req.params.id })
 
     try {
       const response = await grpc.Client.Note!.get(request)
-      res.locals.data = response.note
+      res.locals.data = response.note ?? null
     } 
     catch (error) {
       res.locals.error = createErrorData(error)
@@ -74,7 +74,8 @@ notes.get('/:id',
 
     next()
   },
-  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null, error?: ErrorData }>, next: NextFunction) => {
+  checkGRPCErrors,
+  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>, next: NextFunction) => {
     res.status(200).json({ success: true, data: res.locals.data })
   }
 )

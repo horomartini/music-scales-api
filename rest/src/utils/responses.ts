@@ -28,7 +28,7 @@ export type ResponseBody<T> = {
 export type PaginationData = {
   totalCount: number
   pagesCount: number
-  nextPage: string
+  nextPage: number
 }
 
 export type ResponseErrorDetails = {

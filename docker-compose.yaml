@@ -11,7 +11,7 @@ services:
       NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
       REST_ADDRESS: rest:${REST_PORT}
       APOLLO_ADDRESS: apollo:${APOLLO_PORT}
-      DOCS_ADDRESS: docs:${DOCS_PORT}
+      SWAGGER_ADDRESS: swagger:${SWAGGER_PORT}
     ports:
       - ${NGINX_IP}:${NGINX_PORT}:80
     networks:
@@ -35,15 +35,6 @@ services:
     networks:
       - client-proxy-network
       - server-proxy-network
-    develop:
-      watch:
-        - action: sync
-          path: ./rest/src
-          target: /usr/rest/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./rest/package.json
 
   apollo:
     container_name: apollo
@@ -62,15 +53,6 @@ services:
     networks:
       - client-proxy-network
       - server-proxy-network
-    develop:
-      watch:
-        - action: sync
-          path: ./apollo/src
-          target: /usr/apollo/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./apollo/package.json
 
   grpc:
     container_name: grpc
@@ -88,15 +70,6 @@ services:
     networks:
       - server-proxy-network
       - database-network
-    develop:
-      watch:
-        - action: sync
-          path: ./grpc/src
-          target: /usr/grpc/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./grpc/package.json
 
   mongo:
     container_name: mongo
@@ -112,16 +85,16 @@ services:
     networks:
       - database-network
 
-  docs:
-    container_name: docs
+  swagger:
+    container_name: swagger
     command: npm run dev
     build: 
-      context: ./docs
+      context: ./swagger
       dockerfile: Dockerfile
     depends_on:
       - nginx
     environment:
-      PORT: ${DOCS_PORT}
+      PORT: ${SWAGGER_PORT}
       NODE_END: development
       OPENAPI_SPEC_PATH: http://localhost:${NGINX_PORT}/api/openapi.json
     volumes:

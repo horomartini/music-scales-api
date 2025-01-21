@@ -1,148 +1,69 @@
-// import type { Request, Response, NextFunction } from 'express'
-// import type { Instrument, Note } from 'types/api'
-// import type { InstrumentDoc, NoteDoc, ScaleDoc, TuningDoc } from 'types/db'
-// import type { ParamId } from 'types/req'
+import type { Request, Response, NextFunction } from 'express'
+import { type ParamId } from 'utils/requests'
+import type { ResponseBody } from 'utils/responses'
 
-// import express from 'express'
-// import mongoose from 'mongoose'
+import { Router } from 'express'
 
-// import { checkIfExist, checkLocalsData } from '../../middleware/request'
+import { checkGRPC } from 'middleware/request'
 
-// import db from '../../db'
+import { checkGRPCErrors } from 'utils/responses'
+import { createErrorData, ErrorData } from 'utils/errors'
 
-// import { stringToObjectId } from '../../utils/types'
+import grpc from 'proto/grpc'
 
+const notes = Router()
 
-// const router = express.Router()
+/**
+ * @swagger
+ *  /notes/{id}:
+ *  delete:
+ *    operationId: deleteNote
+ *    tags: 
+ *      - notes
+ *    summary: Delete note
+ *    description: Delete note with specified ID.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noteId'
+ *    responses:
+ *      200:
+ *        description: ID of note that was deleted.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                data: 
+ *                  type: string
+ *              required:
+ *                - success
+ *                - data
+ *      404:
+ *        $ref: '#/components/responses/noteNotFound'
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */  
+notes.delete('/:id',
+  checkGRPC,
+  async (req: Request<ParamId>, res: Response<ResponseBody<string>, { data: string, error?: ErrorData }>, next: NextFunction) => {
+    const request = grpc.Client.Note!.req.delete({ id: req.params.id })
 
+    try {
+      const response = await grpc.Client.Note!.delete(request)
+      res.locals.data = response.id
+    } 
+    catch (error) {
+      res.locals.error = createErrorData(error)
+    }
 
-// router.delete(
-//   '/notes/:id',
-//   (req: Request<ParamId>, res: Response, next: NextFunction) => {
-//     const { id } = req.params
-//     res.locals.data = { _id: stringToObjectId(id) } as Pick<NoteDoc, '_id'>
-//     res.locals.schema = {
-//       _id: { type: mongoose.Types.ObjectId, required: true },
-//     }
-//     next()
-//   },
-//   checkLocalsData<Pick<NoteDoc, '_id'>>,
-//   async (_: Request, res: Response<{}, { data: Pick<NoteDoc, '_id'>, exists?: NoteDoc }>, next: NextFunction) => {
-//     const noteDb = await db.notes.getOne({ _id: res.locals.data._id })
-
-//     if (noteDb !== null)
-//       res.locals.exists = noteDb
-
-//     next()
-//   },
-//   checkIfExist,
-//   async (_: Request, res: Response<{}, { data: Pick<NoteDoc, '_id'> }>, next: NextFunction) => {
-//     await db.notes.deleteOne(res.locals.data)
-//     next()
-//   },
-//   async (req: Request<{}, {}, {}, { with_content: string }>, res: Response) => {
-//     if (req.query.with_content === 'true') 
-//       res.status(200).json({ success: true, data: await db.notes.getMany() })
-//     else
-//       res.sendStatus(204)
-//   }
-// )
-
-// router.delete(
-//   '/instruments/:id',
-//   (req: Request<ParamId>, res: Response, next: NextFunction) => {
-//     const { id } = req.params
-//     res.locals.data = { _id: stringToObjectId(id) } as Pick<InstrumentDoc, '_id'>
-//     res.locals.schema = {
-//       _id: { type: mongoose.Types.ObjectId, required: true },
-//     }
-//     next()
-//   },
-//   checkLocalsData<Pick<InstrumentDoc, '_id'>>,
-//   async (_: Request, res: Response<{}, { data: Pick<InstrumentDoc, '_id'>, exists?: InstrumentDoc }>, next: NextFunction) => {
-//     const noteDb = await db.instruments.getOne({ _id: res.locals.data._id })
-
-//     if (noteDb !== null)
-//       res.locals.exists = noteDb
-
-//     next()
-//   },
-//   checkIfExist,
-//   async (_: Request, res: Response<{}, { data: Pick<InstrumentDoc, '_id'> }>, next: NextFunction) => {
-//     await db.instruments.deleteOne(res.locals.data)
-//     next()
-//   },
-//   async (req: Request<{}, {}, {}, { with_content: string }>, res: Response) => {
-//     if (req.query.with_content === 'true') 
-//       res.status(200).json({ success: true, data: await db.notes.getMany() })
-//     else
-//       res.sendStatus(204)
-//   }
-// )
-
-// router.delete(
-//   '/tunings/:id',
-//   (req: Request<ParamId>, res: Response, next: NextFunction) => {
-//     const { id } = req.params
-//     res.locals.data = { _id: stringToObjectId(id) } as Pick<TuningDoc, '_id'>
-//     res.locals.schema = {
-//       _id: { type: mongoose.Types.ObjectId, required: true },
-//     }
-//     next()
-//   },
-//   checkLocalsData<Pick<TuningDoc, '_id'>>,
-//   async (_: Request, res: Response<{}, { data: Pick<TuningDoc, '_id'>, exists?: TuningDoc }>, next: NextFunction) => {
-//     const noteDb = await db.tunings.getOne({ _id: res.locals.data._id })
-
-//     if (noteDb !== null)
-//       res.locals.exists = noteDb
-
-//     next()
-//   },
-//   checkIfExist,
-//   async (_: Request, res: Response<{}, { data: Pick<TuningDoc, '_id'> }>, next: NextFunction) => {
-//     await db.tunings.deleteOne(res.locals.data)
-//     next()
-//   },
-//   async (req: Request<{}, {}, {}, { with_content: string }>, res: Response) => {
-//     if (req.query.with_content === 'true') 
-//       res.status(200).json({ success: true, data: await db.notes.getMany() })
-//     else
-//       res.sendStatus(204)
-//   }
-// )
-
-// router.delete(
-//   '/scales/:id',
-//   (req: Request<ParamId>, res: Response, next: NextFunction) => {
-//     const { id } = req.params
-//     res.locals.data = { _id: stringToObjectId(id) } as Pick<ScaleDoc, '_id'>
-//     res.locals.schema = {
-//       _id: { type: mongoose.Types.ObjectId, required: true },
-//     }
-//     next()
-//   },
-//   checkLocalsData<Pick<ScaleDoc, '_id'>>,
-//   async (_: Request, res: Response<{}, { data: Pick<ScaleDoc, '_id'>, exists?: ScaleDoc }>, next: NextFunction) => {
-//     const noteDb = await db.scales.getOne({ _id: res.locals.data._id })
-
-//     if (noteDb !== null)
-//       res.locals.exists = noteDb
-
-//     next()
-//   },
-//   checkIfExist,
-//   async (_: Request, res: Response<{}, { data: Pick<ScaleDoc, '_id'> }>, next: NextFunction) => {
-//     await db.scales.deleteOne(res.locals.data)
-//     next()
-//   },
-//   async (req: Request<{}, {}, {}, { with_content: string }>, res: Response) => {
-//     if (req.query.with_content === 'true') 
-//       res.status(200).json({ success: true, data: await db.notes.getMany() })
-//     else
-//       res.sendStatus(204)
-//   }
-// )
+    next()
+  },
+  checkGRPCErrors,
+  (_: Request, res: Response<ResponseBody<string>, { data: string }>, next: NextFunction) => {
+    res.status(200).json({ success: true, data: res.locals.data })
+  }
+)
 
 
-// export default router
+export default notes

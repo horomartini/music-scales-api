@@ -19,6 +19,46 @@ type Note = Exclude<GetNoteResponse['note'], undefined>
 
 const notes = Router()
 
+
+/**
+ * @swagger
+ * /notes/{id}:
+ *  post:
+ *    operationId: postNote
+ *    tags: 
+ *      - notes
+ *    summary: Add note
+ *    description: Add note with specified body. ID is generated automatically.
+ *    requestBody:
+ *      description: Note schema without ID.
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              name:
+ *                type: string
+ *            required:
+ *              - name
+ *    responses:
+ *      200:
+ *        description: Note that was created.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                data: 
+ *                  $ref: '#/components/responses/noteData'
+ *              required:
+ *                - success
+ *                - data
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */  
 notes.post('/', 
   checkGRPC,
   (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null, schema: SchemaDefinition }>, next: NextFunction) => {

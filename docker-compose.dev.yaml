@@ -1,0 +1,44 @@
+services:
+  rest:
+    develop:
+      watch:
+        - action: sync
+          path: ./rest/src
+          target: /usr/rest/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./rest/package.json\
+  
+  apollo:
+    develop:
+      watch:
+        - action: sync
+          path: ./apollo/src
+          target: /usr/apollo/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./apollo/package.json
+  
+  grpc:
+    develop:
+      watch:
+        - action: sync
+          path: ./grpc/src
+          target: /usr/grpc/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./grpc/package.json
+  
+  swagger:
+    develop:
+      watch:
+        - action: sync
+          path: ./swagger/src
+          target: /usr/swagger/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./swagger/package.json

@@ -21,25 +21,42 @@ const notes = Router()
 
 /**
  * @swagger
- * /notes:
+ *  /notes:
  *  get:
+ *    operationId: getNotes
+ *    tags: 
+ *      - notes
  *    summary: Get all notes
  *    description: Fetch a list of all notes.
+ *    parameters:
+ *      - $ref: '#/components/parameters/filter/name_ne'
+ *      - $ref: '#/components/parameters/filter/name_eq'
+ *      - $ref: '#/components/parameters/sort/name'
+ *      - $ref: '#/components/parameters/paginate/page'
+ *      - $ref: '#/components/parameters/paginate/limit'
  *    responses:
  *      200:
  *        description: A list of notes.
  *        content:
  *          application/json:
  *            schema:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  id:
- *                    type: string
- *                  name:
- *                    type: string
- */
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                  default: true
+ *                data: 
+ *                  type: array
+ *                  items:
+ *                    $ref: '#/components/responses/noteData'
+ *                paginationData:
+ *                  $ref: '#/components/responses/paginationData'
+ *              required:
+ *                - success
+ *                - data
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */                     
 notes.get('/',
   checkGRPC,
   parseFilters,
@@ -66,7 +83,7 @@ notes.get('/',
 
     next()
   },
-  checkGRPCErrors, // TODO: does not quite work ... does it?
+  checkGRPCErrors,
   (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, ux?: GetNotesRequest }>, next: NextFunction) => {
     res.status(200).json({ 
       success: true, 
@@ -76,6 +93,37 @@ notes.get('/',
   }
 )
 
+/**
+ * @swagger
+ *  /notes/{id}:
+ *  get:
+ *    operationId: getNote
+ *    tags: 
+ *      - notes
+ *    summary: Get note
+ *    description: Fetch a note based on given ID.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noteId'
+ *    responses:
+ *      200:
+ *        description: Note document.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                data: 
+ *                  $ref: '#/components/responses/noteData'
+ *              required:
+ *                - success
+ *                - data
+ *      404:
+ *        $ref: '#/components/responses/noteNotFound'
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */  
 notes.get('/:id',
   checkGRPC,
   validateParamId,

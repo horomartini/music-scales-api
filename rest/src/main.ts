@@ -6,6 +6,7 @@ import swaggerJSDoc from 'swagger-jsdoc'
 
 import apiRouter from './api/router'
 import healthcheck from './api/healthcheck'
+import * as swaggerComponents from './api/v1/swagger'
 
 import { logger } from './middleware/logger'
 import { globalErrorHandler } from './middleware/errors-handlers'
@@ -49,6 +50,7 @@ const swaggerOptions: swaggerJSDoc.Options = {
       version: '1.0.0',
       description: 'Generated API documentation using OpenAPI',
     },
+    components: swaggerComponents,
   },
   apis: ['./src/api/v1/**/*.ts'],
 }

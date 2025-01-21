@@ -16,7 +16,7 @@ Log.init(() => isProd(NODE_ENV))
 const app = express()
 
 app.use(
-  '/api/docs',
+  '/api/swagger',
   swaggerUi.serve,
   swaggerUi.setup(undefined, {
     swaggerOptions: {

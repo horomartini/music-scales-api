@@ -15,6 +15,6 @@ services:
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
 
-  docs:
+  swagger:
     ports:
-      - ${DOCS_PORT}:${DOCS_PORT}
+      - ${SWAGGER_PORT}:${SWAGGER_PORT}

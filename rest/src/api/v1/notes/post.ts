@@ -30,17 +30,7 @@ const notes = Router()
  *    summary: Add note
  *    description: Add note with specified body. ID is generated automatically.
  *    requestBody:
- *      description: Note schema without ID.
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              name:
- *                type: string
- *            required:
- *              - name
+ *      $ref: '#/components/requests/noteBody'
  *    responses:
  *      200:
  *        description: Note that was created.

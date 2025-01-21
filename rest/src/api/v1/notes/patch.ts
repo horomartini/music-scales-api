@@ -29,15 +29,7 @@ const notes = Router()
  *    summary: Update note
  *    description: Update chosen fields in Note except for ID.
  *    requestBody:
- *      description: Note schema without ID.
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              name:
- *                type: string
+ *      $ref: '#/components/requests/noteBody'
  *    responses:
  *      200:
  *        description: Note that was updated.

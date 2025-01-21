@@ -27,6 +27,23 @@ export const parameters = {
 }
 
 export const requests = {
+  noteBody: {
+    description: 'Note schema without ID.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+          required: [
+            'name',
+          ],
+        },
+      },
+    },
+  },
 }
 
 export const responses = {

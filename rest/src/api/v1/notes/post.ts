@@ -10,9 +10,9 @@ import { parseFilters, parseSorters, validateParamId } from 'middleware/request'
 
 import { checkGRPCErrors } from 'utils/responses'
 import { createErrorData, ErrorData } from 'utils/errors'
+import { SchemaDefinition } from 'utils/parser'
 
 import grpc from 'proto/grpc'
-import { SchemaDefinition } from 'utils/parser'
 
 
 type Note = Exclude<GetNoteResponse['note'], undefined>

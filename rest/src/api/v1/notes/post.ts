@@ -22,7 +22,7 @@ const notes = Router()
 
 /**
  * @swagger
- * /notes/{id}:
+ *  /notes/{id}:
  *  post:
  *    operationId: postNote
  *    tags: 

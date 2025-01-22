@@ -1,5 +1,6 @@
 export const parameters = {
   noteId: createDefaultIdParam({ description: 'Note ID field.' }),
+  scaleId: createDefaultIdParam({ description: 'Scale ID field' }),
 
   filter: {
     ...createDefaultFilterQueryParamObject({ name: 'name' })
@@ -44,6 +45,67 @@ export const requests = {
       },
     },
   },
+  optionalNoteBody: {
+    description: 'Note schema without ID.',
+    required: false,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+
+  scaleBody: {
+    description: 'Scale schema without ID.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            steps: {
+              type: 'array', 
+              minItems: 1,
+              items: {
+                type: 'number',
+              },
+            },
+          },
+          required: [
+            'name',
+            'steps',
+          ],
+        },
+      },
+    },
+  },
+  optionalScaleBody: {
+    description: 'Scale schema without ID.',
+    required: false,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            steps: {
+              type: 'array', 
+              minItems: 1,
+              items: {
+                type: 'number',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 }
 
 export const responses = {
@@ -56,6 +118,25 @@ export const responses = {
     required: [
       'id',
       'name',
+    ],
+  },
+  scaleData: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      name: { type: 'string' },
+      steps: {
+        type: 'array', 
+        minItems: 1,
+        items: {
+          type: 'number',
+        },
+      },
+    },
+    required: [
+      'id',
+      'name',
+      'steps',
     ],
   },
 
@@ -105,7 +186,10 @@ export const responses = {
   },
   noteNotFound: createNotFoundResponse({
     description: 'Note with given ID was not found.'
-  })
+  }),
+  scaleNotFound: createNotFoundResponse({
+    description: 'Scale with given ID was not found.'
+  }),
 }
 
 

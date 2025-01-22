@@ -14,6 +14,37 @@ import grpc from 'proto/grpc'
 
 const scales = Router()
 
+/**
+ * @swagger
+ *  /scales/{id}:
+ *  delete:
+ *    operationId: deleteScale
+ *    tags: 
+ *      - scales
+ *    summary: Delete scale
+ *    description: Delete scale with specified ID.
+ *    parameters:
+ *      - $ref: '#/components/parameters/scaleId'
+ *    responses:
+ *      200:
+ *        description: ID of scale that was deleted.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                data: 
+ *                  type: string
+ *              required:
+ *                - success
+ *                - data
+ *      404:
+ *        $ref: '#/components/responses/scaleNotFound'
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */  
 scales.delete('/:id',
   checkGRPC,
   async (req: Request<ParamId>, res: Response<ResponseBody<string>, { data: string, error?: ErrorData }>, next: NextFunction) => {

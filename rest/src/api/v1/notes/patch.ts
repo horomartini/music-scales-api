@@ -28,8 +28,10 @@ const notes = Router()
  *      - notes
  *    summary: Update note
  *    description: Update chosen fields in Note except for ID.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noteId'
  *    requestBody:
- *      $ref: '#/components/requests/noteBody'
+ *      $ref: '#/components/requests/optionalNoteBody'
  *    responses:
  *      200:
  *        description: Note that was updated.

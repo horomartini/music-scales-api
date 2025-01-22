@@ -18,6 +18,35 @@ type Scale = Exclude<GetScaleResponse['scale'], undefined>
 
 const scales = Router()
 
+/**
+ * @swagger
+ *  /scales/{id}:
+ *  post:
+ *    operationId: postScale
+ *    tags: 
+ *      - scales
+ *    summary: Add scale
+ *    description: Add scale with specified body. ID is generated automatically.
+ *    requestBody:
+ *      $ref: '#/components/requests/scaleBody'
+ *    responses:
+ *      200:
+ *        description: Scale that was created.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                data: 
+ *                  $ref: '#/components/responses/scaleData'
+ *              required:
+ *                - success
+ *                - data
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */  
 scales.post('/',
   checkGRPC,
   (_: Request, res: Response<ResponseBody<Scale | null>, { data: Scale | null, schema: SchemaDefinition }>, next: NextFunction) => {

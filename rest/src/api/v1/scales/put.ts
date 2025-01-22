@@ -19,6 +19,39 @@ type Scale = Exclude<GetScaleResponse['scale'], undefined>
 
 const scales = Router()
 
+/**
+ * @swagger
+ *  /scales/{id}:
+ *  put:
+ *    operationId: putScale
+ *    tags: 
+ *      - scales
+ *    summary: Overwrite scale
+ *    description: Replace all fields in Scale with different ones except for ID.
+ *    parameters:
+ *      - $ref: '#/components/parameters/scaleId'
+ *    requestBody:
+ *      $ref: '#/components/requests/scaleBody'
+ *    responses:
+ *      200:
+ *        description: Scale that was updated.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                data: 
+ *                  $ref: '#/components/responses/scaleData'
+ *              required:
+ *                - success
+ *                - data
+ *      404:
+ *        $ref: '#/components/responses/scaleNotFound'
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */  
 scales.put('/:id', 
   checkGRPC,
   (_: Request, res: Response<ResponseBody<Scale>, { data: Scale, schema: SchemaDefinition }>, next: NextFunction) => {

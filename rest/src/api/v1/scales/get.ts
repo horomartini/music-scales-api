@@ -19,6 +19,44 @@ type Scales = Exclude<GetScalesResponse['scales'], undefined>
 
 const scales = Router()
 
+/**
+ * @swagger
+ *  /scales:
+ *  get:
+ *    operationId: getScales
+ *    tags: 
+ *      - scales
+ *    summary: Get all scales
+ *    description: Fetch a list of all scales.
+ *    parameters:
+ *      - $ref: '#/components/parameters/filter/name_ne'
+ *      - $ref: '#/components/parameters/filter/name_eq'
+ *      - $ref: '#/components/parameters/sort/name'
+ *      - $ref: '#/components/parameters/paginate/page'
+ *      - $ref: '#/components/parameters/paginate/limit'
+ *    responses:
+ *      200:
+ *        description: A list of scales.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                  default: true
+ *                data: 
+ *                  type: array
+ *                  items:
+ *                    $ref: '#/components/responses/scaleData'
+ *                paginationData:
+ *                  $ref: '#/components/responses/paginationData'
+ *              required:
+ *                - success
+ *                - data
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */   
 scales.get('/',
   checkGRPC,
   parseFilters,
@@ -55,6 +93,37 @@ scales.get('/',
   }
 )
 
+/**
+ * @swagger
+ *  /scales/{id}:
+ *  get:
+ *    operationId: getScale
+ *    tags: 
+ *      - scales
+ *    summary: Get scale
+ *    description: Fetch a scale based on given ID.
+ *    parameters:
+ *      - $ref: '#/components/parameters/scaleId'
+ *    responses:
+ *      200:
+ *        description: Scale document.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success: 
+ *                  type: boolean
+ *                data: 
+ *                  $ref: '#/components/responses/scaleData'
+ *              required:
+ *                - success
+ *                - data
+ *      404:
+ *        $ref: '#/components/responses/scaleNotFound'
+ *      400:
+ *        $ref: '#/components/responses/badRequest'
+ */  
 scales.get('/:id',
   checkGRPC,
   validateParamId,

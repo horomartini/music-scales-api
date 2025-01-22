@@ -28,6 +28,8 @@ const notes = Router()
  *      - notes
  *    summary: Overwrite note
  *    description: Replace all fields in Note with different ones except for ID.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noteId'
  *    requestBody:
  *      $ref: '#/components/requests/noteBody'
  *    responses:

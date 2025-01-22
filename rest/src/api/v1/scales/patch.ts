@@ -53,12 +53,11 @@ const scales = Router()
  *        $ref: '#/components/responses/badRequest'
  */  
 scales.patch('/:id',
-  () => {  console.log('1') },
   checkGRPC,
   (_: Request, res: Response<ResponseBody<Scale>, { data: Scale, schema: SchemaDefinition }>, next: NextFunction) => {
     res.locals.schema = {
       name: { type: String, required: false },
-      steps: { type: Array, required: false, schema: { type: Number, required: true } }
+      steps: { type: Array, required: false, schema: { type: Number, required: true } },
     }
 
     next()

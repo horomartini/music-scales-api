@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
-import type { GetNoteResponse } from 'proto/__generated__/note'
+import type { GetInstrumentResponse } from 'proto/__generated__/instrument'
 import type { ResponseBody } from 'utils/responses'
 
 import { Router } from 'express'
@@ -14,25 +14,25 @@ import { SchemaDefinition } from 'utils/parser'
 import grpc from 'proto/grpc'
 
 
-type Note = Exclude<GetNoteResponse['note'], undefined>
+type Instrument = Exclude<GetInstrumentResponse['instrument'], undefined>
 
-const notes = Router()
+const instruments = Router()
 
 
 /**
  * @swagger
- *  /notes/{id}:
+ *  /instruments/{id}:
  *  post:
- *    operationId: postNote
+ *    operationId: postInstrument
  *    tags: 
- *      - notes
- *    summary: Add note
- *    description: Add note with specified body. ID is generated automatically.
+ *      - instruments
+ *    summary: Add instrument
+ *    description: Add instrument with specified body. ID is generated automatically.
  *    requestBody:
- *      $ref: '#/components/requests/noteBody'
+ *      $ref: '#/components/requests/instrumentBody'
  *    responses:
  *      200:
- *        description: Note that was created.
+ *        description: Instrument that was created.
  *        content:
  *          application/json:
  *            schema:
@@ -41,29 +41,30 @@ const notes = Router()
  *                success: 
  *                  type: boolean
  *                data: 
- *                  $ref: '#/components/responses/noteData'
+ *                  $ref: '#/components/responses/instrumentData'
  *              required:
  *                - success
  *                - data
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
-notes.post('/', 
+instruments.post('/', 
   checkGRPC,
-  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null, schema: SchemaDefinition }>, next: NextFunction) => {
+  (_: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null, schema: SchemaDefinition }>, next: NextFunction) => {
     res.locals.schema = {
       name: { type: String, required: true },
+      defaultTuningId: { type: String, required: false },
     }
 
     next()
   },
   checkBody,
-  async (req: Request, res: Response<ResponseBody<Note | null>, { data: Note | null, error?: ErrorData }>, next: NextFunction) => {
-    const request = grpc.Client.Note!.req.add(req.body)
+  async (req: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null, error?: ErrorData }>, next: NextFunction) => {
+    const request = grpc.Client.Instrument!.req.add(req.body)
 
     try {
-      const response = await grpc.Client.Note!.add(request)
-      res.locals.data = response.note ?? null
+      const response = await grpc.Client.Instrument!.add(request)
+      res.locals.data = response.instrument ?? null
     } 
     catch (error) {
       res.locals.error = createErrorData(error)
@@ -75,10 +76,10 @@ notes.post('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>) => {
+  (_: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null }>) => {
     res.status(200).json({ success: true, data: res.locals.data })
   }
 )
 
 
-export default notes
+export default instruments

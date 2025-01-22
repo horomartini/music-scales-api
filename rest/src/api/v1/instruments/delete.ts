@@ -11,22 +11,22 @@ import { createErrorData, ErrorData } from 'utils/errors'
 
 import grpc from 'proto/grpc'
 
-const notes = Router()
+const instruments = Router()
 
 /**
  * @swagger
- *  /notes/{id}:
+ *  /instruments/{id}:
  *  delete:
- *    operationId: deleteNote
+ *    operationId: deleteInstrument
  *    tags: 
- *      - notes
- *    summary: Delete note
- *    description: Delete note with specified ID.
+ *      - instruments
+ *    summary: Delete instrument
+ *    description: Delete instrument with specified ID.
  *    parameters:
- *      - $ref: '#/components/parameters/noteId'
+ *      - $ref: '#/components/parameters/instrumentId'
  *    responses:
  *      200:
- *        description: ID of note that was deleted.
+ *        description: ID of instrument that was deleted.
  *        content:
  *          application/json:
  *            schema:
@@ -40,17 +40,17 @@ const notes = Router()
  *                - success
  *                - data
  *      404:
- *        $ref: '#/components/responses/noteNotFound'
+ *        $ref: '#/components/responses/instrumentNotFound'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
-notes.delete('/:id',
+instruments.delete('/:id',
   checkGRPC,
   async (req: Request<ParamId>, res: Response<ResponseBody<string>, { data: string, error?: ErrorData }>, next: NextFunction) => {
-    const request = grpc.Client.Note!.req.delete({ id: req.params.id })
+    const request = grpc.Client.Instrument!.req.delete({ id: req.params.id })
 
     try {
-      const response = await grpc.Client.Note!.delete(request)
+      const response = await grpc.Client.Instrument!.delete(request)
       res.locals.data = response.id
     } 
     catch (error) {
@@ -66,4 +66,4 @@ notes.delete('/:id',
 )
 
 
-export default notes
+export default instruments

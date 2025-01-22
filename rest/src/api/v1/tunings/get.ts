@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
-import type { GetNoteResponse, GetNotesRequest, GetNotesResponse } from 'proto/__generated__/note'
+import type { GetTuningResponse, GetTuningsRequest, GetTuningsResponse } from 'proto/__generated__/tuning'
 import type { ParamId } from 'utils/requests'
 import type { PaginationData, ResponseBody } from 'utils/responses'
 
@@ -14,20 +14,20 @@ import { createErrorData, ErrorData } from 'utils/errors'
 import grpc from 'proto/grpc'
 
 
-type Note = Exclude<GetNoteResponse['note'], undefined>
-type Notes = Exclude<GetNotesResponse['notes'], undefined>
+type Tuning = Exclude<GetTuningResponse['tuning'], undefined>
+type Tunings = Exclude<GetTuningsResponse['tunings'], undefined>
 
-const notes = Router()
+const tunings = Router()
 
 /**
  * @swagger
- *  /notes:
+ *  /tunings:
  *  get:
- *    operationId: getNotes
+ *    operationId: getTunings
  *    tags: 
- *      - notes
- *    summary: Get all notes
- *    description: Fetch a list of all notes.
+ *      - tunings
+ *    summary: Get all tunings
+ *    description: Fetch a list of all tunings.
  *    parameters:
  *      - $ref: '#/components/parameters/filter/name_ne'
  *      - $ref: '#/components/parameters/filter/name_eq'
@@ -36,7 +36,7 @@ const notes = Router()
  *      - $ref: '#/components/parameters/paginate/limit'
  *    responses:
  *      200:
- *        description: A list of notes.
+ *        description: A list of tunings.
  *        content:
  *          application/json:
  *            schema:
@@ -48,7 +48,7 @@ const notes = Router()
  *                data: 
  *                  type: array
  *                  items:
- *                    $ref: '#/components/responses/noteData'
+ *                    $ref: '#/components/responses/tuningData'
  *                paginationData:
  *                  $ref: '#/components/responses/paginationData'
  *              required:
@@ -57,17 +57,17 @@ const notes = Router()
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */                     
-notes.get('/',
+tunings.get('/',
   checkGRPC,
   parseFilters,
   parseSorters,
   parsePagination,
-  async (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, error?: ErrorData, ux?: GetNotesRequest }>, next: NextFunction) => {
-    const request = grpc.Client.Note!.req.getMany(res.locals.ux)
+  async (_: Request, res: Response<ResponseBody<Tunings>, { data: Tunings, paginationData?: PaginationData, error?: ErrorData, ux?: GetTuningsRequest }>, next: NextFunction) => {
+    const request = grpc.Client.Tuning!.req.getMany(res.locals.ux)
 
     try {
-      const response = await grpc.Client.Note!.getMany(request)
-      res.locals.data = response.notes
+      const response = await grpc.Client.Tuning!.getMany(request)
+      res.locals.data = response.tunings
       res.locals.paginationData = {
         totalCount: response.totalCount, 
         pagesCount: response.totalPages, 
@@ -84,7 +84,7 @@ notes.get('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, ux?: GetNotesRequest }>) => {
+  (_: Request, res: Response<ResponseBody<Tunings>, { data: Tunings, paginationData?: PaginationData, ux?: GetTuningsRequest }>) => {
     res.status(200).json({ 
       success: true, 
       data: res.locals.data, 
@@ -95,18 +95,18 @@ notes.get('/',
 
 /**
  * @swagger
- *  /notes/{id}:
+ *  /tunings/{id}:
  *  get:
- *    operationId: getNote
+ *    operationId: getTuning
  *    tags: 
- *      - notes
- *    summary: Get note
- *    description: Fetch a note based on given ID.
+ *      - tunings
+ *    summary: Get tuning
+ *    description: Fetch a tuning based on given ID.
  *    parameters:
- *      - $ref: '#/components/parameters/noteId'
+ *      - $ref: '#/components/parameters/tuningId'
  *    responses:
  *      200:
- *        description: Note document.
+ *        description: Tuning document.
  *        content:
  *          application/json:
  *            schema:
@@ -115,24 +115,24 @@ notes.get('/',
  *                success: 
  *                  type: boolean
  *                data: 
- *                  $ref: '#/components/responses/noteData'
+ *                  $ref: '#/components/responses/tuningData'
  *              required:
  *                - success
  *                - data
  *      404:
- *        $ref: '#/components/responses/noteNotFound'
+ *        $ref: '#/components/responses/tuningNotFound'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
-notes.get('/:id',
+tunings.get('/:id',
   checkGRPC,
   validateParamId,
-  async (req: Request<ParamId>, res: Response<ResponseBody<Note | null>, { data: Note | null, error?: ErrorData }>, next: NextFunction) => {
-    const request = grpc.Client.Note!.req.get({ id: req.params.id })
+  async (req: Request<ParamId>, res: Response<ResponseBody<Tuning | null>, { data: Tuning | null, error?: ErrorData }>, next: NextFunction) => {
+    const request = grpc.Client.Tuning!.req.get({ id: req.params.id })
 
     try {
-      const response = await grpc.Client.Note!.get(request)
-      res.locals.data = response.note ?? null
+      const response = await grpc.Client.Tuning!.get(request)
+      res.locals.data = response.tuning ?? null
     } 
     catch (error) {
       res.locals.error = createErrorData(error)
@@ -144,10 +144,10 @@ notes.get('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>) => {
+  (_: Request, res: Response<ResponseBody<Tuning | null>, { data: Tuning | null }>) => {
     res.status(200).json({ success: true, data: res.locals.data })
   }
 )
 
 
-export default notes
+export default tunings

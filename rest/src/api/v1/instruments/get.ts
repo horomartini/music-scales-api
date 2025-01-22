@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
-import type { GetNoteResponse, GetNotesRequest, GetNotesResponse } from 'proto/__generated__/note'
+import type { GetInstrumentResponse, GetInstrumentsRequest, GetInstrumentsResponse } from 'proto/__generated__/instrument'
 import type { ParamId } from 'utils/requests'
 import type { PaginationData, ResponseBody } from 'utils/responses'
 
@@ -14,20 +14,20 @@ import { createErrorData, ErrorData } from 'utils/errors'
 import grpc from 'proto/grpc'
 
 
-type Note = Exclude<GetNoteResponse['note'], undefined>
-type Notes = Exclude<GetNotesResponse['notes'], undefined>
+type Instrument = Exclude<GetInstrumentResponse['instrument'], undefined>
+type Instruments = Exclude<GetInstrumentsResponse['instruments'], undefined>
 
-const notes = Router()
+const Instruments = Router()
 
 /**
  * @swagger
- *  /notes:
+ *  /instruments:
  *  get:
- *    operationId: getNotes
+ *    operationId: getInstruments
  *    tags: 
- *      - notes
- *    summary: Get all notes
- *    description: Fetch a list of all notes.
+ *      - instruments
+ *    summary: Get all instruments
+ *    description: Fetch a list of all instruments.
  *    parameters:
  *      - $ref: '#/components/parameters/filter/name_ne'
  *      - $ref: '#/components/parameters/filter/name_eq'
@@ -36,7 +36,7 @@ const notes = Router()
  *      - $ref: '#/components/parameters/paginate/limit'
  *    responses:
  *      200:
- *        description: A list of notes.
+ *        description: A list of instruments.
  *        content:
  *          application/json:
  *            schema:
@@ -48,7 +48,7 @@ const notes = Router()
  *                data: 
  *                  type: array
  *                  items:
- *                    $ref: '#/components/responses/noteData'
+ *                    $ref: '#/components/responses/instrumentData'
  *                paginationData:
  *                  $ref: '#/components/responses/paginationData'
  *              required:
@@ -57,17 +57,17 @@ const notes = Router()
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */                     
-notes.get('/',
+Instruments.get('/',
   checkGRPC,
   parseFilters,
   parseSorters,
   parsePagination,
-  async (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, error?: ErrorData, ux?: GetNotesRequest }>, next: NextFunction) => {
-    const request = grpc.Client.Note!.req.getMany(res.locals.ux)
+  async (_: Request, res: Response<ResponseBody<Instruments>, { data: Instruments, paginationData?: PaginationData, error?: ErrorData, ux?: GetInstrumentsRequest }>, next: NextFunction) => {
+    const request = grpc.Client.Instrument!.req.getMany(res.locals.ux)
 
     try {
-      const response = await grpc.Client.Note!.getMany(request)
-      res.locals.data = response.notes
+      const response = await grpc.Client.Instrument!.getMany(request)
+      res.locals.data = response.instruments
       res.locals.paginationData = {
         totalCount: response.totalCount, 
         pagesCount: response.totalPages, 
@@ -84,7 +84,7 @@ notes.get('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, ux?: GetNotesRequest }>) => {
+  (_: Request, res: Response<ResponseBody<Instruments>, { data: Instruments, paginationData?: PaginationData, ux?: GetInstrumentsRequest }>) => {
     res.status(200).json({ 
       success: true, 
       data: res.locals.data, 
@@ -95,18 +95,18 @@ notes.get('/',
 
 /**
  * @swagger
- *  /notes/{id}:
+ *  /instruments/{id}:
  *  get:
- *    operationId: getNote
+ *    operationId: getInstrument
  *    tags: 
- *      - notes
- *    summary: Get note
- *    description: Fetch a note based on given ID.
+ *      - instruments
+ *    summary: Get instrument
+ *    description: Fetch an instrument based on given ID.
  *    parameters:
- *      - $ref: '#/components/parameters/noteId'
+ *      - $ref: '#/components/parameters/instrumentId'
  *    responses:
  *      200:
- *        description: Note document.
+ *        description: Instrument document.
  *        content:
  *          application/json:
  *            schema:
@@ -115,24 +115,24 @@ notes.get('/',
  *                success: 
  *                  type: boolean
  *                data: 
- *                  $ref: '#/components/responses/noteData'
+ *                  $ref: '#/components/responses/instrumentData'
  *              required:
  *                - success
  *                - data
  *      404:
- *        $ref: '#/components/responses/noteNotFound'
+ *        $ref: '#/components/responses/instrumentNotFound'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
-notes.get('/:id',
+Instruments.get('/:id',
   checkGRPC,
   validateParamId,
-  async (req: Request<ParamId>, res: Response<ResponseBody<Note | null>, { data: Note | null, error?: ErrorData }>, next: NextFunction) => {
-    const request = grpc.Client.Note!.req.get({ id: req.params.id })
+  async (req: Request<ParamId>, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null, error?: ErrorData }>, next: NextFunction) => {
+    const request = grpc.Client.Instrument!.req.get({ id: req.params.id })
 
     try {
-      const response = await grpc.Client.Note!.get(request)
-      res.locals.data = response.note ?? null
+      const response = await grpc.Client.Instrument!.get(request)
+      res.locals.data = response.instrument ?? null
     } 
     catch (error) {
       res.locals.error = createErrorData(error)
@@ -144,10 +144,10 @@ notes.get('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>) => {
+  (_: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null }>) => {
     res.status(200).json({ success: true, data: res.locals.data })
   }
 )
 
 
-export default notes
+export default Instruments

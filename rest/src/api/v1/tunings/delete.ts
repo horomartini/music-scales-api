@@ -11,22 +11,22 @@ import { createErrorData, ErrorData } from 'utils/errors'
 
 import grpc from 'proto/grpc'
 
-const notes = Router()
+const tunings = Router()
 
 /**
  * @swagger
- *  /notes/{id}:
+ *  /tunings/{id}:
  *  delete:
- *    operationId: deleteNote
+ *    operationId: deleteTuning
  *    tags: 
- *      - notes
- *    summary: Delete note
- *    description: Delete note with specified ID.
+ *      - tunings
+ *    summary: Delete tuning
+ *    description: Delete tuning with specified ID.
  *    parameters:
- *      - $ref: '#/components/parameters/noteId'
+ *      - $ref: '#/components/parameters/tuningId'
  *    responses:
  *      200:
- *        description: ID of note that was deleted.
+ *        description: ID of tuning that was deleted.
  *        content:
  *          application/json:
  *            schema:
@@ -40,17 +40,17 @@ const notes = Router()
  *                - success
  *                - data
  *      404:
- *        $ref: '#/components/responses/noteNotFound'
+ *        $ref: '#/components/responses/tuningNotFound'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
-notes.delete('/:id',
+tunings.delete('/:id',
   checkGRPC,
   async (req: Request<ParamId>, res: Response<ResponseBody<string>, { data: string, error?: ErrorData }>, next: NextFunction) => {
-    const request = grpc.Client.Note!.req.delete({ id: req.params.id })
+    const request = grpc.Client.Tuning!.req.delete({ id: req.params.id })
 
     try {
-      const response = await grpc.Client.Note!.delete(request)
+      const response = await grpc.Client.Tuning!.delete(request)
       res.locals.data = response.id
     } 
     catch (error) {
@@ -66,4 +66,4 @@ notes.delete('/:id',
 )
 
 
-export default notes
+export default tunings

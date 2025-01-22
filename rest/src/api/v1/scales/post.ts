@@ -52,7 +52,7 @@ scales.post('/',
   (_: Request, res: Response<ResponseBody<Scale | null>, { data: Scale | null, schema: SchemaDefinition }>, next: NextFunction) => {
     res.locals.schema = {
       name: { type: String, required: true },
-      steps: { type: Array, required: true, schema: { type: Number, required: true } }
+      steps: { type: Array, required: true, schema: { type: Number, required: true } },
     }
 
     next()

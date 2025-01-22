@@ -1,18 +1,17 @@
 import type { Request, Response, NextFunction } from 'express'
-import type { GetNoteResponse, GetNotesRequest, GetNotesResponse } from 'proto/__generated__/note'
-import { checkBody, type ParamId } from 'utils/requests'
-import type { PaginationData, ResponseBody } from 'utils/responses'
+import type { GetNoteResponse } from 'proto/__generated__/note'
+import type { ResponseBody } from 'utils/responses'
 
 import { Router } from 'express'
 
-import { checkGRPC, parsePagination } from 'middleware/request'
-import { parseFilters, parseSorters, validateParamId } from 'middleware/request'
+import { checkGRPC } from 'middleware/request'
 
+import { checkBody, type ParamId } from 'utils/requests'
 import { checkGRPCErrors } from 'utils/responses'
 import { createErrorData, ErrorData } from 'utils/errors'
+import { SchemaDefinition } from 'utils/parser'
 
 import grpc from 'proto/grpc'
-import { SchemaDefinition } from 'utils/parser'
 
 
 type Note = Exclude<GetNoteResponse['note'], undefined>

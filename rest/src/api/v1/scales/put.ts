@@ -57,7 +57,7 @@ scales.put('/:id',
   (_: Request, res: Response<ResponseBody<Scale>, { data: Scale, schema: SchemaDefinition }>, next: NextFunction) => {
     res.locals.schema = {
       name: { type: String, required: true },
-      steps: { type: Array, required: true, schema: { type: Number, required: true } }
+      steps: { type: Array, required: true, schema: { type: Number, required: true } },
     }
 
     next()

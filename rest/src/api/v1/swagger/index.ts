@@ -1,6 +1,8 @@
 export const parameters = {
   noteId: createDefaultIdParam({ description: 'Note ID field.' }),
-  scaleId: createDefaultIdParam({ description: 'Scale ID field' }),
+  instrumentId: createDefaultIdParam({ description: 'Instrument ID field.' }),
+  tuningId: createDefaultIdParam({ description: 'Tuning ID field.' }),
+  scaleId: createDefaultIdParam({ description: 'Scale ID field.' }),
 
   filter: {
     ...createDefaultFilterQueryParamObject({ name: 'name' })
@@ -54,6 +56,94 @@ export const requests = {
           type: 'object',
           properties: {
             name: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+
+  instrumentBody: {
+    description: 'Instrument schema without ID.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            defaultTuning: { type: 'string' },
+          },
+          required: [
+            'name',
+          ],
+        },
+      },
+    },
+  },
+  optionalInstrumentBody: {
+    description: 'Instrument schema without ID.',
+    required: false,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            defaultTuningId: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+
+  tuningBody: {
+    description: 'Tuning schema without ID.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            instrumentId: { type: 'string' },
+            notes: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  noteId: { type: 'string' },
+                  octave: { type: 'number' },
+                },
+              },
+            },
+          },
+          required: [
+            'name',
+          ],
+        },
+      },
+    },
+  },
+  optionalTuningBody: {
+    description: 'Tuning schema without ID.',
+    required: false,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            instrumentId: { type: 'string' },
+            notes: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  noteId: { type: 'string' },
+                  octave: { type: 'number' },
+                },
+              },
+            },
           },
         },
       },
@@ -114,6 +204,40 @@ export const responses = {
     properties: {
       id: { type: 'string' },
       name: { type: 'string' },
+    },
+    required: [
+      'id',
+      'name',
+    ],
+  },
+  instrumentData: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      name: { type: 'string' },
+      defaultTuning: { type: 'string' },
+    },
+    required: [
+      'id',
+      'name',
+    ],
+  },
+  tuningData: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      name: { type: 'string' },
+      instrumentId: { type: 'string' },
+      notes: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            noteId: { type: 'string' },
+            octave: { type: 'number' },
+          },
+        },
+      },
     },
     required: [
       'id',
@@ -186,6 +310,12 @@ export const responses = {
   },
   noteNotFound: createNotFoundResponse({
     description: 'Note with given ID was not found.'
+  }),
+  instrumentNotFound: createNotFoundResponse({
+    description: 'Instrument with given ID was not found.'
+  }),
+  tuningNotFound: createNotFoundResponse({
+    description: 'Tuning with given ID was not found.'
   }),
   scaleNotFound: createNotFoundResponse({
     description: 'Scale with given ID was not found.'

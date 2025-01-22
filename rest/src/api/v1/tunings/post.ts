@@ -54,10 +54,10 @@ tunings.post('/',
     res.locals.schema = {
       name: { type: String, required: true },
       instrumentId: { type: String, required: false },
-      notes: { type: Array, required: false, schema: { type: Object, required: false, schema: {
+      notes: { type: Array, required: false, schema: {
         noteId: { type: String, required: true },
         octave: { type: Number, required: true },
-      }}},
+      }},
     }
 
     next()

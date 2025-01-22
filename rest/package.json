@@ -9,7 +9,7 @@
   "scripts": {
     "start": "NODE_PATH=./build node build/main.js",
     "build": "tsc -p .",
-    "test": "jest --watch",
+    "test": "vitest",
     "dev": "nodemon src/main.ts",
     "dev:no-apollo": "tsc -p tsconfig.no-apollo.json",
     "dev-dockerless": "nodemon src/main.ts"
@@ -19,7 +19,8 @@
     "@grpc/grpc-js": "^1.12.5",
     "cors": "^2.8.5",
     "express": "^4.21.1",
-    "swagger-jsdoc": "^6.2.8"
+    "swagger-jsdoc": "^6.2.8",
+    "vitest": "^3.0.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

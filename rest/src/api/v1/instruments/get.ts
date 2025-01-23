@@ -34,6 +34,7 @@ const Instruments = Router()
  *      - $ref: '#/components/parameters/sort/name'
  *      - $ref: '#/components/parameters/paginate/page'
  *      - $ref: '#/components/parameters/paginate/limit'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: A list of instruments.
@@ -54,6 +55,8 @@ const Instruments = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */                     
@@ -84,12 +87,15 @@ Instruments.get('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Instruments>, { data: Instruments, paginationData?: PaginationData, ux?: GetInstrumentsRequest }>) => {
-    res.status(200).json({ 
-      success: true, 
-      data: res.locals.data, 
-      ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
-    })
+  (req: Request, res: Response<ResponseBody<Instruments>, { data: Instruments, paginationData?: PaginationData, ux?: GetInstrumentsRequest }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ 
+        success: true, 
+        data: res.locals.data, 
+        ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
+      })
   }
 )
 
@@ -104,6 +110,7 @@ Instruments.get('/',
  *    description: Fetch an instrument based on given ID.
  *    parameters:
  *      - $ref: '#/components/parameters/instrumentId'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: Instrument document.
@@ -119,6 +126,8 @@ Instruments.get('/',
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/instrumentNotFound'
  *      400:
@@ -144,8 +153,11 @@ Instruments.get('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

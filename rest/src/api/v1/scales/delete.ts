@@ -25,6 +25,7 @@ const scales = Router()
  *    description: Delete scale with specified ID.
  *    parameters:
  *      - $ref: '#/components/parameters/scaleId'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: ID of scale that was deleted.
@@ -40,6 +41,8 @@ const scales = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/scaleNotFound'
  *      400:
@@ -61,8 +64,11 @@ scales.delete('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<string>, { data: string }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<string>, { data: string }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

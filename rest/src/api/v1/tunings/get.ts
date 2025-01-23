@@ -34,6 +34,7 @@ const tunings = Router()
  *      - $ref: '#/components/parameters/sort/name'
  *      - $ref: '#/components/parameters/paginate/page'
  *      - $ref: '#/components/parameters/paginate/limit'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: A list of tunings.
@@ -54,6 +55,8 @@ const tunings = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */                     
@@ -84,12 +87,15 @@ tunings.get('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Tunings>, { data: Tunings, paginationData?: PaginationData, ux?: GetTuningsRequest }>) => {
-    res.status(200).json({ 
-      success: true, 
-      data: res.locals.data, 
-      ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
-    })
+  (req: Request, res: Response<ResponseBody<Tunings>, { data: Tunings, paginationData?: PaginationData, ux?: GetTuningsRequest }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ 
+        success: true, 
+        data: res.locals.data, 
+        ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
+      })
   }
 )
 
@@ -104,6 +110,7 @@ tunings.get('/',
  *    description: Fetch a tuning based on given ID.
  *    parameters:
  *      - $ref: '#/components/parameters/tuningId'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: Tuning document.
@@ -119,6 +126,8 @@ tunings.get('/',
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/tuningNotFound'
  *      400:
@@ -144,8 +153,11 @@ tunings.get('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Tuning | null>, { data: Tuning | null }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Tuning | null>, { data: Tuning | null }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

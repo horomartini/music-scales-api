@@ -27,6 +27,12 @@ export const parameters = {
       schema: { type: 'number' },
     }),
   },
+
+  noData: createDefaultQueryParam({
+    name: 'no_data',
+    description: 'Specify no data to be returned - 204 on success.',
+    schema: { type: 'boolean' },
+  }),
 }
 
 export const requests = {
@@ -308,6 +314,7 @@ export const responses = {
       },
     },
   },
+
   noteNotFound: createNotFoundResponse({
     description: 'Note with given ID was not found.'
   }),
@@ -320,6 +327,10 @@ export const responses = {
   scaleNotFound: createNotFoundResponse({
     description: 'Scale with given ID was not found.'
   }),
+
+  noData: {
+    description: 'Success, but no data is returned. Triggered with "?no_data=true".',
+  }
 }
 
 

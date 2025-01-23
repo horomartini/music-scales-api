@@ -28,10 +28,12 @@ const notes = Router()
  *      - notes
  *    summary: Add note
  *    description: Add note with specified body. ID is generated automatically.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/noteBody'
  *    responses:
- *      200:
+ *      201:
  *        description: Note that was created.
  *        content:
  *          application/json:
@@ -45,6 +47,8 @@ const notes = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
@@ -75,8 +79,11 @@ notes.post('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(201).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

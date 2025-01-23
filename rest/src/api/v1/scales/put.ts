@@ -30,6 +30,7 @@ const scales = Router()
  *    description: Replace all fields in Scale with different ones except for ID.
  *    parameters:
  *      - $ref: '#/components/parameters/scaleId'
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/scaleBody'
  *    responses:
@@ -47,6 +48,8 @@ const scales = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/scaleNotFound'
  *      400:
@@ -77,8 +80,11 @@ scales.put('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Scale>, { data: Scale }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Scale>, { data: Scale }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

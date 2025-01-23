@@ -29,6 +29,7 @@ const notes = Router()
  *    description: Replace all fields in Note with different ones except for ID.
  *    parameters:
  *      - $ref: '#/components/parameters/noteId'
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/noteBody'
  *    responses:
@@ -46,6 +47,8 @@ const notes = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/noteNotFound'
  *      400:
@@ -75,8 +78,11 @@ notes.put('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Note>, { data: Note }>, next: NextFunction) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Note>, { data: Note }>, next: NextFunction) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

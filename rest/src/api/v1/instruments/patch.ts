@@ -30,6 +30,7 @@ const instruments = Router()
  *    description: Update chosen fields in Instrument except for ID.
  *    parameters:
  *      - $ref: '#/components/parameters/instrumentId'
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/optionalInstrumentBody'
  *    responses:
@@ -47,6 +48,8 @@ const instruments = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/instrumentNotFound'
  *      400:
@@ -77,8 +80,11 @@ instruments.patch('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Instrument>, { data: Instrument }>, next: NextFunction) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Instrument>, { data: Instrument }>, next: NextFunction) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

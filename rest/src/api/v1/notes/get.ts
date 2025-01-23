@@ -34,6 +34,7 @@ const notes = Router()
  *      - $ref: '#/components/parameters/sort/name'
  *      - $ref: '#/components/parameters/paginate/page'
  *      - $ref: '#/components/parameters/paginate/limit'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: A list of notes.
@@ -54,6 +55,8 @@ const notes = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */                     
@@ -84,12 +87,15 @@ notes.get('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, ux?: GetNotesRequest }>) => {
-    res.status(200).json({ 
-      success: true, 
-      data: res.locals.data, 
-      ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
-    })
+  (req: Request, res: Response<ResponseBody<Notes>, { data: Notes, paginationData?: PaginationData, ux?: GetNotesRequest }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ 
+        success: true, 
+        data: res.locals.data, 
+        ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
+      })
   }
 )
 
@@ -104,6 +110,7 @@ notes.get('/',
  *    description: Fetch a note based on given ID.
  *    parameters:
  *      - $ref: '#/components/parameters/noteId'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: Note document.
@@ -119,6 +126,8 @@ notes.get('/',
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/noteNotFound'
  *      400:
@@ -144,8 +153,11 @@ notes.get('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Note | null>, { data: Note | null }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

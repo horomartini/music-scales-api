@@ -24,6 +24,7 @@ const instruments = Router()
  *    description: Delete instrument with specified ID.
  *    parameters:
  *      - $ref: '#/components/parameters/instrumentId'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: ID of instrument that was deleted.
@@ -39,6 +40,8 @@ const instruments = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/instrumentNotFound'
  *      400:
@@ -60,8 +63,11 @@ instruments.delete('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<string>, { data: string }>, next: NextFunction) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<string>, { data: string }>, next: NextFunction) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

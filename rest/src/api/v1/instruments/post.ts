@@ -28,10 +28,12 @@ const instruments = Router()
  *      - instruments
  *    summary: Add instrument
  *    description: Add instrument with specified body. ID is generated automatically.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/instrumentBody'
  *    responses:
- *      200:
+ *      201:
  *        description: Instrument that was created.
  *        content:
  *          application/json:
@@ -45,6 +47,8 @@ const instruments = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
@@ -76,8 +80,11 @@ instruments.post('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Instrument | null>, { data: Instrument | null }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(201).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

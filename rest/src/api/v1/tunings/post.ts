@@ -28,10 +28,12 @@ const tunings = Router()
  *      - tunings
  *    summary: Add tuning
  *    description: Add tuning with specified body. ID is generated automatically.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/tuningBody'
  *    responses:
- *      200:
+ *      201:
  *        description: Tuning that was created.
  *        content:
  *          application/json:
@@ -45,6 +47,8 @@ const tunings = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
@@ -80,8 +84,11 @@ tunings.post('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Tuning | null>, { data: Tuning | null }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Tuning | null>, { data: Tuning | null }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(201).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

@@ -27,10 +27,12 @@ const scales = Router()
  *      - scales
  *    summary: Add scale
  *    description: Add scale with specified body. ID is generated automatically.
+ *    parameters:
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/scaleBody'
  *    responses:
- *      200:
+ *      201:
  *        description: Scale that was created.
  *        content:
  *          application/json:
@@ -44,6 +46,8 @@ const scales = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */  
@@ -75,8 +79,11 @@ scales.post('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Scale | null>, { data: Scale | null }>) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Scale | null>, { data: Scale | null }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(201).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

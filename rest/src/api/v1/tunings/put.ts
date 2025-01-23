@@ -29,6 +29,7 @@ const tunings = Router()
  *    description: Replace all fields in Tuning with different ones except for ID.
  *    parameters:
  *      - $ref: '#/components/parameters/tuningId'
+ *      - $ref: '#/components/parameters/noData'
  *    requestBody:
  *      $ref: '#/components/requests/tuningBody'
  *    responses:
@@ -46,6 +47,8 @@ const tunings = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/tuningNotFound'
  *      400:
@@ -80,8 +83,11 @@ tunings.put('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Tuning>, { data: Tuning }>, next: NextFunction) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Tuning>, { data: Tuning }>, next: NextFunction) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

@@ -34,6 +34,7 @@ const scales = Router()
  *      - $ref: '#/components/parameters/sort/name'
  *      - $ref: '#/components/parameters/paginate/page'
  *      - $ref: '#/components/parameters/paginate/limit'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: A list of scales.
@@ -54,6 +55,8 @@ const scales = Router()
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      400:
  *        $ref: '#/components/responses/badRequest'
  */   
@@ -84,12 +87,15 @@ scales.get('/',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Scales>, { data: Scales, paginationData?: PaginationData, ux?: GetScalesRequest }>) => {
-    res.status(200).json({ 
-      success: true, 
-      data: res.locals.data, 
-      ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
-    })
+  (req: Request, res: Response<ResponseBody<Scales>, { data: Scales, paginationData?: PaginationData, ux?: GetScalesRequest }>) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ 
+        success: true, 
+        data: res.locals.data, 
+        ...(res.locals.ux?.pageToken ? { paginationData: res.locals.paginationData } : {}), 
+      })
   }
 )
 
@@ -104,6 +110,7 @@ scales.get('/',
  *    description: Fetch a scale based on given ID.
  *    parameters:
  *      - $ref: '#/components/parameters/scaleId'
+ *      - $ref: '#/components/parameters/noData'
  *    responses:
  *      200:
  *        description: Scale document.
@@ -119,6 +126,8 @@ scales.get('/',
  *              required:
  *                - success
  *                - data
+ *      204:
+ *        $ref: '#/components/responses/noData'
  *      404:
  *        $ref: '#/components/responses/scaleNotFound'
  *      400:
@@ -144,8 +153,11 @@ scales.get('/:id',
     next()
   },
   checkGRPCErrors,
-  (_: Request, res: Response<ResponseBody<Scale | null>, { data: Scale | null }>,) => {
-    res.status(200).json({ success: true, data: res.locals.data })
+  (req: Request, res: Response<ResponseBody<Scale | null>, { data: Scale | null }>,) => {
+    if (req.query?.no_data && req.query.no_data === 'true')
+      res.sendStatus(204)
+    else
+      res.status(200).type('application/json').json({ success: true, data: res.locals.data })
   }
 )
 

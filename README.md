@@ -1,80 +1,153 @@
 # music-scales-api
-University project for 7th semester. API for quick access to music scales and other helpful tools for music.
 
-run `docker compose up --build --no-cache` to run dev mode or `docker compose build --no-cache & docker compose up`
+> University project for 7th semester. \
+> API for quick access to music scales.
 
-? `docker-compose rm -f` | `docker-compose down && docker-compose build --no-cache && docker-compose up`
+## Table of Contents
 
-`docker compose up --watch`
+- [General Information](#general-information)
+- [Technologies Used](#technologies-used)
+- [Project Structure](#project-structure)
+- [Setup](#setup)
+- [Usage](#usage)
+- [Support](#support)
+- [Contributions](#contributions)
+- [Status](#status)
 
-### login do mongo:
-> docker > exec \
-> mongosh "mongodb://overlord:ENV.PWD@localhost:27017/maindb?authSource=admin"
-> or
-> monhosh -u overlord -p ENV.PWD
+## General Information
 
-### knowledge
-- [rest caching](https://restfulapi.net/caching/)
-- [rest versioning](https://restfulapi.net/versioning/)
+Music Scales API is an API service built from microservices all running concurrently and connected to each other for a smooth UX and ease of development. The Contents of the project is not its main focus and it is lacking in usable data section.
 
+Main focus for the project was to use all the technologies learnt and create a service that goes beyong the requirements set for the university project and to create a modern service that is up-to-date with current requirements and standards.
 
-npm jest package uses outdated packages Glob@7.2.3 and inflight@1.0.6, consider using an alternative to jest
+## Technologies Used
+- Docker 27.2
+- Docker Compose 2.29
+- Node 20.15
+- Vitest 3.0
+- TypeScript 5.6
+- Express 4.21
+- Swagger UI 5.0
+- Docusaurus 3.7
+- gRPC JS 1.12
+- Protobuf 2.2
+- GraphQL 16.10
+- Apollo 4.11
+- MongoDB 8.0
+- Nginx 1.27
 
-node --inspect might be a security vulnerability when exposed with 0.0.0.0:port: https://nodejs.org/en/learn/getting-started/debugging#exposing-the-debug-port-publicly-is-unsafe
-node --nolazy is so that breakpoints and debugging on IDEs work with async/await
+# Project Structure
 
-compile grpc protobufs to ts types example (has to be in powershell or cmd):
+Project uses Docker to create containers for every service and to arrange them in a logical way.
+
+Services:
+- Nginx - web server used as a proxy between the end-user and accessible services to the public
+- REST - public REST API implementing simple paths for resources following RESTful practices
+- Apollo - public web service that uses GraphQL for accessing resources with built-in documentation
+- gRPC - internal communication service that handles all transfers between public interfaces and databases
+- Mongo - Non-relational database used as a storage for resources
+- Swagger - public web service publicating documentation for REST API
+- Docusaurus - public service to store general documentation (UNIMPLEMENTED in docker containers - will not be listed further in the instruction)
+
+Volumes:
+- Shared - internal files shared between containers
+- Mongo Data - database data
+
+Networks:
 ```
-protoc --plugin=protoc-gen-ts_proto=".\\node_modules\\.bin\\protoc-gen-ts_proto.cmd" --ts_proto_out=. ./src/proto/note.proto
+                   +-<<Server>>------------+
++-<<Client>>-------|----------+            |
+|  +-<<Public>>-+  |  REST    |            |
+|  |  Nginx     |  |  Apollo  |  +-<<Database>>-+
++--|------------|--|----------+  |  gRPC   |    |
+   |  Swagger   |  +-------------|---------+    |
+   +------------+                |  Mongo       |
+                                 +--------------+
 ```
 
-npm install with deps as `@graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-resolvers` generates these deprecated warnings:
-- inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests 
-by a key value, which is much more comprehensive and powerful.
-- glob@7.2.3: Glob versions prior to v9 are no longer supported
-- @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
-- @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please 
-use @babel/plugin-transform-object-rest-spread instead.
+## Setup
 
+To run the API you need Docker and Docker Compose installed on your computer. To develop code you will need Node and a code editor of your choosing.
+
+### Config files
+
+First, create `.env` file in the root structure with following data:
+
+```bash
+NGINX_IP=<public IP for nginx - 127.0.0.1>
+NGINX_PORT=<port for nginx internal communication - 8044>
+REST_PORT=<port for rest api internal communication - 8080>
+APOLLO_PORT=<port for graphql internal communication - 8082>
+GRPC_PORT=<port for grpc internal communication - 8084>
+MONGO_PORT=<port for db internal communication - 27017>
+MONGO_USERNAME=<name for db user - dbuser>
+MONGO_PASSWORD=<password for db user>
+MONGO_DATABASE=<name of the resource db collection - maindb>
+SWAGGER_PORT=<port for swagger internal communication - 8086>
+DOCUSAURUS_PORT=<port for docs internal communication - 8088>
 ```
-Request<Params, ResBody, ReqBody, Query>
-Response<ResBody, Locals>
+> Do not copy the exact values, data in `<...>` are descriptions and examples. A proper value is e.g. `NGINX_IP=127.0.0.1`.
+
+This will specify all the data required to run the services. Mainly the database user with proper privilages, database URI for accessing the database, publicly available IP address (set to 127.0.0.1 for local work) and all the ports for services to communicate with each other.
+
+### Proto files
+
+Next, generate TypeScript files from Protobufs with commands below (from root):
+```bash
+cd grpc/
+npm run protoc:linux
+```
+> If you are on a machine with Windows, replace `protoc:linux` with `protoc:windows`.
+
+This will generate all the TS files from Proto files and copy them to proper folders, which will get rid of most errors.
+
+If you do not have `protoc` installed on your system, you will get an error. If you do not want to install `protoc` globally, you can install it locally in `grpc/` by running `npm install protoc` and then running included `protoc:<os>` script.
+
+### GraphQL files (optional)
+
+Lastly, generate Typescript files from GraphQL file with commands below (from root):
+```bash
+cd apollo/
+npm i
+npm run codgen
+```
+> This step is optional unless you wish to actively change the codebase for Apollo service.
+
+This will generate all the TS files for Apollo and will get rid of the rest of the errors.
+
+## Usage
+
+You now can run all the containers with:
+```bash
+docker compose -f docker-compose.yaml up --build
 ```
 
-status codes
+To run docker containers with HMR (only for docker compose 1.22+) run:
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build`.
 ```
-GET
-- 200 OK: Use when the request is successful, and the resource data is returned in the response body.
-- 204 No Content: Use when the request is successful, but there is no content to return (less common for GET requests; usually applicable for searches that yield no results).
-- 404 Not Found: Use when the requested resource does not exist.
-- 400 Bad Request: Use when the query parameters or request structure are invalid.
-- 403 Forbidden: Use when the client is authenticated but does not have permission to access the resource.
 
-POST
-- 201 Created: Use when a new resource is successfully created. Include a Location header pointing to the newly created resource's URI, if applicable.
-- 200 OK: Use when a POST request processes data but does not create a new resource (e.g., processing a file upload or running a command).
-- 204 No Content: Use when the request is successful, and no content is returned (e.g., an operation acknowledgment).
-- 400 Bad Request: Use when the request body is malformed or invalid.
-- 422 Unprocessable Entity: Use when the syntax is correct, but the server cannot process the instructions due to validation errors.
-- 409 Conflict: Use when the request conflicts with the current state of the server (e.g., trying to create a resource that already exists).
-
-PUT
-- 200 OK: Use when the resource is updated and the updated resource is returned in the response body.
-- 204 No Content: Use when the resource is successfully updated but the response body is empty.
-- 201 Created: Use when the PUT request creates a new resource (less common but possible in REST).
-- 404 Not Found: Use when the resource to be updated does not exist.
-- 400 Bad Request: Use when the request body is invalid or missing required fields.
-
-PATCH
-- 200 OK: Use when the resource is successfully updated, and the updated resource is returned in the response body.
-- 204 No Content: Use when the resource is successfully updated but the response body is empty.
-- 404 Not Found: Use when the resource to be updated does not exist.
-- 400 Bad Request: Use when the request is malformed or invalid.
-- 422 Unprocessable Entity: Use when the request syntax is correct but the server cannot process the instructions due to semantic issues (e.g., invalid field values).
-
-DELETE
-- 200 OK: Use when the resource is successfully deleted, and additional information is returned in the response body (e.g., details about the deletion).
-- 204 No Content: Use when the resource is successfully deleted, and the response body is empty.
-- 404 Not Found: Use when the resource to be deleted does not exist.
-- 403 Forbidden: Use when the server understands the request but refuses to authorize it (e.g., insufficient permissions).
+To run docker containers with HMR and have unrestricted access to all containers (not only from nginx), run:
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.dev.yaml -f docker-compose.debug.yaml up --build`.
 ```
+
+Most services have Dockerfiles in them, which do:
+- Nginx - pulls nginx:1.27.3-alpine, copies config file and runs service
+- REST - pulls node:20-alpine and runs Express server
+- Apollo - pulls node:20-alpine, runs codegen and runs Apollo Standalone Server
+- gRPC - pulls node:20-alpine and runs gRPC Server
+- Mongo - pulls mongo:latest, copies entrypoint file with sample data and runs database
+- Swagger - pulls node:20-alpine and runs Express server
+
+## Support
+
+No updates or bugfixes will be made for this repository, but the idea, both from technology stack and the resource API aspects, might get revisited.
+
+## Contributions
+
+No contributions are or will be accepted, but you may fork or copy the repository and do whatever you want with it.
+
+## Status
+
+Project is not finished, but no new updates will be made to it. If it gets revisited, it will be available in a new repository.
